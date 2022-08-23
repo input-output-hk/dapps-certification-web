@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/dapps-certification/react-web/static/css/main.1c7a1988.css",
+    "main.js": "/dapps-certification/react-web/static/js/main.6669cb0c.js",
+    "static/js/787.7ebdfcd6.chunk.js": "/dapps-certification/react-web/static/js/787.7ebdfcd6.chunk.js",
+    "index.html": "/dapps-certification/react-web/index.html",
+    "main.1c7a1988.css.map": "/dapps-certification/react-web/static/css/main.1c7a1988.css.map",
+    "main.6669cb0c.js.map": "/dapps-certification/react-web/static/js/main.6669cb0c.js.map",
+    "787.7ebdfcd6.chunk.js.map": "/dapps-certification/react-web/static/js/787.7ebdfcd6.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1c7a1988.css",
+    "static/js/main.6669cb0c.js"
+  ]
+}
