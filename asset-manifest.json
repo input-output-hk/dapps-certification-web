@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/dapps-certification/static/css/main.b52b24ef.css",
-    "main.js": "/dapps-certification/static/js/main.37861abd.js",
-    "static/js/787.7ebdfcd6.chunk.js": "/dapps-certification/static/js/787.7ebdfcd6.chunk.js",
-    "index.html": "/dapps-certification/index.html",
-    "main.b52b24ef.css.map": "/dapps-certification/static/css/main.b52b24ef.css.map",
-    "main.37861abd.js.map": "/dapps-certification/static/js/main.37861abd.js.map",
-    "787.7ebdfcd6.chunk.js.map": "/dapps-certification/static/js/787.7ebdfcd6.chunk.js.map"
+    "main.css": "/static/css/main.473ab822.css",
+    "main.js": "/static/js/main.615e4143.js",
+    "static/js/787.7ebdfcd6.chunk.js": "/static/js/787.7ebdfcd6.chunk.js",
+    "index.html": "/index.html",
+    "main.473ab822.css.map": "/static/css/main.473ab822.css.map",
+    "main.615e4143.js.map": "/static/js/main.615e4143.js.map",
+    "787.7ebdfcd6.chunk.js.map": "/static/js/787.7ebdfcd6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b52b24ef.css",
-    "static/js/main.37861abd.js"
+    "static/css/main.473ab822.css",
+    "static/js/main.615e4143.js"
   ]
 }
