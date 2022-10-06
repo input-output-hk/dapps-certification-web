@@ -67,6 +67,7 @@ generateFlake backend flakeref output = withEvent backend GenerateFlake \ev -> d
     hPutStrLn h "      url = \"github:input-output-hk/dapps-certification\";"
     hPutStrLn h "      flake = false;"
     hPutStrLn h "    };"
+    hPutStrLn h "    flake-utils.url = \"github:numtide/flake-utils\";"
     hPutStrLn h "  };"
     hPutStrLn h ""
     hPutStrLn h "  outputs = args: import ./outputs.nix args;"
