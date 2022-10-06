@@ -1,5 +1,7 @@
-{ plutus-apps, dapps-certification, repo, flake-utils, ... }: let
-  origProject = repo.iog.dapp;
+{ plutus-apps, dapps-certification, repo, flake-utils, ... }: flake-utils.lib.eachDefaultSystem (system: let
+  iog = repo.iog.${system} or repo.iog;
+
+  origProject = iog.dapp;
 
   inherit (origProject) pkgs;
 
@@ -53,7 +55,7 @@
     mkdir -p $out/bin
     ${ghc}/bin/ghc ${./Certify.hs} -Wall -o $out/bin/certify -L${pkgs.numactl}/lib
   '';
-in flake-utils.lib.eachDefaultSystem (_: {
+in {
   defaultPackage = certify;
   packages.default = certify;
 })
