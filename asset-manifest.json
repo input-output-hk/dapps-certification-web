@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/dapps-certification/static/css/main.fd0f892b.css",
-    "main.js": "/dapps-certification/static/js/main.d420173f.js",
+    "main.js": "/dapps-certification/static/js/main.7e7a0fee.js",
     "static/js/787.7ebdfcd6.chunk.js": "/dapps-certification/static/js/787.7ebdfcd6.chunk.js",
     "static/media/download.svg": "/dapps-certification/static/media/download.6b436a12a6280b2e3ab8b5fef2a62bbe.svg",
     "index.html": "/dapps-certification/index.html",
     "main.fd0f892b.css.map": "/dapps-certification/static/css/main.fd0f892b.css.map",
-    "main.d420173f.js.map": "/dapps-certification/static/js/main.d420173f.js.map",
+    "main.7e7a0fee.js.map": "/dapps-certification/static/js/main.7e7a0fee.js.map",
     "787.7ebdfcd6.chunk.js.map": "/dapps-certification/static/js/787.7ebdfcd6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.fd0f892b.css",
-    "static/js/main.d420173f.js"
+    "static/js/main.7e7a0fee.js"
   ]
 }
