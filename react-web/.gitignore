@@ -50,8 +50,9 @@ node_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
+# For demo-master
+# # dotenv environment variables file
+# .env
 
 # any static API response mock-ups
 public/static/data
