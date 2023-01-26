@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
-import './ConnectWallet.scss';
-import Modal from "components/Modal/Modal";
-import Button from "components/Button/Button";
-
 import { useAppDispatch } from "store/store";
 import { getProfileDetails } from "store/slices/auth.slice";
+
+import Modal from "components/Modal/Modal";
+import Button from "components/Button/Button";
+import Loader from "components/Loader/Loader";
+
+import './ConnectWallet.scss';
 
 const wallets: Array<string> = ['lace', 'nami', 'yoroi']
 
@@ -18,8 +20,10 @@ let CardanoNS = window.cardano;
 const ConnectWallet = () => {
     const dispatch = useAppDispatch();
     const [wallet, setWallet] = useState(null)
+    const [walletName, setWalletName] = useState("")
     const [address, setAddress] = useState(null)
     const [isOpen, setIsOpen] = useState(false)
+    const [walletLoading, setWalletLoading] = useState(false)
 
     const openConnectWalletModal = useCallback(() => setIsOpen(true),[])
 
@@ -27,22 +31,34 @@ const ConnectWallet = () => {
 
     const loadWallet = async (walletName: string) => {
         try {
+            setWalletLoading(true)
             const enabledWallet = await CardanoNS[walletName].enable();
             setWallet(enabledWallet)
+            setWalletName(walletName)
             if (enabledWallet) {
                 setAddress(await enabledWallet.getChangeAddress())
             }
-        } catch (err) {
-            // do nothing
-            console.log(err);
-        }
+        } catch (e) { handleError(e); }
+    }
+
+    const handleError = (err: any) => {
+        console.log(err)
     }
 
     useEffect(() => {
         if (address) {
-            dispatch(getProfileDetails({"address": address, "wallet": wallet}))            
+            (async () => {
+                try {
+                    const response: any = await dispatch(getProfileDetails({"address": address, "wallet": wallet, "walletName": walletName})).catch(handleError)
+                    setWalletLoading(false)
+                } catch(error) {
+                    setWalletLoading(false)
+                    handleError(error)
+                    // dispatch(clearCache()) 
+                }
+            })()
         }
-    }, [dispatch, address, wallet])
+    }, [dispatch, address, wallet, walletName])
 
     return (
         <>
@@ -69,6 +85,7 @@ const ConnectWallet = () => {
                             }
                         })
                     }
+                    { walletLoading ? <Loader /> : null}
                 </div>
             </Modal>
         </>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import { fetchData, postData } from "api/api";
 import Button from "components/Button/Button";
@@ -26,9 +26,11 @@ import Toast from "components/Toast/Toast";
 import { exportObjectToJsonFile } from "../../utils/utils";
 import DownloadIcon from "assets/images/download.svg";
 import InformationTable from "components/InformationTable/InformationTable";
+import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { setUuid } from "./slices/certification.slice";
+import { clearUuid, setUuid } from "./slices/certification.slice";
+// import { useLocation } from "react-router-dom";
 
 const TIMEOFFSET = 1000;
 
@@ -37,6 +39,15 @@ const Certification = () => {
     schema: certificationSchema,
     mode: "onChange",
   });
+
+  // /** To be fixed */ 
+  // let location: any = useLocation() // Error - using type Location throws TS errors at Line45:location.state.insideNavigation
+  // useEffect(() => {
+  //   if (location?.pathname === '/' && location?.state?.insideNavigation) {
+  //     // resetStates()
+  //     // clearUuid()
+  //   }
+  // }, [location])
 
   const { uuid } = useAppSelector((state) => state.certification);
   const { userDetails } = useAppSelector((state) => state.auth);
@@ -57,7 +68,7 @@ const Certification = () => {
   const [username, setUsername] = useState('');
   const [repoName, setRepository] = useState('');
   const [coverageFile, setCoverageFile] = useState("");
-
+  
   useEffect(() => {
     if (userDetails?.dapp?.owner) {
       setUsername(userDetails.dapp.owner)
@@ -66,6 +77,18 @@ const Certification = () => {
       setRepository(userDetails.dapp.repo)
     }
   }, [userDetails])
+
+  const resetStates = () => {
+    setRunState("")
+    setRunStatus("")
+    setResultData({})
+    setUnitTestSuccess(true)
+    setSubmitting(false)
+    setFormSubmitted(false)
+    setGithubLink("")
+    setCoverageFile("")
+    setTimelineConfig(TIMELINE_CONFIG)
+  }
 
   const formHandler = (formData: ISearchForm) => {
     const { branch, commit } = formData;
@@ -174,6 +197,8 @@ const Certification = () => {
   useEffect(() => {
     if (uuid.length) {
       triggerFetchRunStatus();
+    } else {
+      // resetStates()
     }
     // eslint-disable-next-line
   }, [uuid]);
@@ -262,6 +287,7 @@ const Certification = () => {
                     buttonLabel="Download Report"
                     iconUrl={DownloadIcon}
                   />
+                  <CreateCertificate />
                 </>) : null}
               </div>
             </header>
