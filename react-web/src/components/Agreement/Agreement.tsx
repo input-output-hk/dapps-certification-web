@@ -10,26 +10,25 @@ function Agreement() {
     dispatch(setLoginStatus());
   };
   return (
-    <div className="wrap">
-      <section className="container">
-        <div className="container__content">
+    <div className="nda-container">
+        <div className="container-content">
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
-            odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla
-            quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent
-            mauris. Fusce nec tellus sed augue semper porta. Mauris massa.
-            Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad
-            litora torquent per conubia nostra, per inceptos himenaeos.
-            Curabitur sodales ligula in libero. Sed dignissim lacinia nunc.{" "}
+            Welcome to the Early Access Program for our new Plutus Testing Tool.
+            As a participant in this program, you will have the opportunity to
+            test and provide feedback on our MVPs before it is released to the
+            general public. Please be aware that by participating in this
+            program, you are required to sign and acknowledge a non-disclosure
+            agreement (NDA) before proceeding with the sign-up process. The NDA
+            is necessary to protect the confidential information shared during
+            the testing phase. Thank you for your understanding and
+            participation.
           </p>
-          <Link to="/static/sample.pdf" target="_blank" download>
-            Download the Agreement
-          </Link>
+          
+          <span>I hereby acknowledge and agree with this <Link to="/static/sample.pdf" target="_blank" download>
+            NDA
+          </Link></span>
         </div>
-        <div className="container__nav">
-          <small>
-            By clicking 'Accept' you are agreeing to our terms and conditions.
-          </small>
+        <div className="container-nav">
           <button
             className="button"
             onClick={(e) => {
@@ -39,7 +38,6 @@ function Agreement() {
             Accept
           </button>
         </div>
-      </section>
     </div>
   );
 }
