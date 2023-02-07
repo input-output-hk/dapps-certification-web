@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import './ConnectWallet.scss';
 import Modal from "components/Modal/Modal";
 import Button from "components/Button/Button";
+import Agreement from "components/Agreement/Agreement";
 
-import { useAppDispatch } from "store/store";
+import { useAppDispatch, useAppSelector } from "store/store";
 import { getProfileDetails } from "store/slices/auth.slice";
 
 const wallets: Array<string> = ['lace', 'nami', 'yoroi']
@@ -17,9 +18,11 @@ let CardanoNS = window.cardano;
 
 const ConnectWallet = () => {
     const dispatch = useAppDispatch();
+    const { userDetails } = useAppSelector((state) => state.auth);
     const [wallet, setWallet] = useState(null)
     const [address, setAddress] = useState(null)
     const [isOpen, setIsOpen] = useState(false)
+    const [agreementModal, setAgreementModal] = useState(false);
 
     const openConnectWalletModal = useCallback(() => setIsOpen(true),[])
 
@@ -37,6 +40,13 @@ const ConnectWallet = () => {
             console.log(err);
         }
     }
+
+    useEffect(() => {
+        if (address !== null && userDetails.dapp === null) {
+          setIsOpen(false);
+          setAgreementModal(true);
+        }
+    }, [userDetails, address]);
 
     useEffect(() => {
         if (address) {
@@ -70,6 +80,15 @@ const ConnectWallet = () => {
                         })
                     }
                 </div>
+            </Modal>
+            <Modal
+                open={agreementModal}
+                title="Agreement"
+                onCloseModal={() => {
+                setAgreementModal(false);
+                }}
+            >
+                <Agreement />
             </Modal>
         </>
     )
