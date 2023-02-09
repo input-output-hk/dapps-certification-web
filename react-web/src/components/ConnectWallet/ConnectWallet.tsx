@@ -5,7 +5,7 @@ import Button from "components/Button/Button";
 import Agreement from "components/Agreement/Agreement";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { getProfileDetails } from "store/slices/auth.slice";
+import { getProfileDetails, logout } from "store/slices/auth.slice";
 
 const wallets: Array<string> = ['lace', 'nami', 'yoroi']
 
@@ -24,6 +24,12 @@ const ConnectWallet = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [agreementModal, setAgreementModal] = useState(false);
 
+    const resetStates = () => {
+        setWallet(null)
+        setAddress(null)
+        setAgreementModal(false);
+    }
+
     const openConnectWalletModal = useCallback(() => setIsOpen(true),[])
 
     const onCloseModal = useCallback(() => setIsOpen(false),[]) 
@@ -39,6 +45,11 @@ const ConnectWallet = () => {
             // do nothing
             console.log(err);
         }
+    }
+
+    const onCloseAgreementModal = () => {
+        resetStates()
+        dispatch(logout())
     }
 
     useEffect(() => {
@@ -84,9 +95,7 @@ const ConnectWallet = () => {
             <Modal
                 open={agreementModal}
                 title="Agreement"
-                onCloseModal={() => {
-                setAgreementModal(false);
-                }}
+                onCloseModal={() => { onCloseAgreementModal() }}
             >
                 <Agreement />
             </Modal>

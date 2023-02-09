@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { useAppDispatch } from "store/store";
 import { setLoginStatus } from "store/slices/auth.slice";
 import "./Agreement.scss";
+import Button from "components/Button/Button";
 
 function Agreement() {
   const dispatch = useAppDispatch();
+  const [agree, setAgree] = useState(false);
   const acceptAgreement = () => {
     dispatch(setLoginStatus());
   };
@@ -24,19 +27,29 @@ function Agreement() {
             participation.
           </p>
           
-          <span>I hereby acknowledge and agree with this <Link to="/static/sample.pdf" target="_blank" download>
-            NDA
-          </Link></span>
+          <span>I hereby acknowledge and agree with this <Link to="/static/sample.pdf" target="_blank" download>NDA</Link></span>
+
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={agree}
+                  onChange={(e) => {
+                    setAgree(!agree);
+                  }}
+                />
+              }
+              label="I agree"
+            />
+          </FormGroup>
         </div>
         <div className="container-nav">
-          <button
-            className="button"
-            onClick={(e) => {
-              acceptAgreement();
-            }}
-          >
-            Accept
-          </button>
+          <Button
+            type="button"
+            buttonLabel="Next"
+            disabled={!agree}
+            onClick={(_) => acceptAgreement()}
+          />
         </div>
     </div>
   );
