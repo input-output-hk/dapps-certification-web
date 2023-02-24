@@ -12,12 +12,19 @@ import IOHK.Certification.Persistence.Structure as X
   , contacts
   , createTables
   , ProfileId
+  , IpfsCid(..)
+  , TxId(..)
+  , Transaction(..)
+  , TxStatus(..)
+  , TransactionEntry(..)
   )
 import IOHK.Certification.Persistence.API as X
   ( upsertProfile
+  , upsertTransaction
   , getProfile
   , getProfileDApp
   , createRun
+  , getRun
   , updateFinishedRun
   , getRuns
   , withDb
@@ -27,4 +34,11 @@ import IOHK.Certification.Persistence.API as X
   , getRunOwner
   , getCertification
   , createCertificate
+  , deleteRun
+  , getRunStatus
+  , markAsReadyForCertification
+  , getAllCertifiedRunsForAddress
+  , getRunsToCertify
+  , getAllAmountsForAddress
+  , getProfileBalance
   )

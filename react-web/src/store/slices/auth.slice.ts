@@ -24,15 +24,16 @@ const initialState: AuthState = {
   loading: false
 };
 
-export const getProfileDetails: any = createAsyncThunk("getProfileDetails", async (data: any, { rejectWithValue }) => {
-  try { 
+const clearLSCache = () => {
+  localStorage.removeItem('address')
+  localStorage.removeItem('walletName')
+}
+
+export const getProfileDetails: any = createAsyncThunk("getProfileDetails", async (data: any, { }) => {
     localStorage.setItem('address', data.address) 
     const response = await fetchData.get("/profile/current", data)
     // FOR MOCK - const response = await fetchData.get(data.url || 'static/data/current-profile.json', data)
     return response.data
-  } catch(e) {
-    return rejectWithValue(e)
-  }
 })
 
 export const authSlice = createSlice({
@@ -45,8 +46,11 @@ export const authSlice = createSlice({
       localStorage.setItem("address", state.address);
       localStorage.setItem("walletName", state.walletName);
     },
+    clearCache: (state) => {
+      clearLSCache();
+    },
     logout: (state) => {
-      localStorage.removeItem('address')
+      clearLSCache()
       return initialState
     },
   },
@@ -69,13 +73,13 @@ export const authSlice = createSlice({
         }
       })
       .addCase(getProfileDetails.rejected, (state) => {
-        localStorage.removeItem('address')
+        clearLSCache()
         return initialState
       })
   }
 });
 
 
-export const { logout, setLoginStatus } = authSlice.actions;
+export const { logout, clearCache, setLoginStatus } = authSlice.actions;
 
 export default authSlice.reducer;

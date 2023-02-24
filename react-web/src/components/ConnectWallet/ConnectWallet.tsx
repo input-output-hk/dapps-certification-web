@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useCallback } from "react";
-import './ConnectWallet.scss';
+import { Address } from "@emurgo/cardano-serialization-lib-browser";
+
 import Modal from "components/Modal/Modal";
 import Button from "components/Button/Button";
 import Agreement from "components/Agreement/Agreement";
+import Loader from "components/Loader/Loader";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { getProfileDetails, logout } from "store/slices/auth.slice";
+
+import './ConnectWallet.scss';
 
 const wallets: Array<string> = ['lace', 'nami', 'yoroi']
 
@@ -20,15 +24,17 @@ const ConnectWallet = () => {
     const dispatch = useAppDispatch();
     const { userDetails } = useAppSelector((state) => state.auth);
     const [wallet, setWallet] = useState(null)
-    const [address, setAddress] = useState(null)
+    const [walletName, setWalletName] = useState("")
+    const [address, setAddress] = useState("")
     const [isOpen, setIsOpen] = useState(false)
     const [agreementModal, setAgreementModal] = useState(false);
 
     const resetStates = () => {
         setWallet(null)
-        setAddress(null)
+        setAddress("")
         setAgreementModal(false);
     }
+    const [walletLoading, setWalletLoading] = useState(false)
 
     const openConnectWalletModal = useCallback(() => setIsOpen(true),[])
 
@@ -36,15 +42,19 @@ const ConnectWallet = () => {
 
     const loadWallet = async (walletName: string) => {
         try {
+            setWalletLoading(true)
             const enabledWallet = await CardanoNS[walletName].enable();
             setWallet(enabledWallet)
+            setWalletName(walletName)
             if (enabledWallet) {
-                setAddress(await enabledWallet.getChangeAddress())
+                const response = await enabledWallet.getChangeAddress()
+                setAddress(Address.from_bytes(Buffer.from(response, "hex")).to_bech32())
             }
-        } catch (err) {
-            // do nothing
-            console.log(err);
-        }
+        } catch (e) { handleError(e); }
+    }
+
+    const handleError = (err: any) => {
+        console.log(err)
     }
 
     const onCloseAgreementModal = () => {
@@ -61,9 +71,18 @@ const ConnectWallet = () => {
 
     useEffect(() => {
         if (address) {
-            dispatch(getProfileDetails({"address": address, "wallet": wallet}))            
+            (async () => {
+                try {
+                    const response: any = await dispatch(getProfileDetails({"address": address, "wallet": wallet, "walletName": walletName})).catch(handleError)
+                    setWalletLoading(false)
+                } catch(error) {
+                    setWalletLoading(false)
+                    handleError(error)
+                    // dispatch(clearCache()) 
+                }
+            })()
         }
-    }, [dispatch, address, wallet])
+    }, [dispatch, address, wallet, walletName])
 
     return (
         <>
@@ -90,6 +109,7 @@ const ConnectWallet = () => {
                             }
                         })
                     }
+                    { walletLoading ? <Loader /> : null}
                 </div>
             </Modal>
             <Modal
