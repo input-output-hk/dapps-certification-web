@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Modal from "components/Modal/Modal";
 import parse from 'html-react-parser';
+import Tooltip from "@mui/material/Tooltip";
+import InfoIcon from '@mui/icons-material/Info';
+import IconButton from "@mui/material/IconButton";
 
 const FileCoverageContainer: React.FC<{
     result: { [x: string]: any };
@@ -73,29 +76,35 @@ const FileCoverageContainer: React.FC<{
     const renderRows = () => {
         return coverageIndexFiles ? coverageIndexFiles.map((file: string, index) => {
             return (
-                <>
-                    <li className="coverage-file" key={index}>
-                        <>
-                            {/* To be changed to location of the file code coverage UI */}
-                            <span className="link" onClick={(_) => onOpenModal(file)}>{file}</span>
-                            <Modal id="coverageHtmlModal" open={isOpen===file} onCloseModal={onCloseModal}>
-                                <div>{parseHTMLContents(file)}</div>
-                            </Modal>
-                        </>
-                        <div>
-                            <div className="meter-bar">
-                                <div className="progress" style={{width: percentagePerFile[file] + "%"}}></div>
-                            </div>
-                            <span className="coverage-percentage">{percentagePerFile[file]}%</span>
+                <li className="coverage-file" key={index}>
+                    <>
+                        {/* To be changed to location of the file code coverage UI */}
+                        <span className="link" onClick={(_) => onOpenModal(file)}>{file}</span>
+                        <Modal id="coverageHtmlModal" open={isOpen===file} onCloseModal={onCloseModal}>
+                            <div>{parseHTMLContents(file)}</div>
+                        </Modal>
+                    </>
+                    <div>
+                        <div className="meter-bar">
+                            <div className="progress" style={{width: percentagePerFile[file] + "%"}}></div>
                         </div>
-                    </li>
-                </>
+                        <span className="coverage-percentage">{percentagePerFile[file]}%</span>
+                    </div>
+                </li>
             );
         }) : null;
     };
 
     return (
         <div id="coverageIndicator">
+            {coverageIndexFiles?.length ? (
+                <div>
+                    <span>Code Coverage</span>
+                    <Tooltip title={<span style={{fontSize: '14px', lineHeight: '18px'}}>Code coverage is a measure of how much of your on-chain code has been executed during testing</span>} placement="top" arrow>
+                        <IconButton><InfoIcon fontSize="small"/></IconButton>
+                    </Tooltip>
+                </div>
+            ): null}
             <ul>{renderRows()}</ul>
         </div>
     );

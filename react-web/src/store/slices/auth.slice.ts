@@ -11,6 +11,7 @@ interface AuthState {
   walletName: string;
   userDetails: IUserProfile;
   loading: boolean;
+  network: number | null;
 }
 
 // Define the initial state using that type
@@ -21,7 +22,8 @@ const initialState: AuthState = {
   wallet: null,
   walletName: '',
   userDetails: {dapp: null},
-  loading: false
+  loading: false,
+  network: null
 };
 
 const clearLSCache = () => {
@@ -29,11 +31,11 @@ const clearLSCache = () => {
   localStorage.removeItem('walletName')
 }
 
-export const getProfileDetails: any = createAsyncThunk("getProfileDetails", async (data: any, { }) => {
-    localStorage.setItem('address', data.address) 
-    const response = await fetchData.get("/profile/current", data)
-    // FOR MOCK - const response = await fetchData.get(data.url || 'static/data/current-profile.json', data)
-    return response.data
+export const getProfileDetails: any = createAsyncThunk("getProfileDetails", async (data: any, { rejectWithValue }) => {
+  localStorage.setItem('address', data.address) 
+  const response = await fetchData.get("/profile/current", data)
+  // FOR MOCK - const response = await fetchData.get(data.url || 'static/data/current-profile.json', data)
+  return response.data
 })
 
 export const authSlice = createSlice({
@@ -50,9 +52,13 @@ export const authSlice = createSlice({
       clearLSCache();
     },
     logout: (state) => {
-      clearLSCache()
+      clearLSCache();
+      state.loading = false;
       return initialState
     },
+    setNetwork: (state, actions) => {
+      state.network = actions.payload
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getProfileDetails.pending, (state) => {state.loading = true;})
@@ -80,6 +86,6 @@ export const authSlice = createSlice({
 });
 
 
-export const { logout, clearCache, setLoginStatus } = authSlice.actions;
+export const { logout, clearCache, setLoginStatus, setNetwork } = authSlice.actions;
 
 export default authSlice.reducer;
