@@ -100,8 +100,8 @@ function Payment() {
     <div className="payment-container">
       <div className="content">
         <h4>{state.type}</h4>
-        <h3>{state.tier_name}</h3>
-        <h5>{state.title}</h5>
+        <h3>{state.name}</h3>
+        <h5>{state.subtitle}</h5>
         <p>{state.description}</p>
       </div>
       <div className="btn-layout">
@@ -126,7 +126,7 @@ function Payment() {
         modalId="subscriptionSuccessModal"
       >
         <p style={{ marginBottom: "2rem" }}>
-          Successfully initiated subscription of {state.tier_name}
+          Successfully initiated subscription of {state.name}
         </p>
         <span>
           View your performed payment transaction&nbsp;
