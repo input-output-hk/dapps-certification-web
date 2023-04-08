@@ -128,7 +128,7 @@ function Payment() {
         <p style={{ marginBottom: "2rem" }}>
           Successfully initiated subscription of {state.name}
         </p>
-        <span>
+        {transactionId ? (<span>
           View your performed payment transaction&nbsp;
           <a
             target="_blank"
@@ -138,7 +138,7 @@ function Payment() {
             here
           </a>
           !
-        </span>
+        </span>) : null}
       </Modal>
       {showError ? <Toast message={showError} /> : null}
     </div>
