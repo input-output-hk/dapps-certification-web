@@ -16,6 +16,7 @@ import { clearStates,
   getUserAccessToken, 
   verifyRepoAccess, 
   hideConfirmConnection } from "./slices/repositoryAccess.slice";
+import Toast from "components/Toast/Toast";
 
 const UserProfile = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +34,7 @@ const UserProfile = () => {
   const [repoErr, setRepoErr] = useState(false);
   const [canShowConnectModal, setCanShowConnectModal] = useState(false)
   const [focussedOwnerRepo, setFocussedOwnerRepo] = useState(false)
+  const [showError, setShowError] = useState("")
 
   const [searchParams, setSearchParams] = useSearchParams();
   const githubAccessCode = searchParams.get("code");
@@ -82,6 +84,11 @@ const UserProfile = () => {
     dispatch(clearStates())
   }, [userDetails, form]);
 
+  const clearOwnerRepoError = () => {
+    setOwnerErr(false)
+    setRepoErr(false)
+  }
+
   const isOwnerRepoValidationError = () => {
     !owner.length ? setOwnerErr(true) : setOwnerErr(false);
     !repo.length ? setRepoErr(true) : setRepoErr(false);
@@ -120,6 +127,14 @@ const UserProfile = () => {
         );
         dispatch(clearAccessToken())
         navigate('/')
+      }).catch((errorObj) => {
+        let errorMsg = 'Something went wrong. Please try again.'
+        if (errorObj?.response?.data) {
+          errorMsg = errorObj.response.statusText + ' - ' + errorObj.response.data 
+        }
+        setShowError(errorMsg);
+        const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000)
+        
       })
     };
     submitProfile();
@@ -134,10 +149,13 @@ const UserProfile = () => {
       }
       const newTimer = setTimeout(() => {
         if (owner.length && repo.length) {
+          clearOwnerRepoError()
           setCanShowConnectModal(true)
           dispatch(verifyRepoAccess({owner: owner, repo: repo}));
+        } else {
+          isOwnerRepoValidationError()
         }
-      }, 1000)
+      }, 600)
       setTimer(newTimer)
     }
   }, [owner, repo])
@@ -401,7 +419,7 @@ const UserProfile = () => {
                     }}
                   />
                   <Button
-                    disabled={!form.formState.isValid || !accessible || ownerErr || repoErr}
+                    disabled={!form.formState.isValid || verifying || (!accessible && canShowConnectModal) || ownerErr || repoErr}
                     type="submit"
                     buttonLabel={"Save"}
                     onClick={() => {}}
@@ -412,6 +430,7 @@ const UserProfile = () => {
           </Form>
         </div>
       </div>
+      {showError ? <Toast message={showError} /> : null}
       {showConfirmConnection && isEdit && canShowConnectModal ? confirmConnectModal() : null}
     </>
   );
