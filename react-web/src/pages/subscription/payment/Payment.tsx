@@ -125,6 +125,12 @@ function Payment() {
     }
   })
 
+  useEffect(() => {
+    if (!state) {
+      navigate(-1)
+    }
+  })
+
   return (state ? 
     <div className="payment-container">
       <div className="content">
