@@ -76,15 +76,10 @@ data Args = Args
   , host :: !HostPreference
   , backend :: !Backend
   , wallet :: !WalletArgs
+  , githubToken :: !(Maybe GitHubAccessToken)
   , auth :: !AuthMode
   , signatureTimeout :: !Seconds
   , useWhitelist :: !Bool
-  , github :: !GitHubArgs
-  }
-
-data GitHubArgs = GitHubArgs
-  { accessToken :: !(Maybe GitHubAccessToken)
-  , credentials :: !(Maybe GitHubCredentials)
   }
 
 baseUrlReader :: ReadM BaseUrl
@@ -131,6 +126,7 @@ argsParser =  Args
       )
   <*> (localParser <|> ciceroParser)
   <*> walletParser
+  <*> optional gitHubAccessTokenParser
   <*> (jwtArgsParser <|> plainAddressAuthParser)
   <*> option auto
       ( long "signature-timeout"
@@ -141,8 +137,6 @@ argsParser =  Args
       )
   <*> switch
       ( long "use-whitelist" <> help "use the whitelist for authentication" )
-  <*> githubArgsParser
-
 
 data AuthMode = JWTAuth JWTArgs | PlainAddressAuth
 
@@ -168,25 +162,6 @@ jwtArgsParser =  JWTAuth <$> (JWTArgs
       <> showDefault
       <> Opts.value defaultJWTExpiration
       ))
-githubArgsParser :: Parser GitHubArgs
-githubArgsParser = GitHubArgs
-  <$> optional gitHubAccessTokenParser
-  <*> optional (GitHubCredentials <$> gitHubClientIdParser <*> gitHubClientSecretParser)
-
-gitHubClientIdParser :: Parser Text
-gitHubClientIdParser = Text.pack <$> strOption
-  ( long "github-client-id"
- <> metavar "GITHUB_CLIENT_ID"
- <> help "GitHub OAuth client ID"
-  )
-
-gitHubClientSecretParser :: Parser Text
-gitHubClientSecretParser = Text.pack <$> strOption
-  ( long "github-client-secret"
- <> metavar "GITHUB_CLIENT_SECRET"
- <> help "GitHub OAuth client secret"
-  )
-
 walletParser :: Parser WalletArgs
 walletParser = WalletArgs
   <$> option str
@@ -391,10 +366,8 @@ main = do
         (\r -> swaggerSchemaUIServer (documentation args.auth) :<|> server (serverArgs args caps r eb whitelist))
   exitFailure
   where
-  serverArgs args caps r eb whiteList =
-    ServerArgs caps (args.wallet) args.github.accessToken (jwtArgs args.auth) (be r eb) 
-        (args.signatureTimeout) whiteList args.github.credentials 
-
+  serverArgs args caps r eb = ServerArgs
+    caps (args.wallet) args.githubToken (jwtArgs args.auth) (be r eb) (args.signatureTimeout)
   jwtArgs PlainAddressAuth = Nothing
   jwtArgs (JWTAuth args) = Just args
   documentation PlainAddressAuth = swaggerJson
