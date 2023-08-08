@@ -28,7 +28,9 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
         }
         try {
             const cert_fee_in_lovelaces = data.fee
+            
             const walletAddressRes: any = await fetchData.get('/wallet-address').catch(throwError)
+            
             const applicationWallet_receiveAddr = walletAddressRes.data;
             const cert_fee_lovelace: BigNum = cert_fee_in_lovelaces; //BigNum.from_str(cert_fee_in_lovelaces.toString())
             
@@ -72,12 +74,29 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
                 txBuilder.add_inputs_from(txnUnspentOutputs, CoinSelectionStrategyCIP2.LargestFirst)
                 txBuilder.add_change_if_needed(Address.from_bech32(data.address))
 
-                const encodedTx = Buffer.from(txBuilder.build_tx().to_bytes()).toString("hex");
+                const metadata = {"map": [
+                    {
+                      "k": {
+                        "string": "payer"
+                      },
+                      "v": {
+                        "list": [
+                          {
+                            "string":"testing"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+                txBuilder.add_json_metadatum(BigNum.from_str("0"), JSON.stringify(metadata))
+                const unsignedTx = txBuilder.build_tx()
+                const encodedTx = Buffer.from(unsignedTx.to_bytes()).toString("hex");
                 data.wallet.signTx(encodedTx).then((signed: string) =>{
                     const txVkeyWitnesses = TransactionWitnessSet.from_bytes(
                         Buffer.from(signed, "hex")
                     );
-                    const txSigned = Transaction.new(txBuilder.build(), txVkeyWitnesses );
+                    const txSigned = Transaction.new(txBuilder.build(), txVkeyWitnesses, unsignedTx.auxiliary_data() );
                     const encodedSignedTx = Buffer.from(txSigned.to_bytes()).toString("hex");
                     data.wallet.submitTx(encodedSignedTx).then((txnId: string) => {
                         resolve(txnId);
