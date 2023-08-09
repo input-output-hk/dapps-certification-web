@@ -90,6 +90,7 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
                   ]
                 }
                 txBuilder.add_json_metadatum(BigNum.from_str("0"), JSON.stringify(metadata))
+                
                 const unsignedTx = txBuilder.build_tx()
                 const encodedTx = Buffer.from(unsignedTx.to_bytes()).toString("hex");
                 data.wallet.signTx(encodedTx).then((signed: string) =>{
