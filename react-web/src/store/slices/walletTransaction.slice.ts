@@ -29,9 +29,10 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
         try {
             const cert_fee_in_lovelaces = data.fee
             
-            const walletAddressRes: any = await fetchData.get('/wallet-address').catch(throwError)
+            const walletAddrAPI = '/wallet-address'; // ToDo -- Update
+            const walletAddressRes: any = await fetchData.get(walletAddrAPI).catch(throwError)
             
-            const applicationWallet_receiveAddr = walletAddressRes.data;
+            const applicationWallet_receiveAddr = walletAddressRes.data.address;
             const cert_fee_lovelace: BigNum = cert_fee_in_lovelaces; //BigNum.from_str(cert_fee_in_lovelaces.toString())
             
             const protocolParams: any = {
@@ -73,23 +74,25 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
                 txBuilder.add_output(TransactionOutput.new(Address.from_bech32(applicationWallet_receiveAddr), Value.new(cert_fee_lovelace) ))
                 txBuilder.add_inputs_from(txnUnspentOutputs, CoinSelectionStrategyCIP2.LargestFirst)
                 txBuilder.add_change_if_needed(Address.from_bech32(data.address))
-
-                const metadata = {"map": [
-                    {
-                      "k": {
-                        "string": "payer"
-                      },
-                      "v": {
-                        "list": [
-                          {
-                            "string":"testing"
-                          }
-                        ]
+                
+                if (walletAddressRes.data.status === 'overlapping') {
+                  const metadata = {"map": [
+                      {
+                        "k": {
+                          "string": "payer"
+                        },
+                        "v": {
+                          "list": [
+                            {
+                              "string":"testing"
+                            }
+                          ]
+                        }
                       }
-                    }
-                  ]
+                    ]
+                  }
+                  txBuilder.add_json_metadatum(BigNum.from_str("1304"), JSON.stringify(metadata))
                 }
-                txBuilder.add_json_metadatum(BigNum.from_str("0"), JSON.stringify(metadata))
                 
                 const unsignedTx = txBuilder.build_tx()
                 const encodedTx = Buffer.from(unsignedTx.to_bytes()).toString("hex");
