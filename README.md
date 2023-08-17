@@ -48,3 +48,18 @@ npm build:production
 * Pick your branch from 'Use workflow from'
 * Hit the 'Run workflow' button
 * Checkout the app at https://input-output-hk.github.io/dapps-certification/
+
+## Production docker
+NOTE: from the root of the project run all the docker-files scripts
+
+### run the docker
+```sh
+./docker-files/run.sh
+```
+
+### push the docker into a container registry
+
+```sh
+./docker-files/push.sh <<docker-registry>>
+```
+
