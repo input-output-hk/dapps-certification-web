@@ -13,7 +13,7 @@ function isValidJSON(text: string) {
 function useLocalStorage<T>(
   key: string,
   initialValue: T
-): [T, Dispatch<SetStateAction<T>>] {
+): [T, Dispatch<SetStateAction<T>>, () => void] {
   // Get from local storage then
   // parse stored json or return initialValue
   const readValue = () => {
@@ -56,7 +56,7 @@ function useLocalStorage<T>(
 
       // Save to local storage
       try {
-        const serializedValue = JSON.stringify(newValue);
+        const serializedValue = typeof newValue === 'string' ? newValue : JSON.stringify(newValue);
         window.localStorage.setItem(key, serializedValue);
       } catch (error) {
         console.warn(`Error serializing localStorage key “${key}”:`, error);
@@ -69,6 +69,22 @@ function useLocalStorage<T>(
       window.dispatchEvent(new Event("local-storage"));
     } catch (error) {
       console.warn(`Error setting localStorage key “${key}”:`, error);
+    }
+  };
+
+  const removeValue = () => {
+    if (typeof window === "undefined") {
+      console.warn(
+        `Tried removing localStorage key “${key}” even though environment is not a client`
+      );
+    }
+
+    try {
+      window.localStorage.removeItem(key);
+      setStoredValue(initialValue);
+      window.dispatchEvent(new Event("local-storage"));
+    } catch (error) {
+      console.warn(`Error removing localStorage key “${key}”:`, error);
     }
   };
 
@@ -92,7 +108,7 @@ function useLocalStorage<T>(
     // eslint-disable-next-line
   }, []);
 
-  return [storedValue, setValue];
+  return [storedValue, setValue, removeValue];
 }
 
 export default useLocalStorage;

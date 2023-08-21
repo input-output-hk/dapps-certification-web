@@ -14,7 +14,7 @@ import { exportObjectToJsonFile } from "../../../utils/utils";
 import DownloadIcon from "assets/images/download.svg";
 import Toast from "components/Toast/Toast";
 
-const CertificationResult = (props: any) => {
+const CertificationResult = () => {
   const param = useParams();
   const { state } = useLocation();
   const [coverageFile, setCoverageFile] = useState("");

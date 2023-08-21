@@ -22,11 +22,13 @@ import InformationTable from "components/InformationTable/InformationTable";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { clearUuid, setUuid } from "./slices/certification.slice";
-import { clearStates } from "./slices/logRunTime.slice";
+import { clearStates, setBuildInfo, setStates, } from "./slices/logRunTime.slice";
 import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistory.slice";
 import { useConfirm } from "material-ui-confirm";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "components/Loader/Loader";
+import { LocalStorageKeys } from "constants/constants";
+import useLocalStorage from "hooks/useLocalStorage";
 
 const TIMEOFFSET = 1000;
 
@@ -38,6 +40,7 @@ const Certification = () => {
   const navigate = useNavigate();
 
   const { uuid } = useAppSelector((state) => state.certification);
+  const { startTime, endTime } = useAppSelector((state) => state.runTime);
   const { isLoggedIn, userDetails, subscribedFeatures } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
@@ -57,6 +60,40 @@ const Certification = () => {
   const [username, setUsername] = useState('');
   const [repoName, setRepository] = useState('');
   
+  const [certificationRunTime, , removeCertificationRunTime] = useLocalStorage(
+      LocalStorageKeys.certificationRunTime,
+      localStorage.getItem(LocalStorageKeys.certificationRunTime)
+    ? JSON.parse(localStorage.getItem(LocalStorageKeys.certificationRunTime)!)
+    : null
+  )
+  const [certificationUuid, setCertificationUuid, removeCertificationUuid] = useLocalStorage(
+      LocalStorageKeys.certificationUuid,
+      localStorage.getItem(LocalStorageKeys.certificationUuid) ? localStorage.getItem(LocalStorageKeys.certificationUuid) : ""
+  )
+
+  // Populate certification states to resume certification
+  useEffect(() => {console.log('1 -- ', certificationUuid)
+    if (certificationUuid && certificationRunTime) { 
+      const { startTime, endTime, runState } = certificationRunTime;
+      dispatch(setUuid(certificationUuid));
+      dispatch(setStates({ startTime, endTime, runState }));
+      dispatch(setBuildInfo());
+    } else {
+      resetRunForm()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Set form as submitted on component load if certification is running
+  useEffect(() => {
+    if (startTime && endTime) {
+      setFormSubmitted(true);
+      setSubmitting(true);
+      form.setValue("commit", uuid);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uuid]);
+
   useEffect(() => {
     if (userDetails?.dapp?.owner) {
       setUsername(userDetails.dapp.owner)
@@ -65,6 +102,16 @@ const Certification = () => {
       setRepository(userDetails.dapp.repo)
     }
   }, [userDetails])
+
+  const resetRunForm = () => {
+    removeCertificationUuid()
+    removeCertificationRunTime()
+    dispatch(clearUuid())
+    dispatch(clearStates())
+    setSubmitting(false)
+    setFormSubmitted(false)
+    form.reset()
+  }
 
   const resetStates = () => {
     setRunState("")
@@ -75,11 +122,12 @@ const Certification = () => {
     setFormSubmitted(false)
     setGithubLink("")
     setTimelineConfig(TIMELINE_CONFIG)
-    dispatch(clearUuid());
-    form.reset({
-      commit: "",
-    });
+    // Clear uuid states
+    dispatch(clearUuid())
+    removeCertificationUuid()
+    form.reset();
     dispatch(clearStates())
+    removeCertificationRunTime()
   }
 
   const formHandler = (formData: ISearchForm) => {
@@ -106,7 +154,9 @@ const Certification = () => {
         );
         /** For mock */
         // const response = await postData.get('static/data/run')
-        dispatch(setUuid(response.data));
+        const runId = response.data.toString();
+        dispatch(setUuid(runId));
+        setCertificationUuid(runId);
       } catch (e) {
         handleErrorScenario();
         console.log(e);
@@ -151,6 +201,7 @@ const Certification = () => {
       if (status === "finished") {
         // navigate to result page
         navigate("/report/" + uuid, {state: { repoUrl: githubLink, certifiable: true }});
+        resetRunForm()
       }
       if (state === "failed" || status === "finished") {
         setSubmitting(false);
@@ -193,12 +244,6 @@ const Certification = () => {
     // eslint-disable-next-line
   }, [uuid]);
 
-  // while unmount of component
-  useEffect(() => {
-    return () => {
-      resetStates();
-    };
-  }, []);
 
   useEffect(() => {
     runStatus === "certifying" ? setRefetchMin(2) : setRefetchMin(5);
