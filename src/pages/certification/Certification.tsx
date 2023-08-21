@@ -11,29 +11,21 @@ import { useLogs } from "hooks/useLogs";
 import "./Certification.scss";
 import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
-import {
-  processFinishedJson,
-  setManyStatus,
-} from "components/TimelineItem/timeline.helper";
-import ResultContainer from "./components/ResultContainer";
-import FileCoverageContainer from "./components/FileCoverageContainer";
+import { setManyStatus } from "components/TimelineItem/timeline.helper";
 import {
   isAnyTaskFailure,
   getPlannedCertificationTaskCount,
 } from "./Certification.helper";
 import { useDelayedApi } from "hooks/useDelayedApi";
 import Toast from "components/Toast/Toast";
-import { exportObjectToJsonFile } from "../../utils/utils";
-import DownloadIcon from "assets/images/download.svg";
 import InformationTable from "components/InformationTable/InformationTable";
-import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { clearUuid, setUuid } from "./slices/certification.slice";
 import { clearStates } from "./slices/logRunTime.slice";
 import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistory.slice";
 import { useConfirm } from "material-ui-confirm";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loader from "components/Loader/Loader";
 
 const TIMEOFFSET = 1000;
@@ -43,6 +35,7 @@ const Certification = () => {
     schema: certificationSchema,
     mode: "onChange",
   });
+  const navigate = useNavigate();
 
   const { uuid } = useAppSelector((state) => state.certification);
   const { isLoggedIn, userDetails, subscribedFeatures } = useAppSelector((state) => state.auth);
@@ -63,7 +56,6 @@ const Certification = () => {
   const [apiFetching, setApiFetching] = useState(false); // to be used for 'Abort'
   const [username, setUsername] = useState('');
   const [repoName, setRepository] = useState('');
-  const [coverageFile, setCoverageFile] = useState("");
   
   useEffect(() => {
     if (userDetails?.dapp?.owner) {
@@ -82,7 +74,6 @@ const Certification = () => {
     setSubmitting(false)
     setFormSubmitted(false)
     setGithubLink("")
-    setCoverageFile("")
     setTimelineConfig(TIMELINE_CONFIG)
     dispatch(clearUuid());
     form.reset({
@@ -158,14 +149,8 @@ const Certification = () => {
         return setManyStatus(index, config, item, status, "passed");
       });
       if (status === "finished") {
-        const isArrayResult = Array.isArray(res.data.result)
-        const resultJson = isArrayResult ? res.data.result[0] : res.data.result;
-        if (isArrayResult) {
-          setCoverageFile(res.data.result[1])
-        }
-        const unitTestResult = processFinishedJson(resultJson);
-        setUnitTestSuccess(unitTestResult);
-        setResultData(resultJson);
+        // navigate to result page
+        navigate("/report/" + uuid, {state: { repoUrl: githubLink, certifiable: true }});
       }
       if (state === "failed" || status === "finished") {
         setSubmitting(false);
@@ -190,10 +175,6 @@ const Certification = () => {
     setFormSubmitted(false);
     setTimelineConfig(TIMELINE_CONFIG);
   },[form])
-
-  const handleDownloadResultData = (resultData: any) => {
-    exportObjectToJsonFile(resultData, "Testing Report.json");
-  };
 
   const abortRun = () => {
     confirm({ title: "", description: "Are sure you want to abort this run!" })
@@ -307,6 +288,8 @@ const Certification = () => {
       {formSubmitted && (
         <>
           <div id="resultContainer" data-testid="resultContainer">
+            {/* 
+            **TBD -- migrated into CertificationResult**
             {runStatus === "finished" ? (
               <button
                 className="back-btn"
@@ -332,18 +315,7 @@ const Certification = () => {
                   {username}/{repoName}
                 </a>
               </h2>
-              <div style={{float:"right", marginLeft:"5px"}}>
-                {Object.keys(resultData).length ? (<>
-                  <Button
-                    className="report-download"
-                    onClick={(_) => handleDownloadResultData(resultData)}
-                    buttonLabel="Download Report"
-                    iconUrl={DownloadIcon}
-                  />
-                  <CreateCertificate />
-                </>) : null}
-              </div>
-            </header>
+            </header> */}
             <Timeline
               statusConfig={timelineConfig}
               unitTestSuccess={unitTestSuccess}
@@ -354,18 +326,6 @@ const Certification = () => {
           {/* To show 'View Logs' always  */}
           <InformationTable logs={logInfo} />
           
-          {unitTestSuccess === false && Object.keys(resultData).length ? (
-            <>
-              <ResultContainer unitTestSuccess={unitTestSuccess} result={resultData} />
-            </>
-          ) : null}
-
-          {unitTestSuccess && Object.keys(resultData).length ? (
-            <>
-              <FileCoverageContainer githubLink={githubLink} result={resultData} coverageFile={coverageFile}/>
-              <ResultContainer result={resultData} />
-            </>
-          ) : null}
         </>
       )}
 
