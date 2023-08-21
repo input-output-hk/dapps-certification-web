@@ -9,6 +9,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.2
       - run: |
-          cd react-web
           npm ci
           npm run test
