@@ -1,4 +1,4 @@
-import { CertificationTasks } from "pages/certification/Certification.helper";
+import { CertificationTasks, getPlannedCertificationTaskCount } from "pages/certification/Certification.helper";
 
 export const setManyStatus = (
   index: number,
@@ -46,3 +46,33 @@ export const processFinishedJson = (result: { [x: string]: any }): boolean => {
   unitTestFailures += filteredData.length ? 1 : 0
   return unitTestFailures ? false : true
 };
+
+export const processTimeLineConfig = (
+  config: any[],
+  state: any,
+  status: string,
+  res: { data: { progress: { [x: string]: string | any[] }; plan: any } }
+) => {
+  return config.map((item, index) => {
+    if (item.status === status) {
+      const currentState =
+        status === "finished" ? "passed" : state || "running";
+      let returnObj: any = { ...item, state: currentState };
+      if (
+        status === "certifying" &&
+        currentState === "running" &&
+        res.data.progress &&
+        res.data.plan
+      ) {
+        returnObj["progress"] = Math.trunc(
+          (res.data.progress["finished-tasks"].length /
+            getPlannedCertificationTaskCount(res.data.plan)) *
+            100
+        );
+      }
+      return returnObj;
+    }
+    // Set the previously executed states as passed
+    return setManyStatus(index, config, item, status, "passed");
+  });
+}

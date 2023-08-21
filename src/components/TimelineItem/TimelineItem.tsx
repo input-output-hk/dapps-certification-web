@@ -25,7 +25,7 @@ const TimelineItem: FC<ITimelineItem> = ({
     } else if (!unitTestSuccess && (status === "finished" || status === 'certifying')) {
       state = 'failed'
     }
-    return "images/" + state + ".svg";
+    return "/images/" + state + ".svg";
   };
 
   const renderProgressPercentage = () => {
