@@ -11,11 +11,8 @@ import { useLogs } from "hooks/useLogs";
 import "./Certification.scss";
 import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
-import { setManyStatus } from "components/TimelineItem/timeline.helper";
-import {
-  isAnyTaskFailure,
-  getPlannedCertificationTaskCount,
-} from "./Certification.helper";
+import { processTimeLineConfig } from "components/TimelineItem/timeline.helper";
+import { isAnyTaskFailure } from "./Certification.helper";
 import { useDelayedApi } from "hooks/useDelayedApi";
 import Toast from "components/Toast/Toast";
 import InformationTable from "components/InformationTable/InformationTable";
@@ -176,28 +173,7 @@ const Certification = () => {
       setRunStatus(status);
       setRunState(state);
       setFetchRunStatus(state === "running" || state === "passed");
-      config = config.map((item, index) => {
-        if (item.status === status) {
-          const currentState =
-            status === "finished" ? "passed" : state || "running";
-          let returnObj: any = { ...item, state: currentState };
-          if (
-            status === "certifying" &&
-            currentState === "running" &&
-            res.data.progress &&
-            res.data.plan
-          ) {
-            returnObj["progress"] = Math.trunc(
-              (res.data.progress["finished-tasks"].length /
-                getPlannedCertificationTaskCount(res.data.plan)) *
-                100
-            );
-          }
-          return returnObj;
-        }
-        // Set the previously executed states as passed
-        return setManyStatus(index, config, item, status, "passed");
-      });
+      config = processTimeLineConfig(config, state, status, res);
       if (status === "finished") {
         // navigate to result page
         navigate("/report/" + uuid, {state: { repoUrl: githubLink, certifiable: true }});

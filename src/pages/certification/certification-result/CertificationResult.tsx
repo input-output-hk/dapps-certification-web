@@ -3,9 +3,12 @@ import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import { fetchData } from "api/api";
-import { processFinishedJson } from "components/TimelineItem/timeline.helper";
+import { processFinishedJson, processTimeLineConfig } from "components/TimelineItem/timeline.helper";
 import ResultContainer from "../components/ResultContainer";
 import FileCoverageContainer from "../components/FileCoverageContainer";
+import { isAnyTaskFailure } from "../Certification.helper";
+import Timeline from "compositions/Timeline/Timeline";
+import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
 
 import "../Certification.scss";
 import Button from "components/Button/Button";
@@ -21,12 +24,17 @@ const CertificationResult = () => {
   const [resultData, setResultData] = useState<any>({});
   const [unitTestSuccess, setUnitTestSuccess] = useState(true); // assuming unit tests will pass
   const [errorToast, setErrorToast] = useState(false);
+  const [timelineConfig, setTimelineConfig] = useState(TIMELINE_CONFIG);
 
   useEffect(() => {
     (async () => {
       try {
         const res = await fetchData.get("/run/" + param.uuid);
         const status = res.data.status;
+        const state = res.data.hasOwnProperty("state") ? res.data.state : "";
+        setTimelineConfig(
+          processTimeLineConfig(timelineConfig, state, status, res)
+        );
         if (status === "finished") {
           const isArrayResult = Array.isArray(res.data.result);
           const resultJson = isArrayResult
@@ -44,6 +52,7 @@ const CertificationResult = () => {
         // error handling
       }
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [param.uuid]);
 
   const handleDownloadResultData = (resultData: any) => {
@@ -77,6 +86,11 @@ const CertificationResult = () => {
           ) : null}
         </div>
       </header>
+      <Timeline
+        statusConfig={timelineConfig}
+        unitTestSuccess={unitTestSuccess}
+        hasFailedTasks={isAnyTaskFailure(resultData)}
+      />
       {unitTestSuccess === false && Object.keys(resultData).length ? (
         <>
           <ResultContainer
