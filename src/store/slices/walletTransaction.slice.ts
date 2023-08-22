@@ -29,10 +29,10 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
         try {
             const cert_fee_in_lovelaces = data.fee
             
-            const walletAddrAPI = '/wallet-address'; // ToDo -- Update
+            const walletAddrAPI = '/profile/current/wallet-address';
             const walletAddressRes: any = await fetchData.get(walletAddrAPI).catch(throwError)
             
-            const applicationWallet_receiveAddr = walletAddressRes.data.address;
+            const applicationWallet_receiveAddr = walletAddressRes.data[1];
             const cert_fee_lovelace: BigNum = cert_fee_in_lovelaces; //BigNum.from_str(cert_fee_in_lovelaces.toString())
             
             const protocolParams: any = {
@@ -75,23 +75,9 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
                 txBuilder.add_inputs_from(txnUnspentOutputs, CoinSelectionStrategyCIP2.LargestFirst)
                 txBuilder.add_change_if_needed(Address.from_bech32(data.address))
                 
-                if (walletAddressRes.data.status === 'overlapping') {
-                  const metadata = {"map": [
-                      {
-                        "k": {
-                          "string": "payer"
-                        },
-                        "v": {
-                          "list": [
-                            {
-                              "string":"testing"
-                            }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                  txBuilder.add_json_metadatum(BigNum.from_str("1304"), JSON.stringify(metadata))
+                if (walletAddressRes.data[0] === 'overlapping') {
+                  const metadata = { "payer": data.address.split(/(.{64})/).filter(Boolean) }
+                  txBuilder.add_json_metadatum(BigNum.from_str("0"), JSON.stringify(metadata))
                 }
                 
                 const unsignedTx = txBuilder.build_tx()
