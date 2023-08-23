@@ -79,7 +79,7 @@ const UserProfile = () => {
     }
     else if (dapp !== null) {
       const { name, owner, repo, version } = dapp
-      formData = { ...formData, name, version }
+      formData = { ...formData, name, version, owner, repo }; // NOTE: set form value explicitly to trigger validation since Owner and Repo are not registered to `form`
       setOwner(owner);
       setRepo(repo)
       form.reset(formData);
@@ -190,6 +190,7 @@ const UserProfile = () => {
     } else if (type ==='repo') {
       setRepo(currentVal)
     }
+    form.setValue(type, currentVal); // NOTE: set form value explicitly to trigger validation since Owner and Repo are not registered to `form`
     setCanShowConnectModal(false)
     setFocussedOwnerRepo(true)
     dispatch(hideConfirmConnection());
