@@ -3,34 +3,45 @@ import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import { fetchData } from "api/api";
+import { useAppDispatch } from "store/store";
+import { useLogs } from "hooks/useLogs";
+
+import { setUuid } from "../slices/certification.slice";
+
+import ResultContainer from "../components/ResultContainer";
+import FileCoverageContainer from "../components/FileCoverageContainer";
+import Button from "components/Button/Button";
+import CreateCertificate from "components/CreateCertificate/CreateCertificate";
+import Toast from "components/Toast/Toast";
+import InformationTable from "components/InformationTable/InformationTable";
+import Loader from "components/Loader/Loader";
+import Timeline from "compositions/Timeline/Timeline";
+import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
+
 import {
   processFinishedJson,
   processTimeLineConfig,
 } from "components/TimelineItem/timeline.helper";
-import ResultContainer from "../components/ResultContainer";
-import FileCoverageContainer from "../components/FileCoverageContainer";
 import { isAnyTaskFailure } from "../Certification.helper";
-import Timeline from "compositions/Timeline/Timeline";
-import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
-
-import "../Certification.scss";
-import Button from "components/Button/Button";
-import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import { exportObjectToJsonFile } from "../../../utils/utils";
 import DownloadIcon from "assets/images/download.svg";
-import Toast from "components/Toast/Toast";
-import InformationTable from "components/InformationTable/InformationTable";
-import { useLogs } from "hooks/useLogs";
-import Loader from "components/Loader/Loader";
+import "../Certification.scss";
 
 const CertificationResult = () => {
   const param = useParams();
   const { state } = useLocation();
+  const dispatch = useAppDispatch();
   const [coverageFile, setCoverageFile] = useState("");
   const [resultData, setResultData] = useState<any>({});
   const [unitTestSuccess, setUnitTestSuccess] = useState(true); // assuming unit tests will pass
   const [errorToast, setErrorToast] = useState(false);
   const [timelineConfig, setTimelineConfig] = useState(TIMELINE_CONFIG);
+
+  // set uuid from param into certification.slice
+  useEffect(() => {
+    dispatch(setUuid(param.uuid));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     (async () => {
