@@ -3,7 +3,10 @@ import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import { fetchData } from "api/api";
-import { processFinishedJson, processTimeLineConfig } from "components/TimelineItem/timeline.helper";
+import {
+  processFinishedJson,
+  processTimeLineConfig,
+} from "components/TimelineItem/timeline.helper";
 import ResultContainer from "../components/ResultContainer";
 import FileCoverageContainer from "../components/FileCoverageContainer";
 import { isAnyTaskFailure } from "../Certification.helper";
@@ -16,6 +19,9 @@ import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import { exportObjectToJsonFile } from "../../../utils/utils";
 import DownloadIcon from "assets/images/download.svg";
 import Toast from "components/Toast/Toast";
+import InformationTable from "components/InformationTable/InformationTable";
+import { useLogs } from "hooks/useLogs";
+import Loader from "components/Loader/Loader";
 
 const CertificationResult = (props: any) => {
   const param = useParams();
@@ -52,7 +58,7 @@ const CertificationResult = (props: any) => {
         // error handling
       }
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [param.uuid]);
 
   const handleDownloadResultData = (resultData: any) => {
@@ -62,35 +68,50 @@ const CertificationResult = (props: any) => {
   const handleErrorScenario = useCallback(() => {
     // show an api error toast
     setErrorToast(true);
+    setErrorToast(true);
     const timeout = setTimeout(() => {
-      clearTimeout(timeout)
+      clearTimeout(timeout);
       setErrorToast(false);
     }, 5000); // hide after 5 seconds
-  },[])
+    setTimelineConfig(TIMELINE_CONFIG);
+  }, []);
+
+  const { logInfo } = useLogs(param.uuid as string, true, handleErrorScenario);
+
+  // Show loader until data is fetched
+  if (!resultData || !Object.keys(resultData).length) {
+    return <Loader />
+  }
 
   return (
     <>
-      <header>
-        <h3>Certification Result</h3>
-        <div style={{ float: "right", marginLeft: "5px" }}>
-          {Object.keys(resultData).length ? (
-            <>
-              <Button
-                className="report-download"
-                onClick={(_) => handleDownloadResultData(resultData)}
-                buttonLabel="Download Report"
-                iconUrl={DownloadIcon}
-              />
-              {state?.certifiable ? <CreateCertificate /> : null }
-            </>
-          ) : null}
+      <div className="flex col common-bottom">
+        <header>
+          <h3>Certification Result</h3>
+          <div style={{ float: "right", marginLeft: "5px" }}>
+            {Object.keys(resultData).length ? (
+              <>
+                <Button
+                  className="report-download"
+                  onClick={(_) => handleDownloadResultData(resultData)}
+                  buttonLabel="Download Report"
+                  iconUrl={DownloadIcon}
+                />
+                {state?.certifiable ? <CreateCertificate /> : null}
+              </>
+            ) : null}
+          </div>
+        </header>
+        <div style={{ marginTop: "-20px" }}>
+          <Timeline
+            statusConfig={timelineConfig}
+            unitTestSuccess={unitTestSuccess}
+            hasFailedTasks={isAnyTaskFailure(resultData)}
+          />
         </div>
-      </header>
-      <Timeline
-        statusConfig={timelineConfig}
-        unitTestSuccess={unitTestSuccess}
-        hasFailedTasks={isAnyTaskFailure(resultData)}
-      />
+        {/* To show 'View Logs' always  */}
+        <InformationTable logs={logInfo} />
+      </div>
       {unitTestSuccess === false && Object.keys(resultData).length ? (
         <>
           <ResultContainer
