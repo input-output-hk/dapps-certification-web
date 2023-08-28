@@ -250,6 +250,16 @@ const UserProfile = () => {
         description: "Unable to find the entered repository. Please go back and correct the Owner/Repository. Or, is this a Private one? If so, please hit Connect to authorize us to access it!",
         confirmationText: "Connect",
         cancellationText: "Go back"
+      }).then( privateRepoDisclaimer )
+    }, 0)
+  }
+
+  const privateRepoDisclaimer = () => {
+    setTimeout(() => {
+      confirm({
+        title: "Private Repository Access Disclaimer",
+        description: "Auditors need to obtain consent from their customers and acquire the necessary permissions to fork their private Github repositories in order to test the decentralized application (dApp) using the Plutus Testing Tool, created by Input Output Global, Inc (IOG). The Plutus Testing Tool is available on an “AS IS” and “AS AVAILABLE” basis, without any representation or warranties of any kind. IOG is not responsible for the actions, omissions, or accuracy of any third party for any loss or damage of any sort resulting from the forking of repositories and testing of dApps using the Plutus Testing Tool.",
+        confirmationText: "Agree",
       }).then( connectToGithub )
     }, 0)
   }
