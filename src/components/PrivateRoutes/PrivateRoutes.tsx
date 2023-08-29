@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import useLocalStorage from "hooks/useLocalStorage";
-import { LocalStorageKeys } from 'constants/constants';
+import { LocalStorageKeys } from "constants/constants";
 
 const PrivateRoutes = () => {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ const PrivateRoutes = () => {
 
   const [isLoggedIn] = useLocalStorage(
     LocalStorageKeys.isLoggedIn,
-    localStorage.getItem(LocalStorageKeys.isLoggedIn) === "true" ? true : false
+    localStorage.getItem(LocalStorageKeys.isLoggedIn)
   );
 
   const [userDetails] = useLocalStorage(
@@ -20,7 +20,7 @@ const PrivateRoutes = () => {
   );
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (isLoggedIn !== "true") {
       navigate("/"); // navigate to root link if unauthorized
     } else {
       // user profile details are empty --> prompt user to enter details
@@ -33,7 +33,7 @@ const PrivateRoutes = () => {
     // eslint-disable-next-line
   }, [isLoggedIn, location.pathname]);
 
-  return isLoggedIn ? <Outlet /> : <></>;
+  return <>{isLoggedIn ? <Outlet /> : null}</>;
 };
 
 export default PrivateRoutes;
