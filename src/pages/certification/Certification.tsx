@@ -67,6 +67,11 @@ const Certification = () => {
       LocalStorageKeys.certificationUuid,
       localStorage.getItem(LocalStorageKeys.certificationUuid) ? localStorage.getItem(LocalStorageKeys.certificationUuid) : ""
   )
+  
+  const [certificationDone, , removeCertificationDone] = useLocalStorage(
+    LocalStorageKeys.certificationDone,
+    localStorage.getItem(LocalStorageKeys.certificationDone)
+  );
 
   // Populate certification states to resume certification
   useEffect(() => {console.log('1 -- ', certificationUuid)
@@ -83,7 +88,7 @@ const Certification = () => {
 
   // Set form as submitted on component load if certification is running
   useEffect(() => {
-    if (startTime && endTime) {
+    if (startTime && endTime && certificationDone !== "1") {
       setFormSubmitted(true);
       setSubmitting(true);
       form.setValue("commit", uuid);
@@ -121,9 +126,14 @@ const Certification = () => {
     setTimelineConfig(TIMELINE_CONFIG)
     // Clear uuid states
     dispatch(clearUuid())
-    removeCertificationUuid()
     form.reset();
     dispatch(clearStates())
+  };
+
+  const clearPersistentStates = () => {
+    dispatch(clearUuid());
+    dispatch(clearStates());
+    removeCertificationUuid()
     removeCertificationRunTime()
   }
 
@@ -176,6 +186,7 @@ const Certification = () => {
       config = processTimeLineConfig(config, state, status, res);
       if (status === "finished") {
         // navigate to result page
+        clearPersistentStates();
         navigate("/report/" + uuid, {state: { repoUrl: githubLink, certifiable: true }});
         resetRunForm()
       }
@@ -212,10 +223,11 @@ const Certification = () => {
   }
 
   useEffect(() => {
-    if (uuid.length) {
+    if (uuid.length && certificationDone !== "1") {
       triggerFetchRunStatus();
     } else {
       // resetStates()
+      removeCertificationDone(); // Clear certification done status
     }
     // eslint-disable-next-line
   }, [uuid]);
@@ -247,6 +259,7 @@ const Certification = () => {
   const {logInfo} = useLogs(
       uuid,
       runStatus === "finished" || runState === "failed",
+      true,
       handleErrorScenario
   )
 

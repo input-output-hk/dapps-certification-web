@@ -6,7 +6,8 @@ import { fetchData } from "api/api";
 import { useAppDispatch } from "store/store";
 import { useLogs } from "hooks/useLogs";
 
-import { setUuid } from "../slices/certification.slice";
+import { clearUuid, setUuid } from "../slices/certification.slice";
+import { clearStates } from "../slices/logRunTime.slice";
 
 import ResultContainer from "../components/ResultContainer";
 import FileCoverageContainer from "../components/FileCoverageContainer";
@@ -17,6 +18,8 @@ import InformationTable from "components/InformationTable/InformationTable";
 import Loader from "components/Loader/Loader";
 import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
+import { LocalStorageKeys } from "constants/constants";
+import useLocalStorage from "hooks/useLocalStorage";
 
 import {
   processFinishedJson,
@@ -37,9 +40,20 @@ const CertificationResult = () => {
   const [errorToast, setErrorToast] = useState(false);
   const [timelineConfig, setTimelineConfig] = useState(TIMELINE_CONFIG);
 
+  const [, setCertificationDone] = useLocalStorage(
+    LocalStorageKeys.certificationDone,
+    localStorage.getItem(LocalStorageKeys.certificationDone)
+  );
+
   // set uuid from param into certification.slice
   useEffect(() => {
     dispatch(setUuid(param.uuid));
+    setCertificationDone("1");
+
+    return () => {
+      dispatch(clearUuid());
+      dispatch(clearStates());
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -87,8 +101,13 @@ const CertificationResult = () => {
     setTimelineConfig(TIMELINE_CONFIG);
   }, []);
 
-  const { logInfo } = useLogs(param.uuid as string, true, handleErrorScenario);
-
+  const { logInfo } = useLogs(
+    param.uuid as string,
+    true,
+    false,
+    handleErrorScenario
+  );
+  
   // Show loader until data is fetched
   if (!resultData || !Object.keys(resultData).length) {
     return <Loader />

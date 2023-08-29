@@ -14,6 +14,7 @@ const TIME_OFFSET = 1000;
 export const useLogs = (
     uuid: string,
     testEnded: boolean,
+    storeLogState: boolean,
     handleErrorScenario: () => void
 ) => {
     const dispatch = useDispatch()
@@ -48,7 +49,8 @@ export const useLogs = (
     const captureRunTime = (sTime: string, eTime: string, state: string) => {
         if (sTime && eTime && state) { 
             dispatch(setStates({startTime: sTime, endTime: eTime, runState: state}))
-            setCertificationRunTime({ startTime: sTime, endTime: eTime, runState: state }) // Update log data to LS
+            // Update log data to LS
+            storeLogState && setCertificationRunTime({ startTime: sTime, endTime: eTime, runState: state })
             dispatch(setBuildInfo())
         }
     }
@@ -102,7 +104,8 @@ export const useLogs = (
 
     const fetchLog = async ()=>{
         if(!uuid) return
-        const lastLogTimestamp = logInfo[logInfo.length - 1]?.Time
+        // refrain calling /logs with ?after= for certification-results page
+        const lastLogTimestamp = storeLogState ? logInfo[logInfo.length - 1]?.Time : undefined
         setFetchingLogs(true)
         let fetchApi = false
         if (testEnded && ended <= 1) { 

@@ -9,4 +9,5 @@ export const LocalStorageKeys = {
   hasSubscriptions: "hasSubscriptions",
   certificationUuid: "certificationUuid",
   certificationRunTime: "certificationRunTime",
+  certificationDone: "certificationDone"
 };

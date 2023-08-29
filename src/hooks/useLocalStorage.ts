@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 function isValidJSON(text: string) {
   try {
     const result = JSON.parse(text);
-    return (typeof result === 'object' && result !== null);
+    return (typeof result === "object" && result !== null);
   } catch (e) {
     return false;
   }
