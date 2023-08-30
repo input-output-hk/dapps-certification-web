@@ -28,8 +28,11 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
         }
         try {
             const cert_fee_in_lovelaces = data.fee
-            const walletAddressRes: any = await fetchData.get('/wallet-address').catch(throwError)
-            const applicationWallet_receiveAddr = walletAddressRes.data;
+            
+            const walletAddrAPI = '/profile/current/wallet-address';
+            const walletAddressRes: any = await fetchData.get(walletAddrAPI).catch(throwError)
+            
+            const applicationWallet_receiveAddr = walletAddressRes.data[1];
             const cert_fee_lovelace: BigNum = cert_fee_in_lovelaces; //BigNum.from_str(cert_fee_in_lovelaces.toString())
             
             const protocolParams: any = {
@@ -71,13 +74,19 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
                 txBuilder.add_output(TransactionOutput.new(Address.from_bech32(applicationWallet_receiveAddr), Value.new(cert_fee_lovelace) ))
                 txBuilder.add_inputs_from(txnUnspentOutputs, CoinSelectionStrategyCIP2.LargestFirst)
                 txBuilder.add_change_if_needed(Address.from_bech32(data.address))
-
-                const encodedTx = Buffer.from(txBuilder.build_tx().to_bytes()).toString("hex");
+                
+                if (walletAddressRes.data[0] === 'overlapping') {
+                  const metadata = { "payer": data.address.split(/(.{64})/).filter(Boolean) }
+                  txBuilder.add_json_metadatum(BigNum.from_str("0"), JSON.stringify(metadata))
+                }
+                
+                const unsignedTx = txBuilder.build_tx()
+                const encodedTx = Buffer.from(unsignedTx.to_bytes()).toString("hex");
                 data.wallet.signTx(encodedTx).then((signed: string) =>{
                     const txVkeyWitnesses = TransactionWitnessSet.from_bytes(
                         Buffer.from(signed, "hex")
                     );
-                    const txSigned = Transaction.new(txBuilder.build(), txVkeyWitnesses );
+                    const txSigned = Transaction.new(txBuilder.build(), txVkeyWitnesses, unsignedTx.auxiliary_data() );
                     const encodedSignedTx = Buffer.from(txSigned.to_bytes()).toString("hex");
                     data.wallet.submitTx(encodedSignedTx).then((txnId: string) => {
                         resolve(txnId);
