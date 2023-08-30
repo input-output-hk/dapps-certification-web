@@ -33,7 +33,7 @@ const Button: FC<IButtonProps> = ({
       className={`btn ${className} ${isLoading ? "is-loading" : ""} ${"btn-" + displayStyle} ${"btn-" + size}`}
       type={type}
       onClick={onClick}
-      disabled={disabled}
+      disabled={showLoader || disabled}
       {...props}
     >
       {showLoader ? (

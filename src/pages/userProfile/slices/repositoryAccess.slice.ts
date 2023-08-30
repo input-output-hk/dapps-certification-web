@@ -43,12 +43,16 @@ export const repoAccessSlice = createSlice({
         return initialState
     },
     clearAccessToken: (state) => {
-      state.accessToken = ""
-      return state
+      state.accessToken = "";
+      return state;
     },
     hideConfirmConnection: (state) => {
       state.showConfirmConnection = false;
-      return state
+      return state;
+    },
+    setRepoAccessible: (state) => {
+      state.accessible = true;
+      return state;
     }
   },
   extraReducers: (builder) => {
@@ -73,13 +77,13 @@ export const repoAccessSlice = createSlice({
       .addCase(getUserAccessToken.pending, (state, actions) => {
 
       })
-      .addCase(getUserAccessToken.fulfilled, (state, actions) => { console.log('payload-', actions.payload)
+      .addCase(getUserAccessToken.fulfilled, (state, actions) => {
         const token: string = actions.payload?.data.access_token
         localStorage.setItem(LocalStorageKeys.accessToken, token)
         state.accessToken = token;
       });
   },
 });
-export const { clearStates, clearAccessToken, hideConfirmConnection } = repoAccessSlice.actions;
+export const { clearStates, clearAccessToken, hideConfirmConnection, setRepoAccessible } = repoAccessSlice.actions;
 
 export default repoAccessSlice.reducer;

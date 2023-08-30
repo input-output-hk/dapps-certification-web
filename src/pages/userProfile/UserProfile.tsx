@@ -15,7 +15,8 @@ import { clearStates,
   clearAccessToken,
   getUserAccessToken,
   verifyRepoAccess,
-  hideConfirmConnection } from "./slices/repositoryAccess.slice";
+  hideConfirmConnection,
+  setRepoAccessible } from "./slices/repositoryAccess.slice";
 import Toast from "components/Toast/Toast";
 import useLocalStorage from "hooks/useLocalStorage";
 import { LocalStorageKeys } from "constants/constants";
@@ -37,6 +38,7 @@ const UserProfile = () => {
   const [canShowConnectModal, setCanShowConnectModal] = useState(false)
   const [focussedOwnerRepo, setFocussedOwnerRepo] = useState(false)
   const [showError, setShowError] = useState("")
+  const [submitting, setSubmitting] = useState(false)
 
   const [searchParams, setSearchParams] = useSearchParams();
   const githubAccessCode = searchParams.get("code");
@@ -55,6 +57,7 @@ const UserProfile = () => {
 
   const initializeFormState = () => {
     form.clearErrors(); // clear form errors
+    clearOwnerRepoError();
     
     const { dapp, contacts, authors, linkedin, twitter, vendor, website } = userDetails;
     let formData: {
@@ -78,14 +81,14 @@ const UserProfile = () => {
       form.reset(profileFormData)
     }
     else if (dapp !== null) {
-      const { name, owner, repo, version } = dapp
-      formData = { ...formData, name, version }
+      const { name, owner = '', repo = '', version } = dapp
+      formData = { ...formData, name, version, owner, repo }; // NOTE: set form value explicitly to trigger validation since Owner and Repo are not registered to `form`
       setOwner(owner);
       setRepo(repo)
       form.reset(formData);
     }
 
-    if (!userDetails.dapp?.owner || !userDetails.dapp?.repo || profileInLS) {
+    if ((address && dapp === null) || profileInLS) {
       setIsEdit(true);
     }
   }
@@ -93,6 +96,7 @@ const UserProfile = () => {
   useEffect(() => {
     if (isEdit) {
       form.setFocus("name"); // focus on first field on Edit mode
+      userDetails?.dapp !== null && dispatch(setRepoAccessible()); // if value is available, repo is accessible
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit]);
@@ -119,6 +123,7 @@ const UserProfile = () => {
     if (isOwnerRepoValidationError()) {
       return;
     }
+    setSubmitting(true)
     const {authors, contacts, linkedin, twitter, vendor, website} = formData
     const submitProfile = async () => {
       const reqData: IUserProfile = {
@@ -147,6 +152,7 @@ const UserProfile = () => {
         );
         setUserDetails(response.payload);
         dispatch(clearAccessToken())
+        setSubmitting(false)
         navigate('/')
       }).catch((errorObj) => {
         let errorMsg = 'Something went wrong. Please try again.'
@@ -190,6 +196,10 @@ const UserProfile = () => {
     } else if (type ==='repo') {
       setRepo(currentVal)
     }
+    // set form value explicitly to trigger validation since Owner and Repo are not registered to `form`
+    if (['owner', 'repo'].includes(type)) {
+      form.setValue(type, currentVal);
+    }
     setCanShowConnectModal(false)
     setFocussedOwnerRepo(true)
     dispatch(hideConfirmConnection());
@@ -231,14 +241,37 @@ const UserProfile = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    // Repo not accessible
+    if (isEdit) {
+      if (!verifying && !accessible) {
+        form.setError("owner");
+        form.setError("repo");
+      } else {
+        // trigger revalidation of the form
+        form.trigger(["owner", "repo"]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verifying, accessible, form.formState.errors]);
+
   const connectToGithub = async () => {
     const data = {...form.getValues(), owner: owner, repo: repo}
     // store current form data in localStorage
     localStorage.setItem(LocalStorageKeys.profile, JSON.stringify(data))
-
-    // fetch CLIENT_ID from api
-    const clientId = (await fetchData.get("/github/client-id")).data as string
-    window.location.assign(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`)
+    try {
+      // fetch CLIENT_ID from api
+      const clientId = (await fetchData.get("/github/client-id")).data as string
+      window.location.assign(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`)
+    } catch (errorObj: any) {
+      let errorMsg = "Unable to connect to the repository. "
+      if (errorObj?.response?.data) {
+        errorMsg += errorObj.response.statusText + ' - ' + errorObj.response.data + ". "
+      }
+      errorMsg += "Please recheck and try again."
+      setShowError(errorMsg);
+      const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000)
+    }
   }
 
 
@@ -249,8 +282,16 @@ const UserProfile = () => {
         description: "Unable to find the entered repository. Please go back and correct the Owner/Repository. Or, is this a Private one? If so, please hit Connect to authorize us to access it!",
         confirmationText: "Connect",
         cancellationText: "Go back"
-      }).then( connectToGithub )
+      }).then( privateRepoDisclaimer )
     }, 0)
+  }
+
+  const privateRepoDisclaimer = () => {
+    confirm({
+      title: "Private Repository Access Disclaimer",
+      description: "Auditors need to obtain consent from their customers and acquire the necessary permissions to fork their private Github repositories in order to test the decentralized application (dApp) using the Plutus Testing Tool, created by Input Output Global, Inc (IOG). The Plutus Testing Tool is available on an “AS IS” and “AS AVAILABLE” basis, without any representation or warranties of any kind. IOG is not responsible for the actions, omissions, or accuracy of any third party for any loss or damage of any sort resulting from the forking of repositories and testing of dApps using the Plutus Testing Tool.",
+      confirmationText: "Agree",
+    }).then( connectToGithub )
   }
 
   const ownerRef = useRef<HTMLInputElement>(null);
@@ -410,13 +451,14 @@ const UserProfile = () => {
                   type="button"
                   buttonLabel={"Edit"}
                   onClick={(e) => {
-                    setIsEdit(!isEdit);
+                    setIsEdit(true);
                   }}
                 />
               ) : (
                 <>
                   <Button
                     type="button"
+                    disabled={submitting}
                     displayStyle="secondary"
                     buttonLabel={"Cancel"}
                     onClick={() => {
@@ -426,9 +468,10 @@ const UserProfile = () => {
                     }}
                   />
                   <Button
-                    disabled={!form.formState.isValid || verifying || (!accessible && canShowConnectModal) || ownerErr || repoErr}
+                    disabled={!form.formState.isValid || verifying || !accessible || ownerErr || repoErr}
                     type="submit"
                     buttonLabel={"Save"}
+                    showLoader={submitting}
                   />
                 </>
               )}
