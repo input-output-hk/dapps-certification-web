@@ -5,21 +5,7 @@ import { useAppSelector } from "store/store";
 import Button from "components/Button/Button";
 import Modal from "components/Modal/Modal";
 
-
-// import { Address,
-//     Value,
-//     BigNum,
-//     LinearFee,
-//     TransactionBuilderConfigBuilder,
-//     TransactionUnspentOutputs,
-//     TransactionUnspentOutput,
-//     TransactionBuilder,
-//     TransactionWitnessSet,
-//     Transaction,
-//     TransactionOutput,
-//     CoinSelectionStrategyCIP2
-//  } from '@emurgo/cardano-serialization-lib-browser';
- import { BigNum } from '@emurgo/cardano-serialization-lib-browser';
+import { BigNum } from '@emurgo/cardano-serialization-lib-browser';
 
 import Toast from "components/Toast/Toast";
 import { fetchData } from "api/api";
