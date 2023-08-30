@@ -64,11 +64,16 @@ export const processTimeLineConfig = (
         res.data.progress &&
         res.data.plan
       ) {
-        returnObj["progress"] = Math.trunc(
-          (res.data.progress["finished-tasks"].length /
-            getPlannedCertificationTaskCount(res.data.plan)) *
-            100
-        );
+        const plannedTasksCount = getPlannedCertificationTaskCount(res.data.plan);
+        if (plannedTasksCount > 0) {
+          returnObj["progress"] = Math.trunc(
+            (res.data.progress["finished-tasks"].length /
+              getPlannedCertificationTaskCount(res.data.plan)) *
+              100
+            );
+        } else {
+          returnObj["progress"] = 0;
+        }
       }
       return returnObj;
     }

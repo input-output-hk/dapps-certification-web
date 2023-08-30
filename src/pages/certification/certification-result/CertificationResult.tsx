@@ -31,7 +31,7 @@ import DownloadIcon from "assets/images/download.svg";
 import "../Certification.scss";
 
 const CertificationResult = () => {
-  const param = useParams();
+  const param = useParams<{ uuid: string }>();
   const { state } = useLocation();
   const dispatch = useAppDispatch();
   const [coverageFile, setCoverageFile] = useState("");
@@ -80,7 +80,7 @@ const CertificationResult = () => {
         }
       } catch (error) {
         handleErrorScenario();
-        // error handling
+        console.error('Failed:', error);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -74,7 +74,7 @@ const Certification = () => {
   );
 
   // Populate certification states to resume certification
-  useEffect(() => {console.log('1 -- ', certificationUuid)
+  useEffect(() => {
     if (certificationUuid && certificationRunTime) { 
       const { startTime, endTime, runState } = certificationRunTime;
       dispatch(setUuid(certificationUuid));
@@ -166,7 +166,7 @@ const Certification = () => {
         setCertificationUuid(runId);
       } catch (e) {
         handleErrorScenario();
-        console.log(e);
+        console.error('Failed:', e);
       }
     };
     triggerAPI();
@@ -196,7 +196,7 @@ const Certification = () => {
       setTimelineConfig(config);
     } catch (e) {
       handleErrorScenario();
-      console.log(e);
+      console.error('Failed:', e);
     }
   };
 
