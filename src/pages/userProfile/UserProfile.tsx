@@ -259,10 +259,19 @@ const UserProfile = () => {
     const data = {...form.getValues(), owner: owner, repo: repo}
     // store current form data in localStorage
     localStorage.setItem(LocalStorageKeys.profile, JSON.stringify(data))
-
-    // fetch CLIENT_ID from api
-    const clientId = (await fetchData.get("/github/client-id")).data as string
-    window.location.assign(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`)
+    try {
+      // fetch CLIENT_ID from api
+      const clientId = (await fetchData.get("/github/client-id")).data as string
+      window.location.assign(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`)
+    } catch (errorObj: any) {
+      let errorMsg = "Unable to connect to the repository. "
+      if (errorObj?.response?.data) {
+        errorMsg += errorObj.response.statusText + ' - ' + errorObj.response.data + ". "
+      }
+      errorMsg += "Please recheck and try again."
+      setShowError(errorMsg);
+      const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000)
+    }
   }
 
 
