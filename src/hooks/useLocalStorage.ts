@@ -56,7 +56,7 @@ function useLocalStorage<T>(
 
       // Save to local storage
       try {
-        const serializedValue = JSON.stringify(newValue);
+        const serializedValue = typeof newValue === 'string' ? newValue : JSON.stringify(newValue);
         window.localStorage.setItem(key, serializedValue);
       } catch (error) {
         console.warn(`Error serializing localStorage key “${key}”:`, error);
