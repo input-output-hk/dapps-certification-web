@@ -46,6 +46,12 @@ const ConnectWallet = () => {
 
   const onCloseModal = useCallback(() => setIsOpen(false), []);
 
+  const retryConnectWallet = () => {
+    setWallet(null)
+    setErrorToast({ display: false });
+    openConnectWalletModal()
+  }
+
   const loadWallet = async (walletName: string) => {
     try {
       setWalletLoading(true);
@@ -177,7 +183,7 @@ const ConnectWallet = () => {
           {walletLoading ? <Loader /> : null}
           {errorToast?.display ? (<>
             <span className="error">{errorToast.message}</span>
-            <span className="link" style={{marginLeft: '5px'}} onClick={openConnectWalletModal}>Retry</span>
+            <span className="link" style={{marginLeft: '5px'}} onClick={retryConnectWallet}>Retry</span>
           </>) : null}
         </div>
       </Modal>
