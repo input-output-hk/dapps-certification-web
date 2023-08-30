@@ -297,6 +297,7 @@ const ReportUpload = () => {
           <div className="button-wrapper">
             <Button
               type="button"
+              disabled={submitting}
               displayStyle="secondary"
               buttonLabel={"Cancel"}
               onClick={() => {
