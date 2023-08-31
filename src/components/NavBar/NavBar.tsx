@@ -19,8 +19,8 @@ const NavBar = () => {
     <div
       className={classNames(
         "navbar",
-        bgColors["bg-gray"],
-        textColors["text-white"]
+        bgColors.classes["bg-gray"],
+        textColors.classes["text-white"]
       )}
     >
       <Typography
@@ -31,7 +31,7 @@ const NavBar = () => {
           height: 80,
           lineHeight: "80px",
         }}
-        className={bgColors["bg-purple-dark"]}
+        className={bgColors.classes["bg-purple-dark"]}
       >
         Certifyr.io
       </Typography>
@@ -40,7 +40,7 @@ const NavBar = () => {
         <Link
           key={`${uuid}-${index}`}
           to={menu.path}
-          className={classNames("navbar-link", navLink["navLink-light"], {
+          className={classNames("navbar-link", navLink.classes["navLink-light"], {
             active: location.pathname === menu.path,
           })}
         >

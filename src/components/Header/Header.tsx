@@ -230,7 +230,7 @@ const Header = () => {
   }, [isActive, isLoggedIn, featureList]);
 
   return (
-    <header className={classNames("header", boxShadows["shadow-purple"])}>
+    <header className={classNames("header", boxShadows.classes["shadow-purple"])}>
       <Link to="/" state={{ insideNavigation: true }}>
         <img
           src="/images/logo.png"

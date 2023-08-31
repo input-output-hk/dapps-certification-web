@@ -1,6 +1,6 @@
-import { makeStyles } from "@mui/styles";
+import { makeStyles } from 'tss-react/mui';
 
-export const useTextStyles = makeStyles((appTheme: any) => ({
+export const useTextStyles = makeStyles()((appTheme: any) => ({
   "text-blue": {
     color: appTheme.palette.blue.main,
   },
@@ -39,7 +39,7 @@ export const useTextStyles = makeStyles((appTheme: any) => ({
   },
 }));
 
-export const useBgStyles = makeStyles((appTheme: any) => ({
+export const useBgStyles = makeStyles()((appTheme: any) => ({
   "bg-blue": {
     backgroundColor: appTheme.palette.blue.main,
   },
@@ -78,7 +78,7 @@ export const useBgStyles = makeStyles((appTheme: any) => ({
   },
 }));
 
-export const useIconStyles = makeStyles((appTheme: any) => ({
+export const useIconStyles = makeStyles()((appTheme: any) => ({
   icon: {
     color: appTheme.palette.gray.dark,
     "&.active": {
@@ -87,13 +87,13 @@ export const useIconStyles = makeStyles((appTheme: any) => ({
   },
 }));
 
-export const useBoxShadowStyles = makeStyles((appTheme: any) => ({
+export const useBoxShadowStyles = makeStyles()((appTheme: any) => ({
   "shadow-purple": {
     boxShadow: `0px -10px 20px 0px ${appTheme.palette.purple.dark}`,
   },
 }));
 
-export const useNavLinkStyles = makeStyles((appTheme: any) => ({
+export const useNavLinkStyles = makeStyles()((appTheme: any) => ({
   "navLink-light": {
     color: appTheme.palette.white.main,
     cursor: "pointer",
