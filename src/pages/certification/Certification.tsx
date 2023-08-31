@@ -35,6 +35,7 @@ import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistor
 import { useConfirm } from "material-ui-confirm";
 import { Link } from "react-router-dom";
 import Loader from "components/Loader/Loader";
+import { setSubscribedFeatures } from "store/slices/auth.slice";
 
 const TIMEOFFSET = 1000;
 
@@ -212,8 +213,19 @@ const Certification = () => {
     // eslint-disable-next-line
   }, [uuid]);
 
-  // while unmount of component
   useEffect(() => {
+    (async() => {
+      const features: any = await fetchData.get(
+        "/profile/current/subscriptions/active-features"
+      );
+      if (features.error) {
+        console.error('Failed to fetch active features:', features.error);
+        return;
+      }
+      await dispatch(setSubscribedFeatures(features.data));
+    })()
+
+    // while unmount of component
     return () => {
       resetStates();
     };
