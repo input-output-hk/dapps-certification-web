@@ -17,6 +17,8 @@ import ConnectWallet from "components/ConnectWallet/ConnectWallet";
 import AvatarDropDown from "components/AvatarDropdown/AvatarDropdown";
 import DropoverMenu from "components/DropoverMenu/DropoverMenu";
 import { LocalStorageKeys } from 'constants/constants';
+import classNames from "classnames";
+import { useBoxShadowStyles } from "styles/style";
 
 const Header = () => {
   const { isLoggedIn, address, wallet, network } = useAppSelector(
@@ -43,6 +45,8 @@ const Header = () => {
     LocalStorageKeys.hasSubscriptions,
     localStorage.getItem(LocalStorageKeys.hasSubscriptions) === "true" ? true : false
   );
+
+  const boxShadows = useBoxShadowStyles();
 
   useEffect(() => {
     // check if address, walletName is in localStorage - login user without having to connect to wallet again
@@ -226,7 +230,7 @@ const Header = () => {
   }, [isActive, isLoggedIn, featureList]);
 
   return (
-    <header className="header">
+    <header className={classNames("header", boxShadows["shadow-purple"])}>
       <Link to="/" state={{ insideNavigation: true }}>
         <img
           src="/images/logo.png"

@@ -9,6 +9,7 @@ import PrivateRoutes from "components/PrivateRoutes/PrivateRoutes";
 import NotFound from "components/NotFound/NotFound";
 import Loader from "components/Loader/Loader";
 import { useAppSelector } from "store/store";
+import NavBar from "components/NavBar/NavBar";
 
 const Home = lazy(() => import("../pages/home/Home"));
 const MaintenancePage = lazy(() => import("../pages/maintenance/Maintenance"));
@@ -45,18 +46,21 @@ const PageLayout = () => {
   // }
 
   return (
-    <>
-      <Header />
-      <section id="globalBanners">
-        <Banner />
-      </section>
-      {/* Load page content here */}
-      <section data-testid="contentWrapper" id="contentWrapper">
-        <Suspense fallback={<Loader />}>
-          <Outlet />
-        </Suspense>
-      </section>
-    </>
+    <div className="app">
+      <NavBar />
+      <div className="content">
+        <Header />
+        <section id="globalBanners">
+          <Banner />
+        </section>
+        {/* Load page content here */}
+        <section data-testid="contentWrapper" id="contentWrapper">
+          <Suspense fallback={<Loader />}>
+            <Outlet />
+          </Suspense>
+        </section>
+      </div>
+    </div>
   );
 };
 

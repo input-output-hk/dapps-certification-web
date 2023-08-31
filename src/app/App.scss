@@ -26,3 +26,14 @@ section > svg.spinner {
 #globalBanners {
     padding: 10px 40px;
 }
+
+.app {
+  position: relative;
+  height: inherit;
+
+  .content {
+    position: absolute;
+    width: calc(100% - 250px);
+    left: 250px;
+  }
+}
