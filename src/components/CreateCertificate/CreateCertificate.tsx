@@ -33,7 +33,7 @@ interface Certificate {
 const CreateCertificate = () => {
     const dispatch = useDispatch();
     const { uuid } = useAppSelector((state) => state.certification);
-    const { address, wallet } = useAppSelector((state) => state.auth);
+    const { address, wallet, subscribedFeatures } = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
@@ -42,6 +42,7 @@ const CreateCertificate = () => {
     const [ disableCertify, setDisableCertify ] = useState(false);
     const [certificationPrice, setCertificationPrice] = useState(0);
     const [performTransaction, setPerformTransaction] = useState(true);
+    const [showCertificationMetadataForm, setShowCertificationMetadataForm] = useState(false);
 
     // to run only once initially
     useEffect(() => {
@@ -128,21 +129,40 @@ const CreateCertificate = () => {
         }
     }
 
-    return (<>
-        {certified || disableCertify ? null : (<Button
-            displayStyle="gradient"
-            onClick={() => triggerGetCertificate()}
-            buttonLabel={"Purchase a Certificate"+ (certificationPrice ? " (" + (certificationPrice/1000000).toString() + " ADA)" : "")}
-            showLoader={certifying}
-        />)}
-        {transactionId ? (
-            <Modal open={openModal} title="Certification Successful" onCloseModal={onCloseModal}>
-                <span>
-                    View your certification broadcasted on-chain&nbsp;
-                    <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${transactionId}`}>here</a>!
-                </span>
-            </Modal>
-        ): null}
+    const getL1AuditorCertificate = () => {
+
+    }
+
+    return (
+    <>
+        {subscribedFeatures?.indexOf("l2-upload-report") === -1 ? <>
+            {certified || disableCertify ? null : (<Button
+                displayStyle="gradient"
+                onClick={() => triggerGetCertificate()}
+                buttonLabel={"Purchase a Certificate"+ (certificationPrice ? " (" + (certificationPrice/1000000).toString() + " ADA)" : "")}
+                showLoader={certifying}
+            />)}
+            {transactionId ? (
+                <Modal open={openModal} title="Certification Successful" onCloseModal={onCloseModal}>
+                    <span>
+                        View your certification broadcasted on-chain&nbsp;
+                        <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${transactionId}`}>here</a>!
+                    </span>
+                </Modal>
+            ): null}
+        </> : <>
+            <Button
+                displayStyle="gradient"
+                onClick={() => setShowCertificationMetadataForm(true)}
+                buttonLabel={"Review Certification Metadata"}
+            />
+            {/* TBD - Add form similar to Auditor-ReportUpload here without the Reports */}
+            {showCertificationMetadataForm ? 
+                <Modal open={true} onCloseModal={onCloseModal}>
+                    <CertificationMetadata onCancel={onCloseModal}/>
+                </Modal>
+            : null}
+        </>}
         {showError ? <Toast message={showError} /> : null}
     </>);
 }
