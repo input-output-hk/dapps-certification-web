@@ -37,7 +37,6 @@ const Certification = () => {
   const navigate = useNavigate();
 
   const { uuid } = useAppSelector((state) => state.certification);
-  const { startTime, endTime } = useAppSelector((state) => state.runTime);
   const { isLoggedIn, userDetails, subscribedFeatures } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
@@ -67,11 +66,10 @@ const Certification = () => {
       LocalStorageKeys.certificationUuid,
       localStorage.getItem(LocalStorageKeys.certificationUuid) ? localStorage.getItem(LocalStorageKeys.certificationUuid) : ""
   )
-  
-  const [certificationDone, , removeCertificationDone] = useLocalStorage(
-    LocalStorageKeys.certificationDone,
-    localStorage.getItem(LocalStorageKeys.certificationDone)
-  );
+
+  const [commitHash, setCommitHash, removeCommitHash] = useLocalStorage(
+    LocalStorageKeys.commit, 
+    localStorage.getItem(LocalStorageKeys.commit) || "")
 
   // Populate certification states to resume certification
   useEffect(() => {
@@ -86,28 +84,11 @@ const Certification = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Set form as submitted on component load if certification is running
-  useEffect(() => {
-    if (startTime && endTime && certificationDone !== "1") {
-      setFormSubmitted(true);
-      setSubmitting(true);
-      form.setValue("commit", uuid);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uuid]);
-
-  useEffect(() => {
-    if (userDetails?.dapp?.owner) {
-      setUsername(userDetails.dapp.owner)
-    }
-    if (userDetails?.dapp?.repo) {
-      setRepository(userDetails.dapp.repo)
-    }
-  }, [userDetails])
 
   const resetRunForm = () => {
     removeCertificationUuid()
     removeCertificationRunTime()
+    removeCommitHash()
     dispatch(clearUuid())
     dispatch(clearStates())
     setSubmitting(false)
@@ -135,6 +116,7 @@ const Certification = () => {
     dispatch(clearStates());
     removeCertificationUuid()
     removeCertificationRunTime()
+    removeCommitHash()
   }
 
   const formHandler = (formData: ISearchForm) => {
@@ -164,6 +146,7 @@ const Certification = () => {
         const runId = response.data.toString();
         dispatch(setUuid(runId));
         setCertificationUuid(runId);
+        setCommitHash(commit);
       } catch (e) {
         handleErrorScenario();
         console.error('Failed:', e);
@@ -192,6 +175,7 @@ const Certification = () => {
       }
       if (state === "failed" || status === "finished") {
         setSubmitting(false);
+        clearPersistentStates();
       }
       setTimelineConfig(config);
     } catch (e) {
@@ -212,6 +196,8 @@ const Certification = () => {
     setSubmitting(false);
     setFormSubmitted(false);
     setTimelineConfig(TIMELINE_CONFIG);
+    clearPersistentStates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[form])
 
   const abortRun = () => {
@@ -219,19 +205,53 @@ const Certification = () => {
       .then(async () => {
         await dispatch(deleteTestHistoryData({ url: "/run/" + uuid + "?delete=true" }));
         resetStates()
+        clearPersistentStates();
       }).catch(() => { });
   }
 
+  // Populate certification states to resume certification
   useEffect(() => {
-    if (uuid.length && certificationDone !== "1") {
+    const uuidLS = certificationUuid,
+      runTimeLS = certificationRunTime,
+      commitLS = commitHash;
+
+    if (uuidLS && commitLS) {
+      // Run time calc is not always done for the initial states
+      if (runTimeLS) {
+        const { startTime, endTime, runState } = runTimeLS;
+        dispatch(setStates({ startTime, endTime, runState }));
+
+        // Set form as submitted on component load if certification is running
+        setFormSubmitted(true);
+        setSubmitting(true);
+        form.setValue("commit", commitLS);
+      }
+      dispatch(setUuid(String(uuidLS)));
+      dispatch(setBuildInfo());
+    }
+
+    // Run on unmount
+    return () => {
+      resetStates();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (uuid.length) {
       triggerFetchRunStatus();
-    } else {
-      // resetStates()
-      removeCertificationDone(); // Clear certification done status
     }
     // eslint-disable-next-line
   }, [uuid]);
 
+  useEffect(() => {
+    if (userDetails?.dapp?.owner) {
+      setUsername(userDetails.dapp.owner);
+    }
+    if (userDetails?.dapp?.repo) {
+      setRepository(userDetails.dapp.repo);
+    }
+  }, [userDetails]);
 
   useEffect(() => {
     runStatus === "certifying" ? setRefetchMin(2) : setRefetchMin(5);
@@ -322,34 +342,6 @@ const Certification = () => {
       {formSubmitted && (
         <>
           <div id="resultContainer" data-testid="resultContainer">
-            {/* 
-            **TBD -- migrated into CertificationResult**
-            {runStatus === "finished" ? (
-              <button
-                className="back-btn"
-                onClick={(e) => {
-                  resetStates();
-                }}
-              >
-                {" "}
-                <img
-                  src="images/back.png"
-                  alt="back_btn"
-                />
-              </button>
-            ) : null}
-            <header>
-              <h2
-                id="breadcrumb"
-                data-testid="breadcrumb"
-                style={{alignSelf:"center"}}
-                className={runStatus === "finished" ? "" : "hidden"}
-              >
-                <a target="_blank" rel="noreferrer" href={githubLink}>
-                  {username}/{repoName}
-                </a>
-              </h2>
-            </header> */}
             <Timeline
               statusConfig={timelineConfig}
               unitTestSuccess={unitTestSuccess}
