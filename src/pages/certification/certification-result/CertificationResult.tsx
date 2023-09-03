@@ -93,7 +93,7 @@ const CertificationResult = () => {
     <>
       <div className="flex col common-bottom">
         <header>
-          <h3>Certification Result</h3>
+          <h3>Test Result</h3>
           <div style={{ float: "right", marginLeft: "5px" }}>
             {Object.keys(resultData).length ? (
               <>
