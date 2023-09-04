@@ -32,7 +32,7 @@ const Header = () => {
     localStorage.getItem(LocalStorageKeys.isLoggedIn) === "true" ? true : false
   );
 
-  const [, setUserDetails] = useLocalStorage(
+  const [, setUserDetails, removeUserDetails] = useLocalStorage(
     LocalStorageKeys.userDetails,
     localStorage.getItem(LocalStorageKeys.userDetails)
       ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
@@ -105,7 +105,7 @@ const Header = () => {
     setPollForAddress(false);
     setPollForNetwork(false);
     dispatch(logout());
-    setUserDetails({ dapp: null });
+    removeUserDetails()
     setIsLoggedIn(false);
   };
 

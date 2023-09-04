@@ -35,7 +35,7 @@ const ConnectWallet = () => {
     localStorage.getItem(LocalStorageKeys.isLoggedIn) === "true" ? true : false
   );
 
-  const [, setUserDetails] = useLocalStorage(
+  const [, setUserDetails, removeUserDetails] = useLocalStorage(
     LocalStorageKeys.userDetails,
     localStorage.getItem(LocalStorageKeys.userDetails)
       ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
@@ -93,7 +93,7 @@ const ConnectWallet = () => {
       }, 3000);
     }
     setIsLoggedIn(false);
-    setUserDetails({ dapp: null });
+    removeUserDetails();
   };
 
   const catchError = (err: any) => {

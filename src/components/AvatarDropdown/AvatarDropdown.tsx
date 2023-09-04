@@ -6,8 +6,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Avatar from "@mui/material/Avatar";
 import "./AvatarDropDown.scss";
 import DropoverMenu from "components/DropoverMenu/DropoverMenu";
-import useLocalStorage from "hooks/useLocalStorage";
-import { LocalStorageKeys } from 'constants/constants';
+// import useLocalStorage from "hooks/useLocalStorage";
+// import { LocalStorageKeys } from 'constants/constants';
 
 const AvatarDropDown = () => {
   const navigate = useNavigate();
@@ -15,17 +15,6 @@ const AvatarDropDown = () => {
   const logOut = () => {
     dispatch(logout());
   };
-  const [, setIsLoggedIn] = useLocalStorage(
-    LocalStorageKeys.isLoggedIn,
-    localStorage.getItem(LocalStorageKeys.isLoggedIn) === "true" ? true : false
-  );
-
-  const [, setUserDetails] = useLocalStorage(
-    LocalStorageKeys.userDetails,
-    localStorage.getItem(LocalStorageKeys.userDetails)
-      ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
-      : null
-  );
 
   const navigateToProfile = () => {
     navigate("/profile");

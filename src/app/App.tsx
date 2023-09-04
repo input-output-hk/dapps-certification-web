@@ -22,6 +22,7 @@ const SubscriptionContent = lazy(() => import("../pages/subscription/Subscriptio
 const Payment = lazy(() => import("../pages/subscription/payment/Payment"));
 const ReportUpload = lazy(() => import("../pages/auditing/reportUpload/ReportUpload"))
 const SubscriptionHistory = lazy(() => import("../pages/subscription/history/SubscriptionHistory"));
+const CertificationResult = lazy(() => import("../pages/certification/certification-result/CertificationResult"));
 
 const Banner = () => {
   const { network } = useAppSelector((state) => state.auth);
@@ -75,6 +76,7 @@ const App = () => {
             <Route path="/audit-report-upload" element={<ReportUpload />} />
             <Route path="/history" element={<TestHistory />} />
             <Route path="/profile/*" element={<UserProfile />} />
+            <Route path="/report/:uuid" element={<CertificationResult />} />
           </Route>
           <Route path="/" element={<MaintenancePage />} />
           <Route path="/community" element={<Community />} />
