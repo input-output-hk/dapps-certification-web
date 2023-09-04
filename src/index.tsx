@@ -1,28 +1,32 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { ConfirmProvider } from "material-ui-confirm";
-import App from "./app/App";
-import "./index.scss";
-import reportWebVitals from "./reportWebVitals";
-
 import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import { StyledEngineProvider, ThemeProvider, CssBaseline } from "@mui/material";
+import { ConfirmProvider } from "material-ui-confirm";
+
+import App from "./app/App";
+import reportWebVitals from "./reportWebVitals";
 import store from "store/store";
-import { ThemeProvider } from "@mui/material";
 import { theme } from "styles/theme";
+
+import "./index.scss";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <BrowserRouter basename={process.env.PUBLIC_URL}>
-    <ThemeProvider theme={theme}>
-      <ConfirmProvider>
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </ConfirmProvider>
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ConfirmProvider>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </ConfirmProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   </BrowserRouter>
 );
 

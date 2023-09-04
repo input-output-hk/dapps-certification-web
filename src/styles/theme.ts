@@ -20,6 +20,9 @@ declare module "@mui/material/styles" {
 }
 
 export const theme = createTheme({
+  typography: {
+    fontFamily: "'Montserrat', sans-serif",
+  },
   palette: {
     blue: {
       main: "#3b86ff",
@@ -46,6 +49,13 @@ export const theme = createTheme({
       main: "#363446",
       dark: "#2c2a3b",
       contrastText: "#fff",
+    },
+    text: {
+      primary: '#43425D',
+      secondary: '#A6A7AD',
+    },
+    primary: {
+      main: '#43425D',
     },
   },
 });
