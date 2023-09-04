@@ -1,26 +1,23 @@
 import { useState } from "react";
 import { useForm } from "hooks/useForm";
-import { useNavigate } from "react-router-dom";
 
 import Toast from "components/Toast/Toast";
-import { reportUploadSchema } from "./reportUpload.schema";
+import { certificationMetadataSchema } from "./certificationMetadata.schema";
+import "./CertificationMetadata.scss";
 import { useAppSelector } from "store/store";
 import {
   IScriptObject,
   OffChainMetadataSchema,
-} from "./reportUpload.interface";
+} from "./certificationMetadata.interface";
 import { fetchData } from "api/api";
 import Modal from "components/Modal/Modal";
 import { exportObjectToJsonFile } from "utils/utils";
-import { REPORT_UPLOAD_FIELDS } from "./config";
+import { CERTIFICATION_METADATA_FIELDS } from "./config";
 import CertificationForm from "components/CertificationForm/CertificationForm";
-
-import "./ReportUpload.scss";
 
 export const fieldArrayName: string = "dAppScripts";
 
-const ReportUpload = () => {
-  const navigate = useNavigate();
+const CertificationMetadata = ({ uuid = "" }) => {
   const { userDetails } = useAppSelector((state: any) => state.auth);
   const [openModal, setOpenModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -29,13 +26,12 @@ const ReportUpload = () => {
   const [showError, setShowError] = useState("");
 
   const form = useForm({
-    schema: reportUploadSchema,
+    schema: certificationMetadataSchema,
     mode: "all", // trigger validation for onBlur and onChange events
   });
 
   const onCloseModal = () => {
     setOpenModal(false);
-    navigate(-1);
   };
 
   const transformDappScripts = (scripts: []) => {
@@ -52,44 +48,40 @@ const ReportUpload = () => {
     });
     return formattedScripts;
   };
-
   const formHandler = async (formData: any) => {
     const {
       subject,
-      certificationLevel,
       name,
       logo,
       email,
       website,
       twitter,
-      reportURL,
       summary,
       disclaimer,
       dAppScripts,
+      discord,
+      github,
     } = formData;
 
     const formattedDappScripts: IScriptObject[] =
       transformDappScripts(dAppScripts);
 
     const payload: OffChainMetadataSchema = {
-      subject: subject,
-      schemaVersion: 1,
-      certificationLevel: parseInt(certificationLevel),
       certificateIssuer: {
         name: name,
-        logo: logo,
+        logo: logo || "",
         social: {
           contact: email,
-          link: website,
+          discord: discord || "",
           twitter: twitter || "",
-          github: website,
+          github: github || "",
           website: website,
         },
       },
-      report: reportURL.replace(/\s+/g, "").split(","),
-      summary: summary,
       disclaimer: disclaimer,
       scripts: formattedDappScripts,
+      subject: subject,
+      summary: summary,
     };
 
     setSubmitting(true);
@@ -119,10 +111,9 @@ const ReportUpload = () => {
 
   return (
     <>
-      <h2>Upload an Audit Report</h2>
-      <div id="auditReportUploadContainer" className="certificate-metadata-form">
+      <div id="certificationMetadataFormContainer" className="certificate-metadata-form">
         <CertificationForm
-          config={REPORT_UPLOAD_FIELDS as any}
+          config={CERTIFICATION_METADATA_FIELDS as any}
           submitting={submitting}
           initData={{
             twitter: userDetails?.twitter,
@@ -132,39 +123,21 @@ const ReportUpload = () => {
           onSubmit={formHandler}
           onFormCancel={() => {
             form.reset();
+            onCloseModal();
           }}
         />
       </div>
-
-      {/* <Upload
-            isMultiple={false}
-            highlightText="Upload a PDF"
-            uploadFiles={(file) => {
-              console.log("file", file);
-              setFiles(file);
-            }}
-            showPreview
-            tooltipText={`Please upload a ${SUPPORTED_FORMATS.join(",")} file within 5MB size`}
-            maxFileSize={FILE_SIZE}
-            acceptedTypes={SUPPORTED_FORMATS.join(",")}
-            uploadedFiles={files}
-            required={true}
-            className="bordered"
-            onClick={(files) => console.log(files)}
-            name="auditReport"
-            showDefaultError
-          /> */}
 
       {showError ? <Toast message={showError} /> : null}
 
       <Modal
         open={openModal}
-        title="Auditor Report Uploaded"
+        title="Certification Metadata Uploaded"
         onCloseModal={onCloseModal}
-        modalId="subscriptionSuccessModal"
+        modalId="verificationSuccessModal"
       >
         <p style={{ marginBottom: "2rem" }}>
-          Successfully submitted Auditor Report. <br />
+          Successfully submitted Certification Metadata. <br />
           <br />
           Both off-chain and on-chain certificates will be downloaded at once
           now.
@@ -174,4 +147,4 @@ const ReportUpload = () => {
   );
 };
 
-export default ReportUpload;
+export default CertificationMetadata;

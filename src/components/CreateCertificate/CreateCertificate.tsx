@@ -5,59 +5,79 @@ import { useAppSelector } from "store/store";
 import Button from "components/Button/Button";
 import Modal from "components/Modal/Modal";
 
-import { BigNum } from '@emurgo/cardano-serialization-lib-browser';
+import { BigNum } from "@emurgo/cardano-serialization-lib-browser";
 
 import Toast from "components/Toast/Toast";
 import { fetchData } from "api/api";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
 
+import "./CreateCertificate.scss";
+import CertificationMetadata from "pages/certification/components/certificationMetadata/CertificationMetadata";
+
 export interface Run {
-    "certificationPrice": number,
-    "commitDate": string;
-    "commitHash": string;
-    "created": string;
-    "finishedAt": string;
-    "repoUrl": string;
-    "reportContentId": string;
-    "runId": string;
-    "runStatus": "queued" | "failed" | "succeeded" | "certified" | "ready-for-certification" | "aborted";
-    "syncedAt": string;
+    certificationPrice: number;
+    commitDate: string;
+    commitHash: string;
+    created: string;
+    finishedAt: string;
+    repoUrl: string;
+    reportContentId: string;
+    runId: string;
+    runStatus:
+    | "queued"
+    | "failed"
+    | "succeeded"
+    | "certified"
+    | "ready-for-certification"
+    | "aborted";
+    syncedAt: string;
 }
 
 interface Certificate {
-    "createdAt": string;
-    "runId": string;
-    "transactionId": string;
+    createdAt: string;
+    runId: string;
+    transactionId: string;
 }
 
 const CreateCertificate = () => {
     const dispatch = useDispatch();
     const { uuid } = useAppSelector((state) => state.certification);
-    const { address, wallet, subscribedFeatures } = useAppSelector((state) => state.auth);
-    const [ certifying, setCertifying ] = useState(false);
-    const [ certified, setCertified ] = useState(false);
-    const [ transactionId, setTransactionId ] = useState("")
-    const [ showError, setShowError ] = useState("");
-    const [ openModal, setOpenModal ] = useState(false);
-    const [ disableCertify, setDisableCertify ] = useState(false);
+    const { address, wallet, subscribedFeatures } = useAppSelector(
+        (state) => state.auth
+    );
+    const [certifying, setCertifying] = useState(false);
+    const [certified, setCertified] = useState(false);
+    const [transactionId, setTransactionId] = useState("");
+    const [showError, setShowError] = useState("");
+    const [openModal, setOpenModal] = useState(false);
+    const [openMetadataModal, setOpenMetadataModal] = useState(false);
+    const [disableCertify, setDisableCertify] = useState(false);
     const [certificationPrice, setCertificationPrice] = useState(0);
     const [performTransaction, setPerformTransaction] = useState(true);
-    const [showCertificationMetadataForm, setShowCertificationMetadataForm] = useState(false);
 
     // to run only once initially
     useEffect(() => {
-        fetchData.get('/profile/current/balance').then(response => {
-            const availableProfileBalance: number = response.data
-            fetchData.get('/run/' + uuid + '/details').then(res => {
-                const runDetails: Run = res.data
+        fetchData.get("/profile/current/balance").then((response) => {
+            const availableProfileBalance: number = response.data;
+            fetchData.get("/run/" + uuid + "/details").then((res) => {
+                const runDetails: Run = res.data;
                 setCertificationPrice(runDetails.certificationPrice);
-                setPerformTransaction((availableProfileBalance >= 0 && (availableProfileBalance - runDetails.certificationPrice) < 0) ? true : false)
-            })
-        })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    
+                setPerformTransaction(
+                    availableProfileBalance >= 0 &&
+                        availableProfileBalance - runDetails.certificationPrice < 0
+                        ? true
+                        : false
+                );
+            });
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const onCloseModal = () => { setOpenModal(false) }
+
+    const setMetadataModalStatus = (status: boolean) => {
+        setOpenMetadataModal(status);
+    };
 
     const handleError = (errorObj: any) => {
         let errorMsg = ''
@@ -68,7 +88,7 @@ const CreateCertificate = () => {
         } else if (errorObj?.response?.message) {
             errorMsg = errorObj?.response.message + ' Please try again.'
         } else if (errorObj?.response?.data) {
-            errorMsg = errorObj.response.statusText + ' - ' + errorObj.response.data 
+            errorMsg = errorObj.response.statusText + ' - ' + errorObj.response.data
         }
         setShowError(errorMsg.length > 50 ? 'Something wrong occurred. Please try again later.' : errorMsg);
         const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000)
@@ -90,7 +110,7 @@ const CreateCertificate = () => {
         fetchData.get('/run/' + uuid + '/details').then(response => {
             const details: Run = response.data
             if (details?.runStatus === 'ready-for-certification') {
-                const timeout = setTimeout(async ()=> {
+                const timeout = setTimeout(async () => {
                     clearTimeout(timeout)
                     fetchRunDetails()
                 }, 1000)
@@ -129,42 +149,42 @@ const CreateCertificate = () => {
         }
     }
 
-    const getL1AuditorCertificate = () => {
-
-    }
-
     return (
-    <>
-        {subscribedFeatures?.indexOf("l2-upload-report") === -1 ? <>
-            {certified || disableCertify ? null : (<Button
-                displayStyle="gradient"
-                onClick={() => triggerGetCertificate()}
-                buttonLabel={"Purchase a Certificate"+ (certificationPrice ? " (" + (certificationPrice/1000000).toString() + " ADA)" : "")}
-                showLoader={certifying}
-            />)}
-            {transactionId ? (
-                <Modal open={openModal} title="Certification Successful" onCloseModal={onCloseModal}>
-                    <span>
-                        View your certification broadcasted on-chain&nbsp;
-                        <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${transactionId}`}>here</a>!
-                    </span>
+        <>
+            {subscribedFeatures?.indexOf("l2-upload-report") === -1 ? <>
+                {certified || disableCertify ? null : (<Button
+                    displayStyle="gradient"
+                    onClick={() => triggerGetCertificate()}
+                    buttonLabel={"Purchase a Certificate" + (certificationPrice ? " (" + (certificationPrice / 1000000).toString() + " ADA)" : "")}
+                    showLoader={certifying}
+                />)}
+                {transactionId ? (
+                    <Modal open={openModal} title="Certification Successful" onCloseModal={onCloseModal}>
+                        <span>
+                            View your certification broadcasted on-chain&nbsp;
+                            <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${transactionId}`}>here</a>!
+                        </span>
+                    </Modal>
+                ) : null}
+            </> : <>
+                <Button
+                    displayStyle="gradient"
+                    onClick={() => setMetadataModalStatus(true)}
+                    buttonLabel={"Review Certification Metadata"}
+                    showLoader={certifying}
+                />
+                <Modal
+                    open={openMetadataModal}
+                    title="Certification Metadata"
+                    className="certification-metadata"
+                    fullWidth
+                >
+                    <CertificationMetadata uuid={uuid} />
                 </Modal>
-            ): null}
-        </> : <>
-            <Button
-                displayStyle="gradient"
-                onClick={() => setShowCertificationMetadataForm(true)}
-                buttonLabel={"Review Certification Metadata"}
-            />
-            {/* TBD - Add form similar to Auditor-ReportUpload here without the Reports */}
-            {showCertificationMetadataForm ? 
-                <Modal open={true} onCloseModal={onCloseModal}>
-                    <CertificationMetadata onCancel={onCloseModal}/>
-                </Modal>
-            : null}
-        </>}
-        {showError ? <Toast message={showError} /> : null}
-    </>);
+            </>}
+
+            {showError ? <Toast message={showError} /> : null}
+        </>);
 }
 
 export default CreateCertificate;
