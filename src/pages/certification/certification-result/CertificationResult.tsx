@@ -37,12 +37,12 @@ const CertificationResult = () => {
     (async () => {
       try {
         const res = await fetchData.get("/run/" + param.uuid);
-        const status = res.data.status;
-        const state = res.data.hasOwnProperty("state") ? res.data.state : "";
+        const runStatus = res.data.status;
+        const runState = res.data.hasOwnProperty("state") ? res.data.state : "";
         setTimelineConfig(
-          processTimeLineConfig(timelineConfig, state, status, res)
+          processTimeLineConfig(timelineConfig, runState, runStatus, res)
         );
-        if (status === "finished") {
+        if (runStatus === "finished") {
           const isArrayResult = Array.isArray(res.data.result);
           const resultJson = isArrayResult
             ? res.data.result[0]
