@@ -69,7 +69,6 @@ const CertificationResult = () => {
   const handleErrorScenario = useCallback(() => {
     // show an api error toast
     setErrorToast(true);
-    setErrorToast(true);
     const timeout = setTimeout(() => {
       clearTimeout(timeout);
       setErrorToast(false);

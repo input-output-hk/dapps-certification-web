@@ -93,6 +93,7 @@ const Certification = () => {
     dispatch(clearStates())
     setSubmitting(false)
     setFormSubmitted(false)
+    setApiFetching(false) // Clear apiFetching state
     form.reset()
   }
 
@@ -103,6 +104,7 @@ const Certification = () => {
     setUnitTestSuccess(true)
     setSubmitting(false)
     setFormSubmitted(false)
+    setApiFetching(false) // Clear apiFetching state
     setGithubLink("")
     setTimelineConfig(TIMELINE_CONFIG)
     // Clear uuid states
@@ -114,6 +116,7 @@ const Certification = () => {
   const clearPersistentStates = () => {
     dispatch(clearUuid());
     dispatch(clearStates());
+    setApiFetching(false) // Clear apiFetching state
     removeCertificationUuid()
     removeCertificationRunTime()
     removeCommitHash()
