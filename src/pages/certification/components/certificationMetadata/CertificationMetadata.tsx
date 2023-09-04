@@ -17,7 +17,10 @@ import CertificationForm from "components/CertificationForm/CertificationForm";
 
 export const fieldArrayName: string = "dAppScripts";
 
-const CertificationMetadata = ({ uuid = "" }) => {
+const CertificationMetadata: {
+    uuid: string,
+    onCloseForm?: () => void
+} = ({ uuid = "", onCloseForm }) => {
   const { userDetails } = useAppSelector((state: any) => state.auth);
   const [openModal, setOpenModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -32,6 +35,7 @@ const CertificationMetadata = ({ uuid = "" }) => {
 
   const onCloseModal = () => {
     setOpenModal(false);
+    onCloseForm()
   };
 
   const transformDappScripts = (scripts: []) => {
@@ -87,7 +91,7 @@ const CertificationMetadata = ({ uuid = "" }) => {
     setSubmitting(true);
 
     const response: any = await fetchData
-      .post("/auditor/reports", payload)
+      .post("/run/" + uuid + "/certificate", payload)
       .catch((errorObj) => {
         let errorMsg = "Something went wrong. Please try again.";
         if (errorObj?.response?.data) {

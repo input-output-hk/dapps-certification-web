@@ -179,7 +179,7 @@ const CreateCertificate = () => {
                     className="certification-metadata"
                     fullWidth
                 >
-                    <CertificationMetadata uuid={uuid} />
+                    <CertificationMetadata uuid={uuid} onCloseForm={setMetadataModalStatus(false)}/>
                 </Modal>
             </>}
 
