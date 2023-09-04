@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .package-type, .package-type-active {
+    @apply
+      flex-1
+      mx-2
+      py-12
+      outline
+      outline-1
+      outline-[#EAEAEA];
+  }
+
+  .package-type-active {
+    @apply
+      outline-2
+      outline-[#3A87FF];
+  }
+}
