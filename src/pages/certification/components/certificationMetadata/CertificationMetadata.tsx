@@ -17,10 +17,10 @@ import CertificationForm from "components/CertificationForm/CertificationForm";
 
 export const fieldArrayName: string = "dAppScripts";
 
-const CertificationMetadata: {
+const CertificationMetadata: React.FC<{
     uuid: string,
-    onCloseForm?: () => void
-} = ({ uuid = "", onCloseForm }) => {
+    onCloseForm: () => void
+}> = ({uuid = "", onCloseForm}) => {
   const { userDetails } = useAppSelector((state: any) => state.auth);
   const [openModal, setOpenModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -108,8 +108,8 @@ const CertificationMetadata: {
 
     setShowError("");
     setOpenModal(true);
-    exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + subject + ".json");
-    exportObjectToJsonFile(response.data.onchain, "On-Chain_" + subject + ".json");
+    exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + uuid + ".json");
+    exportObjectToJsonFile(response.data.onchain, "On-Chain_" + uuid + ".json");
     setSubmitting(false);
   };
 

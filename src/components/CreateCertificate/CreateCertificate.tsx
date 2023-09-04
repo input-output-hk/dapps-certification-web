@@ -77,7 +77,11 @@ const CreateCertificate = () => {
 
     const setMetadataModalStatus = (status: boolean) => {
         setOpenMetadataModal(status);
-    };
+    }
+
+    const onCloseMetadataForm = () => {
+        setMetadataModalStatus(false)
+    }
 
     const handleError = (errorObj: any) => {
         let errorMsg = ''
@@ -177,9 +181,10 @@ const CreateCertificate = () => {
                     open={openMetadataModal}
                     title="Certification Metadata"
                     className="certification-metadata"
+                    onCloseModal={()=> {}}
                     fullWidth
                 >
-                    <CertificationMetadata uuid={uuid} onCloseForm={setMetadataModalStatus(false)}/>
+                    <CertificationMetadata uuid={uuid} onCloseForm={onCloseMetadataForm}/>
                 </Modal>
             </>}
 
