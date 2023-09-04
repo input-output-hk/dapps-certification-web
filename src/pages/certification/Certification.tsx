@@ -24,6 +24,7 @@ import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistor
 import { useConfirm } from "material-ui-confirm";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "components/Loader/Loader";
+import { setSubscribedFeatures } from "store/slices/auth.slice";
 import { LocalStorageKeys } from "constants/constants";
 import useLocalStorage from "hooks/useLocalStorage";
 
@@ -70,32 +71,6 @@ const Certification = () => {
   const [commitHash, setCommitHash, removeCommitHash] = useLocalStorage(
     LocalStorageKeys.commit, 
     localStorage.getItem(LocalStorageKeys.commit) || "")
-
-  // Populate certification states to resume certification
-  useEffect(() => {
-    if (certificationUuid && certificationRunTime) { 
-      const { startTime, endTime, runState } = certificationRunTime;
-      dispatch(setUuid(certificationUuid));
-      dispatch(setStates({ startTime, endTime, runState }));
-      dispatch(setBuildInfo());
-    } else {
-      resetRunForm()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-
-  const resetRunForm = () => {
-    removeCertificationUuid()
-    removeCertificationRunTime()
-    removeCommitHash()
-    dispatch(clearUuid())
-    dispatch(clearStates())
-    setSubmitting(false)
-    setFormSubmitted(false)
-    setApiFetching(false) // Clear apiFetching state
-    form.reset()
-  }
 
   const resetStates = () => {
     setRunState("")
@@ -174,7 +149,6 @@ const Certification = () => {
         // navigate to result page
         clearPersistentStates();
         navigate("/report/" + uuid, {state: { repoUrl: githubLink, certifiable: true }});
-        resetRunForm()
       }
       if (state === "failed" || status === "finished") {
         setSubmitting(false);
@@ -232,6 +206,17 @@ const Certification = () => {
       dispatch(setUuid(String(uuidLS)));
       dispatch(setBuildInfo());
     }
+
+    (async() => {
+      const features: any = await fetchData.get(
+        "/profile/current/subscriptions/active-features"
+      );
+      if (features.error) {
+        console.error('Failed to fetch active features:', features.error);
+        return;
+      }
+      await dispatch(setSubscribedFeatures(features.data));
+    })()
 
     // Run on unmount
     return () => {
