@@ -3,6 +3,22 @@
 @tailwind utilities;
 
 @layer components {
+  .title-text {
+    @apply font-bold tracking-[.2em];
+  }
+
+  .subtitle-text {
+    @apply font-normal text-[#A6A7AD];
+  }
+
+  .price-text {
+    @apply font-normal text-sm mt-6 text-red-500;
+  }
+
+  .white-box {
+    @apply flex flex-col m-0 min-w-[50vw] bg-white;
+  }
+
   .package-type, .package-type-active {
     @apply
       flex-1

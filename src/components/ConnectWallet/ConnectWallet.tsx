@@ -3,8 +3,8 @@ import { Address } from "@emurgo/cardano-serialization-lib-browser";
 import { useAppDispatch } from "store/store";
 import { getProfileDetails, logout, setNetwork } from "store/slices/auth.slice";
 
+import { Button } from "@mui/material";
 import Modal from "components/Modal/Modal";
-import Button from "components/Button/Button";
 import Loader from "components/Loader/Loader";
 
 import "./ConnectWallet.scss";
@@ -151,10 +151,13 @@ const ConnectWallet = () => {
     <>
       <Button
         type="button"
-        displayStyle="gradient"
-        buttonLabel={"Connect Wallet"}
+        variant="contained"
+        size="large"
+        className="py-3 px-4 normal-case font-medium"
         onClick={openConnectWalletModal}
-      />
+      >
+        Connect your wallet
+      </Button>
       <Modal open={isOpen} title="Connect a wallet" onCloseModal={onCloseModal}>
         <div id="walletsContainer">
           {wallet ? null : !CardanoNS ? (

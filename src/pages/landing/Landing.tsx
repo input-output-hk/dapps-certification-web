@@ -11,22 +11,20 @@ import { fetchTiers } from "./slices/tiers.slice";
 import type { Tier } from "./slices/tiers.slice";
 
 import "./Landing.css";
+import { stat } from "fs";
 
 const REFRESH_TIME = 30;
 
-const ConnectSection = (props: { onSubmit: () => void }) => (
+const ConnectSection = () => (
   <Box className="flex flex-row-reverse flex-1">
-    <Box className="flex flex-col justify-center m-0 min-w-[50vw] bg-white">
+    <Box className="white-box justify-center">
       <Box className="text-center">
-        <Typography variant="h3" className="font-bold mb-4 tracking-[.2em]">
+        <Typography variant="h3" className="title-text mb-4">
           Testing Tool
         </Typography>
-        <Typography variant="h6" className="font-normal mb-40 text-[#A6A7AD]">
+        <Typography variant="h6" className="subtitle-text mb-40">
           Connect your in-browser wallet to login/sign-up
         </Typography>
-        <Button variant="contained" size="large" className="py-3 px-4 normal-case font-medium" onClick={props.onSubmit}>
-          Connect your wallet
-        </Button>
         <ConnectWallet />
       </Box>
     </Box>
@@ -34,13 +32,13 @@ const ConnectSection = (props: { onSubmit: () => void }) => (
 );
 
 const SubscriptionSection = (props: { tiers: Tier[], tierId: string|null, onSelect: (tierId: string) => void }) => (
-  <Box className="flex flex-col m-0 pt-24 min-w-[50vw] bg-white">
+  <Box className="white-box pt-24">
     <Box className="text-center">
-      <Typography variant="h4" className="font-bold mb-2 tracking-[.2em]">
+      <Typography variant="h4" className="title-text mb-2">
         Testing Tool
       </Typography>
-      <Typography variant="subtitle1" className="font-normal mb-16 text-[#A6A7AD]">
-        Please choose the Package you wish to subscribe to.
+      <Typography variant="subtitle1" className="subtitle-text mb-16">
+        Please choose a subscription
       </Typography>
       <Box className="flex flex-row px-2">
         {props.tiers.map(tier => (
@@ -76,12 +74,12 @@ const SubscriptionSection = (props: { tiers: Tier[], tierId: string|null, onSele
 );
 
 const RegisterSection = (props: { tierId: string, count: number, price: number, onSubmit: (event: React.SyntheticEvent) => void }) => (
-  <Box className="flex flex-col m-0 pt-24 min-w-[50vw] bg-white text-center">
-    <Typography variant="h4" className="font-bold mb-2 tracking-[.2em] capitalize">
+  <Box className="white-box pt-24 text-center">
+    <Typography variant="h4" className="title-text mb-2">
       Auditor profile
     </Typography>
-    <Typography variant="subtitle1" className="font-normal mb-16 text-[#A6A7AD]">
-      Please complete the information to create your account.
+    <Typography variant="subtitle1" className="subtitle-text mb-16">
+      Please complete your user profile information
     </Typography>
     <Container maxWidth="sm">
       <form onSubmit={props.onSubmit}>
@@ -128,8 +126,8 @@ const RegisterSection = (props: { tierId: string, count: number, price: number, 
         >
           Pay (₳{props.price.toFixed(2)})
         </Button>
-        <Typography variant="body1" className="font-normal text-sm mt-6 text-red-500">
-          Price will refresh in {props.count} seconds
+        <Typography variant="body1" className="price-text">
+          Price will refresh in {props.count} second{props.count === 1 ? '' : 's'}
         </Typography>
       </form>
     </Container>
@@ -139,6 +137,7 @@ const RegisterSection = (props: { tierId: string, count: number, price: number, 
 export default function LandingPage() {
   const { price } = useAppSelector((state) => state.price);
   const { tiers } = useAppSelector((state) => state.tiers);
+  const { isLoggedIn } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   const [step, setStep] = useState<string>('connect');
@@ -170,6 +169,12 @@ export default function LandingPage() {
   useEffect(() => { dispatch(fetchTiers({})); }, []);
 
   useEffect(() => {
+    if (isLoggedIn && step === 'connect') {
+      setStep('subscription');
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
     if (tierId !== null) {
       setCount(REFRESH_TIME);
       dispatch(fetchPrice());
@@ -191,9 +196,9 @@ export default function LandingPage() {
   return (
     <Box
       className="flex flex-row h-screen bg-cover bg-center"
-      sx={{ backgroundImage: 'url(/images/landing-background.svg)' }}
+      sx={{ backgroundImage: 'url(/images/landing-background.png)' }}
     >
-      { step === 'connect' && <ConnectSection onSubmit={() => setStep('subscription')}/> }
+      { step === 'connect' && <ConnectSection /> }
       { step === 'subscription' && <SubscriptionSection tiers={tiers} tierId={tierId} onSelect={setTierId}/> }
       { tierId !== null && <RegisterSection tierId={tierId} count={count} price={price} onSubmit={handleFormSubmit} /> }
     </Box>
