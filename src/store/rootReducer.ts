@@ -6,6 +6,8 @@ import deleteTestHistory from "pages/testHistory/slices/deleteTestHistory.slice"
 import logRunTimeSlice from "pages/certification/slices/logRunTime.slice";
 import walletTransactionSlice from "./slices/walletTransaction.slice";
 import repoAccessSlice from "pages/userProfile/slices/repositoryAccess.slice";
+import priceSlide from "pages/landing/slices/price.slice";
+import tiersSlide from "pages/landing/slices/tiers.slice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -13,7 +15,9 @@ const rootReducer = combineReducers({
   deleteTestHistory,
   runTime: logRunTimeSlice,
   walletTransaction: walletTransactionSlice,
-  repoAccess: repoAccessSlice
+  repoAccess: repoAccessSlice,
+  price: priceSlide,
+  tiers: tiersSlide,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
