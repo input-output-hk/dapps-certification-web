@@ -22,12 +22,7 @@ export const useLogs = (
     const [fetchingLogs, setFetchingLogs] = useState(false);
     const [refetchLogsOffset] = useState(1);
 
-    const [, setCertificationRunTime] = useLocalStorage(
-        LocalStorageKeys.certificationRunTime,
-        localStorage.getItem(LocalStorageKeys.certificationRunTime)
-      ? JSON.parse(localStorage.getItem(LocalStorageKeys.certificationRunTime)!)
-      : null
-    )
+    const [, setCertificationRunTime] = useLocalStorage(LocalStorageKeys.certificationRunTime, null)
     
     const { startTime, endTime, runState, ended } = useAppSelector((state) => state.runTime)
 

@@ -43,12 +43,7 @@ const UserProfile = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const githubAccessCode = searchParams.get("code");
 
-  const [, setUserDetails, removeUserDetails] = useLocalStorage(
-    LocalStorageKeys.userDetails,
-    localStorage.getItem(LocalStorageKeys.userDetails)
-      ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
-      : null
-  );
+  const [, setUserDetails, removeUserDetails] = useLocalStorage(LocalStorageKeys.userDetails, null);
 
   const form: any = useForm({
     schema: userProfileSchema,
