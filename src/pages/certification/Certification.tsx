@@ -24,7 +24,7 @@ import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistor
 import { useConfirm } from "material-ui-confirm";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "components/Loader/Loader";
-import { setSubscribedFeatures } from "store/slices/auth.slice";
+import { logout, setSubscribedFeatures } from "store/slices/auth.slice";
 import { LocalStorageKeys } from "constants/constants";
 import useLocalStorage from "hooks/useLocalStorage";
 import { getErrorMessage } from "utils/utils";
@@ -179,7 +179,7 @@ const Certification = () => {
   // Populate certification states to resume certification
   useEffect(() => {
     const uuidLS = certificationUuid,
-      runTimeLS = certificationRunTime,
+      runTimeLS: any = certificationRunTime,
       commitLS = commitHash;
 
     if (uuidLS && commitLS) {
@@ -205,7 +205,11 @@ const Certification = () => {
       console.error('Failed to fetch active features:', errorObj);
         return;
     }).then((response: any) => {
-      dispatch(setSubscribedFeatures(response.data));
+      if (response?.data) {
+        dispatch(setSubscribedFeatures(response.data));
+      } else {
+        dispatch(logout())
+      }
     });
       
 
