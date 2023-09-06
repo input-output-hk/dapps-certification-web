@@ -41,7 +41,7 @@ const Header = () => {
       (async () => {
         try {
           const enabledWallet = await window.cardano[walletNameCache].enable();
-          const response: any = await dispatch(
+          await dispatch(
             getProfileDetails({
               address: addressCache,
               wallet: enabledWallet,
@@ -49,9 +49,10 @@ const Header = () => {
             })
           ).catch((err: any) => {
               forceUserLogout()
-          });
-          setUserDetails(response.payload);
-          setIsLoggedIn(true);
+          }).then((response: any) => {
+            setUserDetails(response.payload);
+            setIsLoggedIn(true);
+          })
 
           enabledWallet.getNetworkId().then(async (data: number) => {
             dispatch(setNetwork(data));
