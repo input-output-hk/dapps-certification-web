@@ -20,7 +20,13 @@ const initialState: {loading: boolean; error: any;} = {
   error: false
 };
 
-export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, { rejectWithValue }) => {
+type PaymentData = {
+  fee: BigNum,
+  wallet: any,
+  address: string,
+  payer: string
+}
+export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: PaymentData, { rejectWithValue }) => {
     return new Promise(async (resolve: any, reject) => {
         const throwError = (errorObj: any) => {
             rejectWithValue(errorObj.info)
@@ -28,13 +34,13 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
         }
         try {
             const cert_fee_in_lovelaces = data.fee
-            
+
             const walletAddrAPI = '/profile/current/wallet-address';
             const walletAddressRes: any = await fetchData.get(walletAddrAPI).catch(throwError)
-            
+
             const applicationWallet_receiveAddr = walletAddressRes.data[1];
             const cert_fee_lovelace: BigNum = cert_fee_in_lovelaces; //BigNum.from_str(cert_fee_in_lovelaces.toString())
-            
+
             const protocolParams: any = {
                 linearFee: {
                     minFeeA: "440",
@@ -50,7 +56,7 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
                 // minFeeCoefficient: 44,
                 // minFeeConstant: 155_381,
                 coinsPerUtxoByte: "4310"
-            } 
+            }
 
             let linearFee = LinearFee.new(
                 BigNum.from_str(protocolParams.linearFee.minFeeA),
@@ -63,7 +69,7 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
                 .pool_deposit(BigNum.from_str(protocolParams.poolDeposit))
                 .max_value_size(protocolParams.maxValSize)
                 .max_tx_size(protocolParams.maxTxSize)
-            
+
             let txBuilder = TransactionBuilder.new(txnBuilderConfigBuilder.build())
 
             data.wallet.getUtxos().then((utxos: any) =>{
@@ -74,12 +80,12 @@ export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: any, 
                 txBuilder.add_output(TransactionOutput.new(Address.from_bech32(applicationWallet_receiveAddr), Value.new(cert_fee_lovelace) ))
                 txBuilder.add_inputs_from(txnUnspentOutputs, CoinSelectionStrategyCIP2.LargestFirst)
                 txBuilder.add_change_if_needed(Address.from_bech32(data.address))
-                
+
                 if (walletAddressRes.data[0] === 'overlapping') {
-                  const metadata = { "payer": data.address.split(/(.{64})/).filter(Boolean) }
+                  const metadata = { "payer": data.payer.split(/(.{64})/).filter(Boolean) }
                   txBuilder.add_json_metadatum(BigNum.from_str("0"), JSON.stringify(metadata))
                 }
-                
+
                 const unsignedTx = txBuilder.build_tx()
                 const encodedTx = Buffer.from(unsignedTx.to_bytes()).toString("hex");
                 data.wallet.signTx(encodedTx).then((signed: string) =>{

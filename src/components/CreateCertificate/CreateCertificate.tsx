@@ -33,7 +33,7 @@ interface Certificate {
 const CreateCertificate = () => {
     const dispatch = useDispatch();
     const { uuid } = useAppSelector((state) => state.certification);
-    const { address, wallet } = useAppSelector((state) => state.auth);
+    const { address, wallet,userDetails:{address: payer} } = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
@@ -106,7 +106,7 @@ const CreateCertificate = () => {
     const triggerSubmitCertificate = async (txnId?: string) => {
         fetchData.post('/run/' + uuid + '/certificate' + (txnId ? '?transactionid=' + txnId : ''))
             .catch(handleError)
-            .then((response: any) => {
+            .then(() => {
                 fetchRunDetails(txnId)
             })
     }
@@ -116,7 +116,7 @@ const CreateCertificate = () => {
         setShowError("")
         if (performTransaction) {
             const response = await dispatch(
-                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet: wallet, address: address })
+                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet, address, payer, })
             );
             if (response.payload) {
                 triggerSubmitCertificate(response.payload)
