@@ -197,20 +197,20 @@ const Certification = () => {
       dispatch(setBuildInfo());
     }
 
-
-    fetchData.get(
-        "/profile/current/subscriptions/active-features"
-    ).catch((errorObj: any) => {
-      handleErrorScenario(errorObj)
-      console.error('Failed to fetch active features:', errorObj);
-        return;
-    }).then((response: any) => {
-      if (response?.data) {
-        dispatch(setSubscribedFeatures(response.data));
-      } else {
-        dispatch(logout())
-      }
-    });
+    (async () => {
+      await fetchData.get(
+          "/profile/current/subscriptions/active-features"
+      ).catch((errorObj: any) => {
+        handleErrorScenario(errorObj)
+        console.error('Failed to fetch active features:', errorObj);
+      }).then((response: any) => {
+        if (response?.data) {
+          dispatch(setSubscribedFeatures(response.data));
+        } else {
+          dispatch(logout())
+        }
+      });
+    })()
       
 
     // Run on unmount
