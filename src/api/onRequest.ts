@@ -17,7 +17,10 @@ export function onRequest(config: AxiosRequestConfig) {
 }
 
 export function onRequestError(error: AxiosError) {
-  // Do something with request error
+  if (localStorage.getItem(LocalStorageKeys.isLoggedIn) !== "true") {
+    localStorage.clear();
+    window.location.reload();
+  }
   return Promise.reject(error);
 }
 
