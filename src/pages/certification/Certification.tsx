@@ -108,13 +108,19 @@ const Certification = () => {
         const response = await postData.post(
           "/run",
           data
-        );
+        ).catch(errorObj => {
+          handleErrorScenario(errorObj)
+          resetStates()
+          clearPersistentStates()
+        });
         /** For mock */
         // const response = await postData.get('static/data/run')
-        const runId = response.data.toString();
-        dispatch(setUuid(runId));
-        setCertificationUuid(runId);
-        setCommitHash(commit);
+        if (response?.data) {
+          const runId = response.data.toString();
+          dispatch(setUuid(runId));
+          setCertificationUuid(runId);
+          setCommitHash(commit);
+        }
       } catch (e) {
         handleErrorScenario(e);
         console.error('Failed:', e);
@@ -207,6 +213,8 @@ const Certification = () => {
         if (response?.data) {
           dispatch(setSubscribedFeatures(response.data));
         } else {
+          resetStates()
+          clearPersistentStates()
           dispatch(logout())
         }
       });
