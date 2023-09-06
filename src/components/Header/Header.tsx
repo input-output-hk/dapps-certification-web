@@ -29,11 +29,10 @@ const Header = () => {
   const [featureList, setFeatureList] = useState<String[]>([]);
 
   const [isLogged, setIsLoggedIn] = useLocalStorage(LocalStorageKeys.isLoggedIn, false);
-  const [userDetails, setUserDetails, removeUserDetails] = useLocalStorage(LocalStorageKeys.userDetails, null); 
+  const [, setUserDetails, removeUserDetails] = useLocalStorage(LocalStorageKeys.userDetails, null); 
   const [, setSubscriptions] = useLocalStorage(LocalStorageKeys.hasSubscriptions, false);
 
   useEffect(() => {
-    console.log(userDetails?.dapp)
     // check if address, walletName is in localStorage - login user without having to connect to wallet again
     const addressCache = localStorage.getItem(LocalStorageKeys.address);
     const walletNameCache = localStorage.getItem(LocalStorageKeys.walletName);
@@ -42,7 +41,7 @@ const Header = () => {
       (async () => {
         try {
           const enabledWallet = await window.cardano[walletNameCache].enable();
-          const response: any = await dispatch(
+          await dispatch(
             getProfileDetails({
               address: addressCache,
               wallet: enabledWallet,
@@ -50,9 +49,10 @@ const Header = () => {
             })
           ).catch((err: any) => {
               forceUserLogout()
-          });
-          setUserDetails(response.payload);
-          setIsLoggedIn(true);
+          }).then((response: any) => {
+            setUserDetails(response.payload);
+            setIsLoggedIn(true);
+          })
 
           enabledWallet.getNetworkId().then(async (data: number) => {
             dispatch(setNetwork(data));

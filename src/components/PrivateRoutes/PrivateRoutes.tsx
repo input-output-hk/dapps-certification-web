@@ -12,11 +12,12 @@ const PrivateRoutes = () => {
   const [userDetails] = useLocalStorage(LocalStorageKeys.userDetails, null);
 
   useEffect(() => {
+    const userDetailsLS: any = userDetails;
     if (isLoggedIn !== "true") {
       navigate("/"); // navigate to root link if unauthorized
     } else {
       // user profile details are empty --> prompt user to enter details
-      if (!userDetails || (!userDetails.dapp?.owner || !userDetails.dapp?.repo)) {
+      if (!userDetailsLS || (!userDetailsLS.dapp?.owner || !userDetailsLS.dapp?.repo)) {
         navigate("/profile");
       } else {
         navigate(location.pathname); // User details are available. Redirect to intended path
