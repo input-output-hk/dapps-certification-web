@@ -27,24 +27,13 @@ const Header = () => {
   const [pollForAddress, setPollForAddress] = useState(false);
   const [pollForNetwork, setPollForNetwork] = useState(false);
   const [featureList, setFeatureList] = useState<String[]>([]);
-  const [isLogged, setIsLoggedIn] = useLocalStorage(
-    LocalStorageKeys.isLoggedIn,
-    localStorage.getItem(LocalStorageKeys.isLoggedIn) === "true" ? true : false
-  );
 
-  const [, setUserDetails, removeUserDetails] = useLocalStorage(
-    LocalStorageKeys.userDetails,
-    localStorage.getItem(LocalStorageKeys.userDetails)
-      ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
-      : null
-  );
-
-  const [, setSubscriptions] = useLocalStorage(
-    LocalStorageKeys.hasSubscriptions,
-    localStorage.getItem(LocalStorageKeys.hasSubscriptions) === "true" ? true : false
-  );
+  const [isLogged, setIsLoggedIn] = useLocalStorage(LocalStorageKeys.isLoggedIn, false);
+  const [userDetails, setUserDetails, removeUserDetails] = useLocalStorage(LocalStorageKeys.userDetails, null); 
+  const [, setSubscriptions] = useLocalStorage(LocalStorageKeys.hasSubscriptions, false);
 
   useEffect(() => {
+    console.log(userDetails?.dapp)
     // check if address, walletName is in localStorage - login user without having to connect to wallet again
     const addressCache = localStorage.getItem(LocalStorageKeys.address);
     const walletNameCache = localStorage.getItem(LocalStorageKeys.walletName);
@@ -59,7 +48,9 @@ const Header = () => {
               wallet: enabledWallet,
               walletName: walletNameCache,
             })
-          );
+          ).catch((err: any) => {
+              forceUserLogout()
+          });
           setUserDetails(response.payload);
           setIsLoggedIn(true);
 

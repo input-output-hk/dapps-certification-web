@@ -27,6 +27,7 @@ import Loader from "components/Loader/Loader";
 import { setSubscribedFeatures } from "store/slices/auth.slice";
 import { LocalStorageKeys } from "constants/constants";
 import useLocalStorage from "hooks/useLocalStorage";
+import { getErrorMessage } from "utils/utils";
 
 const TIMEOFFSET = 1000;
 
@@ -47,7 +48,7 @@ const Certification = () => {
   const [githubLink, setGithubLink] = useState("");
   const [resultData, setResultData] = useState<any>({});
   const [unitTestSuccess, setUnitTestSuccess] = useState(true); // assuming unit tests will pass
-  const [errorToast, setErrorToast] = useState(false);
+  const [showError, setShowError] = useState("");
   const [runStatus, setRunStatus] = useState("");
   const [runState, setRunState] = useState("");
   const [refetchMin, setRefetchMin] = useState(5);
@@ -57,20 +58,9 @@ const Certification = () => {
   const [username, setUsername] = useState('');
   const [repoName, setRepository] = useState('');
   
-  const [certificationRunTime, , removeCertificationRunTime] = useLocalStorage(
-      LocalStorageKeys.certificationRunTime,
-      localStorage.getItem(LocalStorageKeys.certificationRunTime)
-    ? JSON.parse(localStorage.getItem(LocalStorageKeys.certificationRunTime)!)
-    : null
-  )
-  const [certificationUuid, setCertificationUuid, removeCertificationUuid] = useLocalStorage(
-      LocalStorageKeys.certificationUuid,
-      localStorage.getItem(LocalStorageKeys.certificationUuid) ? localStorage.getItem(LocalStorageKeys.certificationUuid) : ""
-  )
-
-  const [commitHash, setCommitHash, removeCommitHash] = useLocalStorage(
-    LocalStorageKeys.commit, 
-    localStorage.getItem(LocalStorageKeys.commit) || "")
+  const [certificationRunTime, , removeCertificationRunTime] = useLocalStorage(LocalStorageKeys.certificationRunTime, null)
+  const [certificationUuid, setCertificationUuid, removeCertificationUuid] = useLocalStorage(LocalStorageKeys.certificationUuid, "")
+  const [commitHash, setCommitHash, removeCommitHash] = useLocalStorage(LocalStorageKeys.commit, "")
 
   const resetStates = () => {
     setRunState("")
@@ -126,7 +116,7 @@ const Certification = () => {
         setCertificationUuid(runId);
         setCommitHash(commit);
       } catch (e) {
-        handleErrorScenario();
+        handleErrorScenario(e);
         console.error('Failed:', e);
       }
     };
@@ -161,13 +151,13 @@ const Certification = () => {
     }
   };
 
-  const handleErrorScenario = React.useCallback(() => {
+  const handleErrorScenario = React.useCallback((errorObj?: any) => {
     // show an api error toast
-    setErrorToast(true);
+    setShowError(getErrorMessage(errorObj));
     form.reset();
     const timeout = setTimeout(() => {
       clearTimeout(timeout)
-      setErrorToast(false);
+      setShowError("");
       // TBD - blur out of input fields
     }, 5000); // hide after 5 seconds
     setSubmitting(false);
@@ -207,16 +197,17 @@ const Certification = () => {
       dispatch(setBuildInfo());
     }
 
-    (async() => {
-      const features: any = await fetchData.get(
+
+    fetchData.get(
         "/profile/current/subscriptions/active-features"
-      );
-      if (features.error) {
-        console.error('Failed to fetch active features:', features.error);
+    ).catch((errorObj: any) => {
+      handleErrorScenario(errorObj)
+      console.error('Failed to fetch active features:', errorObj);
         return;
-      }
-      await dispatch(setSubscribedFeatures(features.data));
-    })()
+    }).then((response: any) => {
+      dispatch(setSubscribedFeatures(response.data));
+    });
+      
 
     // Run on unmount
     return () => {
@@ -343,7 +334,7 @@ const Certification = () => {
         </>
       )}
 
-      {errorToast ? <Toast /> : null}
+      {showError ? <Toast message={showError}/> : null}
     </>
   )
 };

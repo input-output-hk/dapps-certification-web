@@ -4,39 +4,97 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 function isValidJSON(text: string) {
   try {
     const result = JSON.parse(text);
-    return (typeof result === "object" && result !== null);
+    return typeof result === "object" && result !== null;
   } catch (e) {
     return false;
   }
 }
 
+// <any> - string | null | boolean + to fix type errors while using the value
 function useLocalStorage<T>(
   key: string,
-  initialValue: T
+  initialValue: any
 ): [T, Dispatch<SetStateAction<T>>, () => void] {
   // Get from local storage then
   // parse stored json or return initialValue
+
   const readValue = () => {
-    // Prevent build error "window is undefined" but keep keep working
     if (typeof window === "undefined") {
       return initialValue;
     }
-
+  
     try {
       const item = window.localStorage.getItem(key);
-      // eslint-disable-next-line no-nested-ternary
-      return item
-        ? isValidJSON(item)
-          ? JSON.parse(item)
-          : item
-        : initialValue;
+      if (!item) {
+        return initialValue;
+      }
+  
+      let parsedValue;
+      // Attempt to parse as JSON, fallback to the original string if it's not valid JSON
+      try {
+        parsedValue = JSON.parse(item); // handles valid JSON and boolean convertions
+      } catch {
+        parsedValue = item;
+      }
+
+      if (typeof parsedValue === 'string' && initialValue === null) {
+        // if the initialValue of key is supposed to be null, and the stored value is a string, 
+        // then it is wrongly set and need to be cleared
+        return initialValue;
+      } else if (parsedValue === null) { 
+        // in case of possible null after JSON.parse
+        return initialValue;
+      } else {
+        return parsedValue;
+      }
     } catch (error) {
       return initialValue;
     }
+
+    // // Prevent build error "window is undefined" but keep keep working
+    // if (typeof window === "undefined") {
+    //   return initialValue;
+    // }
+
+    // try {
+    //   const item = window.localStorage.getItem(key);
+    //   // eslint-disable-next-line no-nested-ternary
+
+    //   if (item) {
+    //     if (isValidJSON(item)) {
+    //       return JSON.parse(item)
+    //     } else if (typeof item === "string") {
+    //       if (item === "true" || item === "false") {
+    //         // to convert item string to equivalent boolean
+    //         return JSON.parse(item)
+    //       } else if (initialValue === "") {
+    //         return item;
+    //       } else if (initialValue === null) {
+    //         // if the initialValue of key is supposed to be null, and the stored value is a string, 
+    //         // then it is wrongly set and need to be cleared
+    //         return initialValue;
+    //       }
+    //     } else {
+    //       return initialValue;
+    //     }
+    //   } else {
+    //     return initialValue;
+    //   }
+
+      // return item
+      //   ? isValidJSON(item)
+      //     ? JSON.parse(item)
+      //     : item
+      //   : initialValue;
+    
+      // } catch (error) {
+    //   return initialValue;
+    // }
   };
 
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
+  // <any> - string | null | boolean | different JSON structures
   const [storedValue, setStoredValue] = useState<T>(readValue);
 
   // Return a wrapped version of useState's setter function that ...
@@ -52,21 +110,26 @@ function useLocalStorage<T>(
 
     try {
       // Allow value to be a function so we have the same API as useState
-      const newValue = value instanceof Function ? value(storedValue) : value;
+      const newValue: any = value instanceof Function ? value(storedValue) : value;
 
       // Save to local storage
       try {
-        const serializedValue = typeof newValue === 'string' ? newValue : JSON.stringify(newValue);
-        window.localStorage.setItem(key, serializedValue);
+        if (newValue !== "" || newValue !== null) {
+          const serializedValue = typeof newValue === "string" ? newValue : JSON.stringify(newValue);
+          window.localStorage.setItem(key, serializedValue);
+
+          // Save state
+          setStoredValue(newValue);
+
+          // We dispatch a custom event so every useLocalStorage hook are notified
+          window.dispatchEvent(new Event("local-storage"));
+        } else {
+          removeValue()
+        }
       } catch (error) {
         console.warn(`Error serializing localStorage key “${key}”:`, error);
       }
-      
-      // Save state
-      setStoredValue(newValue);
 
-      // We dispatch a custom event so every useLocalStorage hook are notified
-      window.dispatchEvent(new Event("local-storage"));
     } catch (error) {
       console.warn(`Error setting localStorage key “${key}”:`, error);
     }
