@@ -3,18 +3,44 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { StyledEngineProvider, ThemeProvider, CssBaseline } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import { ConfirmProvider } from "material-ui-confirm";
 
 import App from "./app/App";
 import reportWebVitals from "./reportWebVitals";
 import store from "store/store";
-import { theme } from "styles/theme";
 
-import "./index.scss";
+const rootElement = document.getElementById("root") as HTMLElement;
+const root = ReactDOM.createRoot(rootElement);
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+export const theme = createTheme({
+  typography: {
+    fontFamily: "'Montserrat', sans-serif",
+  },
+  components: {
+    MuiPopover: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiPopper: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiDialog: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+    MuiModal: {
+      defaultProps: {
+        container: rootElement,
+      },
+    },
+  },
+});
+
 root.render(
   <BrowserRouter basename={process.env.PUBLIC_URL}>
     <StyledEngineProvider injectFirst>

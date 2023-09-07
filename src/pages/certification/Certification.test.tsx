@@ -66,6 +66,8 @@ describe("Certification component", () => {
         repoAccess: undefined as any,
         price: undefined as any,
         tiers: undefined as any,
+        session: undefined as any,
+        registration: undefined as any,
       })
     );
 
@@ -107,6 +109,8 @@ describe("Certification component", () => {
         repoAccess: undefined as any,
         price: undefined as any,
         tiers: undefined as any,
+        session: undefined as any,
+        registration: undefined as any,
       })
     );
 
@@ -150,6 +154,8 @@ describe("Certification component", () => {
         repoAccess: undefined as any,
         price: undefined as any,
         tiers: undefined as any,
+        session: undefined as any,
+        registration: undefined as any,
       })
     );
 

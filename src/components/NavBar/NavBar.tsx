@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import { useBgStyles, useNavLinkStyles, useTextStyles } from "styles/style";
 
 import "./NavBar.scss";
 import { Typography } from "@mui/material";
@@ -11,16 +10,10 @@ const NavBar = () => {
   const location = useLocation();
   const uuid = useId();
 
-  const bgColors = useBgStyles();
-  const textColors = useTextStyles();
-  const navLink = useNavLinkStyles();
-
   return (
     <div
       className={classNames(
-        "navbar",
-        bgColors.classes["bg-gray"],
-        textColors.classes["text-white"]
+        "navbar"
       )}
     >
       <Typography
@@ -31,7 +24,6 @@ const NavBar = () => {
           height: 80,
           lineHeight: "80px",
         }}
-        className={bgColors.classes["bg-purple-dark"]}
       >
         Certifyr.io
       </Typography>
@@ -40,7 +32,7 @@ const NavBar = () => {
         <Link
           key={`${uuid}-${index}`}
           to={menu.path}
-          className={classNames("navbar-link", navLink.classes["navLink-light"], {
+          className={classNames("navbar-link", {
             active: location.pathname === menu.path,
           })}
         >

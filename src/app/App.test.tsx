@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Link, MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
-import Landing from "pages/landing/Landing";
+import Landing from "pages/landing";
 
 const Header = () => {
   return (

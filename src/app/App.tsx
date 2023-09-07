@@ -1,12 +1,9 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 
-import "./App.scss";
-
-import PrivateRoutes from "components/PrivateRoutes/PrivateRoutes";
-import Loader from "components/Loader/Loader";
-
-const Landing = lazy(() => import("../pages/landing/Landing"));
+const Session = lazy(() => import("../pages/session"));
+const Landing = lazy(() => import("../pages/landing"));
 const Home = lazy(() => import("../pages/home/Home"));
 const TestHistory = lazy(() => import("../pages/testHistory/TestHistory"));
 const UserProfile = lazy(() => import("../pages/userProfile/UserProfile"));
@@ -18,11 +15,11 @@ const SubscriptionHistory = lazy(() => import("../pages/subscription/history/Sub
 
 const App = () => {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
       <Routes>
-        <Route index element={<Landing />} />
-        <Route path="/app" element={<PrivateRoutes />}>
-          <Route index element={<Home />} />
+        <Route path="/" element={<Session />}>
+          <Route index element={<Landing />} />
+          <Route path="home" element={<Home />} />
           <Route path="subscription" element={<Subscription />}>
             <Route index element={<SubscriptionContent />} />  
             <Route path="payment" element={<Payment />} />
