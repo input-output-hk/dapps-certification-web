@@ -26,7 +26,11 @@ module.exports = {
           title: "#5e5d75"
         },
         slate: {
-          contentBg: "#f0f0f7"
+          contentBg: "#f0f0f7",
+          table: {
+            head: "#f5f6fa",
+            headText: "#b0b3bf",
+          }
         }
       },
       borderRadius: {
