@@ -1,5 +1,5 @@
 export const LocalStorageKeys = {
-    profile: "profile",
+  profile: "profile",
   isLoggedIn: "isLoggedIn",
   userDetails: "userDetails",
   walletName: "walletName",
