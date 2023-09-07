@@ -157,44 +157,65 @@ const CreateCertificate = () => {
             triggerSubmitCertificate()
         }
     }
-
+    
+    const CertificateButton = () => {
+        if (certified || disableCertify) return null;
+        return (
+            <Button
+                displayStyle="gradient"
+                onClick={() => triggerGetCertificate()}
+                buttonLabel={"Purchase a Certificate" + (certificationPrice ? " (" + (certificationPrice / 1000000).toString() + " ADA)" : "")}
+                showLoader={certifying}
+            />
+        );
+    }
+    
+    const TransactionModal = () => {
+        if (!transactionId) return null;
+        return (
+            <Modal open={openModal} title="Certification Successful" onCloseModal={onCloseModal}>
+                <span>
+                    View your certification broadcasted on-chain&nbsp;
+                    <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${transactionId}`}>here</a>!
+                </span>
+            </Modal>
+        );
+    }
+    
+    const MetadataModal = () => {
+        return (
+            <Modal
+                open={openMetadataModal}
+                title="Certification Metadata"
+                className="certification-metadata"
+                onCloseModal={()=> {}}
+                fullWidth
+            >
+                <CertificationMetadata uuid={uuid} onCloseForm={onCloseMetadataForm}/>
+            </Modal>
+        );
+    }
+    
     return (
         <>
-            {subscribedFeatures?.indexOf("l2-upload-report") === -1 ? <>
-                {certified || disableCertify ? null : (<Button
-                    displayStyle="gradient"
-                    onClick={() => triggerGetCertificate()}
-                    buttonLabel={"Purchase a Certificate" + (certificationPrice ? " (" + (certificationPrice / 1000000).toString() + " ADA)" : "")}
-                    showLoader={certifying}
-                />)}
-                {transactionId ? (
-                    <Modal open={openModal} title="Certification Successful" onCloseModal={onCloseModal}>
-                        <span>
-                            View your certification broadcasted on-chain&nbsp;
-                            <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${transactionId}`}>here</a>!
-                        </span>
-                    </Modal>
-                ) : null}
-            </> : <>
-                <Button
-                    displayStyle="gradient"
-                    onClick={() => setMetadataModalStatus(true)}
-                    buttonLabel={"Review Certification Metadata"}
-                    showLoader={certifying}
-                />
-                <Modal
-                    open={openMetadataModal}
-                    title="Certification Metadata"
-                    className="certification-metadata"
-                    onCloseModal={()=> {}}
-                    fullWidth
-                >
-                    <CertificationMetadata uuid={uuid} onCloseForm={onCloseMetadataForm}/>
-                </Modal>
-            </>}
-
+            {subscribedFeatures?.indexOf("l2-upload-report") === -1 ? 
+                <>
+                    <CertificateButton />
+                    <TransactionModal />
+                </> : 
+                <>
+                    <Button
+                        displayStyle="gradient"
+                        onClick={() => setMetadataModalStatus(true)}
+                        buttonLabel={"Review Certification Metadata"}
+                        showLoader={certifying}
+                    />
+                    <MetadataModal />
+                </>
+            }
             {showError ? <Toast message={showError} /> : null}
-        </>);
+        </>
+    );
 }
 
 export default CreateCertificate;

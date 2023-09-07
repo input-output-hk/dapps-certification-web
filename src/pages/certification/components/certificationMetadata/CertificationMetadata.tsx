@@ -102,13 +102,12 @@ const CertificationMetadata: React.FC<{
           clearTimeout(timeout);
           setShowError("");
         }, 5000);
+        setSubmitting(false);
       });
-      if (!showError) {
-        setShowError("");
-        setOpenModal(true);
-        exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + uuid + ".json");
-        exportObjectToJsonFile(response.data.onchain, "On-Chain_" + uuid + ".json");
-      }
+    setShowError("");
+    setOpenModal(true);
+    exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + uuid + ".json");
+    exportObjectToJsonFile(response.data.onchain, "On-Chain_" + uuid + ".json");
     setSubmitting(false);
   };
 
