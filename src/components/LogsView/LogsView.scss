@@ -1,9 +1,14 @@
 @import "styles/colors.scss";
 
+#logContainer {
+    margin: 40px 0;
+    position: relative;
+}
 #viewLogsBtn {
     margin-right: 1rem;
 }
 .log-information {
+    position: absolute;
     min-height: 200px;
     max-height: calc(100vh - 270px);
     overflow-y: scroll;

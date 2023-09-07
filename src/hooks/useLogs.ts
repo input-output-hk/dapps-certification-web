@@ -15,7 +15,7 @@ export const useLogs = (
     uuid: string,
     testEnded: boolean,
     storeLogState: boolean,
-    handleErrorScenario: () => void
+    handleErrorScenario?: () => void
 ) => {
     const dispatch = useDispatch()
     const [logInfo, setLogInfo] = useState<Log[]>([])
@@ -120,7 +120,7 @@ export const useLogs = (
                 dispatch(setBuildInfo())
             }
         } catch(e) {
-            handleErrorScenario();
+            handleErrorScenario && handleErrorScenario();
             console.log(e);
         } finally{
             setFetchingLogs(false)

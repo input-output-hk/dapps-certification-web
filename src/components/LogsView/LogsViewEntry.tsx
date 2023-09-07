@@ -1,8 +1,8 @@
 import React, { FC, memo } from "react";
 
-import "./InformationTable.scss";
+import "./LogsView.scss";
 
-const InformationTableEntry: FC<{time: any, log: string}> = ({ time, log }) => {
+const LogsViewEntry: FC<{time: any, log: string}> = ({ time, log }) => {
     return (
         <>
             <div className="log">
@@ -12,4 +12,4 @@ const InformationTableEntry: FC<{time: any, log: string}> = ({ time, log }) => {
     )
 };
 
-export default memo(InformationTableEntry);
+export default memo(LogsViewEntry);

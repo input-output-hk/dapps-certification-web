@@ -1,22 +1,19 @@
+import { useLogs } from "hooks/useLogs";
 import React, { FC, useState, useEffect, useRef } from "react";
 
-import "./InformationTable.scss";
-import InformationTableEntry from "./InformationTableEntry";
+import "./LogsView.scss";
+import LogsViewEntry from "./LogsViewEntry";
 
-const InformationTable: FC<{logs: any, }> = ({ logs, }) => {
+const LogsView: FC<{ runId: string, endPolling?: boolean, oneTime?: boolean, open?: boolean }> = ({ runId, endPolling = false, oneTime = false, open = false }) => {
     const [showLogs, setShowLogs] = useState(false);
     const bottomRef = useRef<HTMLDivElement>(null);
     const logContentRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({behavior: 'smooth'}); // scroll to bottom 
-    }, [logs])
 
     const showLogView = () => {
         setShowLogs(true);
         const timeout = setTimeout(() => {
             clearTimeout(timeout)
-            bottomRef.current?.scrollIntoView({behavior: 'smooth'}); // scroll to bottom 
+            bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); // scroll to bottom 
         }, 2);
     }
 
@@ -24,22 +21,38 @@ const InformationTable: FC<{logs: any, }> = ({ logs, }) => {
         setShowLogs(false)
     }
 
+
+    const { logInfo: logs } = useLogs(
+        runId,
+        oneTime || endPolling,
+        !oneTime
+    )
+
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); // scroll to bottom 
+    }, [logs])
+
+    useEffect(() => {
+        open && showLogView()
+    }, [open])
+
     return (
         <>
             <div id="logContainer">
-                <span 
+                <span
                     id="viewLogsBtn"
-                    className={`link text-right ${showLogs ? "hidden" : ""}`} 
+                    className={`link ${showLogs ? "hidden" : ""}`}
                     onClick={showLogView}>
-                        View logs
+                    View logs
                 </span>
                 <section className={`log-information ${showLogs ? "" : "hidden"}`} data-testid="log-information">
                     <div className="log-header">
                         <h6>Logs</h6>
-                        <span 
+                        <span
                             className="minimize-btn text-right"
                             onClick={hideLogView}>
-                                <i>-</i>
+                            <i>-</i>
                         </span>
                     </div>
                     <div className="log-content" ref={logContentRef}>
@@ -54,7 +67,7 @@ const InformationTable: FC<{logs: any, }> = ({ logs, }) => {
                                 if (attr?.fields?.hasOwnProperty('chunk-data')) {
                                     logData = attr['fields']['chunk-data']
                                 }
-                            } catch(e) {
+                            } catch (e) {
                                 // do nothing
                                 if (typeof item.Text == 'string' && item.Text.length) {
                                     logData = item.Text
@@ -62,7 +75,7 @@ const InformationTable: FC<{logs: any, }> = ({ logs, }) => {
                             }
                             logData = !logData.length ? item.Text : logData
                             return logData.length ? (
-                                <InformationTableEntry key={index} time={item.Time} log={logData} />
+                                <LogsViewEntry key={index} time={item.Time} log={logData} />
                             ) : null
                         })}
                         <div className="empty-element" ref={bottomRef}></div>
@@ -73,4 +86,4 @@ const InformationTable: FC<{logs: any, }> = ({ logs, }) => {
     );
 };
 
-export default InformationTable;
+export default LogsView;

@@ -28,11 +28,11 @@ const TimelineItem: FC<ITimelineItem> = ({
     return "/images/" + state + ".svg";
   };
 
-  const renderProgressPercentage = () => {
-    if (state === "running" && status === "certifying") {
-      return <span className="progress-percentage">{progress}%</span>
-    }
-  };
+  // const renderProgressPercentage = () => {
+  //   if (state === "running" && status === "certifying") {
+  //     return <span className="progress-percentage">{progress}%</span>
+  //   }
+  // };
 
   return (
     <li
@@ -46,7 +46,7 @@ const TimelineItem: FC<ITimelineItem> = ({
         src={getURLFor(state)}
         alt={state}
       />
-      {renderProgressPercentage()}
+      {/* {renderProgressPercentage()} */}
       <span className="text" data-testid={text}>
         {text}
       </span>

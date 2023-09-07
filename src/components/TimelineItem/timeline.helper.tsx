@@ -58,23 +58,19 @@ export const processTimeLineConfig = (
       const currentState =
         status === "finished" ? "passed" : state || "running";
       let returnObj: any = { ...item, state: currentState };
-      if (
-        status === "certifying" &&
-        currentState === "running" &&
-        res.data.progress &&
-        res.data.plan
-      ) {
-        const plannedTasksCount = getPlannedCertificationTaskCount(res.data.plan);
-        if (plannedTasksCount > 0) {
-          returnObj["progress"] = Math.trunc(
-            (res.data.progress["finished-tasks"].length /
-              getPlannedCertificationTaskCount(res.data.plan)) *
-              100
-            );
-        } else {
-          returnObj["progress"] = 0;
-        }
-      }
+      // if (
+      //   status === "certifying" &&
+      //   currentState === "running" &&
+      //   res.data.progress &&
+      //   res.data.plan
+      // ) {
+      //   const plannedTasksCount = getPlannedCertificationTaskCount(res.data.plan);
+      //   if (plannedTasksCount > 0) {
+      //     returnObj["progress"] = Math.trunc((res.data.progress["finished-tasks"].length / plannedTasksCount) * 100);
+      //   } else {
+      //     returnObj["progress"] = 0;
+      //   }
+      // }
       return returnObj;
     }
     // Set the previously executed states as passed

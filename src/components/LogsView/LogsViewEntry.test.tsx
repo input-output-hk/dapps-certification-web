@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
-import InformationTableEntry from "./InformationTableEntry";
+import LogsViewEntry from "./LogsViewEntry";
 
-describe("InformationTableEntry", () => {
+describe("LogsViewEntry", () => {
   test("renders the time and log correctly", () => {
     const time = "12:00 PM";
     const log = "Sample log";
 
     render(
-      <InformationTableEntry time={time} log={log} />
+      <LogsViewEntry time={time} log={log} />
     );
 
     const timeElement = screen.getByText(time);

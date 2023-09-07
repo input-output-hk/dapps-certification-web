@@ -15,7 +15,7 @@ import { processTimeLineConfig } from "components/TimelineItem/timeline.helper";
 import { isAnyTaskFailure } from "./Certification.helper";
 import { useDelayedApi } from "hooks/useDelayedApi";
 import Toast from "components/Toast/Toast";
-import InformationTable from "components/InformationTable/InformationTable";
+import LogsView from "components/LogsView/LogsView";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { clearUuid, setUuid } from "./slices/certification.slice";
@@ -27,6 +27,7 @@ import Loader from "components/Loader/Loader";
 import { logout, setSubscribedFeatures } from "store/slices/auth.slice";
 import { LocalStorageKeys } from "constants/constants";
 import useLocalStorage from "hooks/useLocalStorage";
+import TimelineView from "./components/TimelineView/TimelineView";
 import { getErrorMessage } from "utils/utils";
 
 const TIMEOFFSET = 1000;
@@ -129,33 +130,33 @@ const Certification = () => {
     triggerAPI();
   };
 
-  const triggerFetchRunStatus = async () => {
-    let config = timelineConfig;
-    try {
-      const res = await fetchData.get("/run/" + uuid);
-      /** For mock */
-      // const res = await fetchData.get("static/data/certifying.json")
-      const status = res.data.status;
-      const state = res.data.hasOwnProperty("state") ? res.data.state : "";
-      setRunStatus(status);
-      setRunState(state);
-      setFetchRunStatus(state === "running" || state === "passed");
-      config = processTimeLineConfig(config, state, status, res);
-      if (status === "finished") {
-        // navigate to result page
-        clearPersistentStates();
-        navigate("/report/" + uuid, {state: { repoUrl: githubLink, certifiable: true }});
-      }
-      if (state === "failed" || status === "finished") {
-        setSubmitting(false);
-        clearPersistentStates();
-      }
-      setTimelineConfig(config);
-    } catch (e) {
-      handleErrorScenario();
-      console.error('Failed:', e);
-    }
-  };
+  // const triggerFetchRunStatus = async () => {
+  //   let config = timelineConfig;
+  //   try {
+  //     const res = await fetchData.get("/run/" + uuid);
+  //     /** For mock */
+  //     // const res = await fetchData.get("static/data/certifying.json")
+  //     const status = res.data.status;
+  //     const state = res.data.hasOwnProperty("state") ? res.data.state : "";
+  //     setRunStatus(status);
+  //     setRunState(state);
+  //     setFetchRunStatus(state === "running" || state === "passed");
+  //     config = processTimeLineConfig(config, state, status, res);
+  //     if (status === "finished") {
+  //       // navigate to result page
+  //       clearPersistentStates();
+  //       navigate("/report/" + uuid, {state: { repoUrl: githubLink, certifiable: true }});
+  //     }
+  //     if (state === "failed" || status === "finished") {
+  //       setSubmitting(false);
+  //       clearPersistentStates();
+  //     }
+  //     setTimelineConfig(config);
+  //   } catch (e) {
+  //     handleErrorScenario();
+  //     console.error('Failed:', e);
+  //   }
+  // };
 
   const handleErrorScenario = React.useCallback((errorObj?: any) => {
     // show an api error toast
@@ -173,13 +174,18 @@ const Certification = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[form])
 
-  const abortRun = () => {
-    confirm({ title: "", description: "Are sure you want to abort this run!" })
-      .then(async () => {
-        await dispatch(deleteTestHistoryData({ url: "/run/" + uuid + "?delete=true" }));
-        resetStates()
-        clearPersistentStates();
-      }).catch(() => { });
+  // const abortRun = () => {
+  //   confirm({ title: "", description: "Are sure you want to abort this run!" })
+  //     .then(async () => {
+  //       await dispatch(deleteTestHistoryData({ url: "/run/" + uuid + "?delete=true" }));
+  //       resetStates()
+  //       clearPersistentStates();
+  //     }).catch(() => { });
+  // }
+
+  const onTestRunAbort = () => {
+    resetStates()
+    clearPersistentStates();
   }
 
   // Populate certification states to resume certification
@@ -228,12 +234,12 @@ const Certification = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (uuid.length) {
-      triggerFetchRunStatus();
-    }
-    // eslint-disable-next-line
-  }, [uuid]);
+  // useEffect(() => {
+  //   if (uuid.length) {
+  //     triggerFetchRunStatus();
+  //   }
+  //   // eslint-disable-next-line
+  // }, [uuid]);
 
   useEffect(() => {
     if (userDetails?.dapp?.owner) {
@@ -244,35 +250,35 @@ const Certification = () => {
     }
   }, [userDetails]);
 
-  useEffect(() => {
-    runStatus === "certifying" ? setRefetchMin(2) : setRefetchMin(5);
-    if (
-      runStatus === "certifying" ||
-      runStatus === "building" ||
-      runStatus === "preparing" ||
-      runStatus === "queued" ||
-      (runStatus === "finished" && runState === "running")
-    ) {
-      setApiFetching(true);
-    } else {
-      setApiFetching(false);
-    }
-  }, [runStatus, runState]);
+  // useEffect(() => {
+  //   runStatus === "certifying" ? setRefetchMin(2) : setRefetchMin(5);
+  //   if (
+  //     runStatus === "certifying" ||
+  //     runStatus === "building" ||
+  //     runStatus === "preparing" ||
+  //     runStatus === "queued" ||
+  //     (runStatus === "finished" && runState === "running")
+  //   ) {
+  //     setApiFetching(true);
+  //   } else {
+  //     setApiFetching(false);
+  //   }
+  // }, [runStatus, runState]);
 
-  useDelayedApi(
-    async () => {
-      setFetchRunStatus(false); // to clear timeout until api response
-      triggerFetchRunStatus();
-    },
-    refetchMin * TIMEOFFSET, // delay in milliseconds
-    fetchRunStatus // set to false to stop polling
-  );
-  const {logInfo} = useLogs(
-      uuid,
-      runStatus === "finished" || runState === "failed",
-      true,
-      handleErrorScenario
-  )
+  // useDelayedApi(
+  //   async () => {
+  //     setFetchRunStatus(false); // to clear timeout until api response
+  //     triggerFetchRunStatus();
+  //   },
+  //   refetchMin * TIMEOFFSET, // delay in milliseconds
+  //   fetchRunStatus // set to false to stop polling
+  // );
+  // const {logInfo} = useLogs(
+  //     uuid,
+  //     runStatus === "finished" || runState === "failed",
+  //     true,
+  //     handleErrorScenario
+  // )
 
   // if not logged in, prevent loader as well
   if (!isLoggedIn) {
@@ -310,27 +316,31 @@ const Certification = () => {
               <Button
                 type="submit"
                 buttonLabel={"Start Testing"}
-                showLoader={
-                  submitting &&
-                  (runStatus !== "finished" && runState !== "failed")
-                }
+                // showLoader={
+                //   submitting &&
+                //   (runStatus !== "finished" && runState !== "failed")
+                // }
                 disabled={!form.formState.isValid || submitting}
                 onClick={(_) => setFormSubmitted(true)}
               />
-              {(apiFetching && submitting) && (
+              {/* {(apiFetching && submitting) && (
                 <Button
                   type="button"
                   displayStyle="primary-outline"
                   buttonLabel="Abort Run"
                   onClick={(_) => abortRun()}
                 />
-              )}
+              )} */}
             </div>
           </Form>
         </div>
       </div>
       }
-      {formSubmitted && (
+
+      {/*  */}
+      <TimelineView uuid={uuid} onAbort={onTestRunAbort} triggerFormReset={onTestRunAbort}/>
+      
+      {/* {formSubmitted && (
         <>
           <div id="resultContainer" data-testid="resultContainer">
             <Timeline
@@ -339,12 +349,14 @@ const Certification = () => {
               hasFailedTasks={isAnyTaskFailure(resultData)}
             />
           </div>
+
+          <TimelineView uuid={uuid} onAbort={onTestRunAbort} />
           
-          {/* To show 'View Logs' always  */}
-          <InformationTable logs={logInfo} />
+          To show 'View Logs' always 
+          <LogsView runId={uuid} refetch={(runStatus === "finished" || runState === "failed")} />
           
         </>
-      )}
+      )} */}
 
       {showError ? <Toast message={showError}/> : null}
     </>

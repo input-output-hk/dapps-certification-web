@@ -10,7 +10,7 @@ import FileCoverageContainer from "../components/FileCoverageContainer";
 import Button from "components/Button/Button";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import Toast from "components/Toast/Toast";
-import InformationTable from "components/InformationTable/InformationTable";
+import LogsView from "components/LogsView/LogsView";
 import Loader from "components/Loader/Loader";
 import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
@@ -76,12 +76,12 @@ const CertificationResult = () => {
     setTimelineConfig(TIMELINE_CONFIG);
   }, []);
 
-  const { logInfo } = useLogs(
-    param.uuid as string,
-    true,
-    false,
-    handleErrorScenario
-  );
+  // const { logInfo } = useLogs(
+  //   param.uuid as string,
+  //   true,
+  //   false,
+  //   handleErrorScenario
+  // );
   
   // Show loader until data is fetched
   if (!resultData || !Object.keys(resultData).length) {
@@ -115,7 +115,7 @@ const CertificationResult = () => {
           />
         </div>
         {/* To show 'View Logs' always  */}
-        <InformationTable logs={logInfo} />
+        <LogsView runId={param.uuid as string} oneTime={true} />
       </div>
       {unitTestSuccess === false && Object.keys(resultData).length ? (
         <>
