@@ -43,7 +43,7 @@ const UserProfile = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const githubAccessCode = searchParams.get("code");
 
-  const [, setUserDetails] = useLocalStorage(
+  const [, setUserDetails, removeUserDetails] = useLocalStorage(
     LocalStorageKeys.userDetails,
     localStorage.getItem(LocalStorageKeys.userDetails)
       ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
@@ -161,7 +161,7 @@ const UserProfile = () => {
         }
         setShowError(errorMsg);
         const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000)
-        setUserDetails({ dapp: null });        
+        removeUserDetails();        
       })
     };
     submitProfile();

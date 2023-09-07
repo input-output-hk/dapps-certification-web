@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import tz from "dayjs/plugin/timezone";
+import { useNavigate } from "react-router";
 
 import { fetchData } from "api/api";
 
@@ -51,6 +52,7 @@ const TestHistory = () => {
   const certificationData: IRunCertifications = {};
   const reportData: IRunReport = {};
   const timeZone = dayjs.tz.guess()
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTableData();
@@ -297,13 +299,13 @@ const TestHistory = () => {
             <Button
               size="small"
               type="submit"
-              buttonLabel={`${notCertified ? 'Download' : 'View'} Report`}
+              buttonLabel="View Report"
               onClick={() => {
-                viewReport(props.row.original.runId);
+                navigate("/report/" + props.row.original.runId, {state: { repoUrl: props.row.original.repoUrl, certifiable: notCertified }});
               }}
             />
           );
-        }
+            }
       },
     },
     {

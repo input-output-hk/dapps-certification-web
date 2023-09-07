@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "store/store";
 
@@ -30,9 +30,8 @@ interface Certificate {
     "transactionId": string;
 }
 
-const CreateCertificate = () => {
+const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { uuid } = useAppSelector((state) => state.certification);
     const { address, wallet,userDetails:{address: payer} } = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
