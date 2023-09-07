@@ -39,10 +39,9 @@ const CertificationMetadata: React.FC<{
   };
 
   const transformDappScripts = (scripts: []) => {
-    const formattedScripts: IScriptObject[] = [];
-    scripts.forEach((script: any) => {
+    return scripts.map((script: any) => {
       const { scriptHash, contractAddress, ...rest } = script;
-      formattedScripts.push({
+      return({
         scriptHash: scriptHash,
         contractAddress: contractAddress,
         smartContractInfo: {
@@ -50,8 +49,8 @@ const CertificationMetadata: React.FC<{
         },
       });
     });
-    return formattedScripts;
   };
+
   const formHandler = async (formData: any) => {
     const {
       subject,
@@ -103,13 +102,13 @@ const CertificationMetadata: React.FC<{
           clearTimeout(timeout);
           setShowError("");
         }, 5000);
-        setSubmitting(false);
       });
-
-    setShowError("");
-    setOpenModal(true);
-    exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + uuid + ".json");
-    exportObjectToJsonFile(response.data.onchain, "On-Chain_" + uuid + ".json");
+      if (!showError) {
+        setShowError("");
+        setOpenModal(true);
+        exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + uuid + ".json");
+        exportObjectToJsonFile(response.data.onchain, "On-Chain_" + uuid + ".json");
+      }
     setSubmitting(false);
   };
 

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import Button from "components/Button/Button";
 import { Form } from "compositions/Form/Form";
 import { Input } from "compositions/Form/components/Input";
@@ -79,12 +79,6 @@ const CertificationForm: React.FC<{
     name: fieldArrayName,
   });
 
-  useEffect(() => {
-    // to be called only once initially
-    addNewDappScript();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const addNewDappScript = () => {
     append(
       {
@@ -94,6 +88,12 @@ const CertificationForm: React.FC<{
       { shouldFocus: true }
     );
   };
+
+  useEffect(() => {
+    // to be called only once initially
+    addNewDappScript();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const initializeFormState = () => {
     form.clearErrors(); // clear form errors
@@ -106,7 +106,7 @@ const CertificationForm: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
-  const shouldDisableAddScriptButton = () => {
+  const shouldDisableAddScriptButton = useCallback(() => {
     return (
       !!form?.formState.errors?.[fieldArrayName] || // disable button if errors associated with dynamic form exists
       form
@@ -116,7 +116,7 @@ const CertificationForm: React.FC<{
             !field?.scriptHash || !field?.contractAddress
         )
     ); // prevent addition of new script boxes if the required field is empty
-  };
+  }, [form]);
 
   return (
     <Form form={form} onSubmit={onSubmit}>
