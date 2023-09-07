@@ -3,7 +3,7 @@ import { fetchData } from "api/api";
 import Button from "components/Button/Button";
 import Modal from "components/Modal/Modal";
 import Toast from "components/Toast/Toast";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
@@ -17,7 +17,9 @@ function Payment() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { address, wallet } = useAppSelector((state) => state.auth);
+  const { address, wallet,userDetails: {address: payer} } = useAppSelector((state) => {
+    return state.auth
+  });
   const { error } = useAppSelector((state) => state.walletTransaction);
   const [transactionId, setTransactionId] = useState("");
   const [showError, setShowError] = useState("");
@@ -81,7 +83,7 @@ function Payment() {
 
   const triggerTransactionFromWallet = async (fee_in_lovelace: BigNum) => {
     const response = await dispatch(
-      payFromWallet({ fee: fee_in_lovelace, wallet: wallet, address: address })
+      payFromWallet({ fee: fee_in_lovelace, wallet, address, payer })
     );
     if (response.payload) {
       setTransactionId(response.payload);
@@ -93,7 +95,7 @@ function Payment() {
 
   const fetchCurrentSubscription = (isAfterPayment?: boolean) => {
     fetchData.get("/profile/current/subscriptions").then((response: {data: Subscription[]}) => {
-      const current: Subscription | undefined = response.data.find((item: Subscription) => item.id === currentSubscriptionId) 
+      const current: Subscription | undefined = response.data.find((item: Subscription) => item.id === currentSubscriptionId)
       if (current && current.tierId === state.id) {
         if (current.status === 'pending') {
           if (isAfterPayment) {
@@ -110,7 +112,7 @@ function Payment() {
           // payment retrieved from balance
           setProcessing(false);
           setOpenModal(true);
-        } 
+        }
       }
     }).catch(handleError);
   }
@@ -131,7 +133,7 @@ function Payment() {
       navigate(-1)
     }
   })
-  
+
   const renderPage = () => {
     return (
     <div className="payment-container">

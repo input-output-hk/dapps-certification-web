@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Address } from "@emurgo/cardano-serialization-lib-browser";
+import { Address,BaseAddress,RewardAddress } from "@emurgo/cardano-serialization-lib-browser";
 import { useAppDispatch } from "store/store";
 import { getProfileDetails, logout, setNetwork } from "store/slices/auth.slice";
 
@@ -20,13 +20,38 @@ declare global {
     cardano: any;
   }
 }
+
+// hex string
+export type StakeAddressHex = string;
+export type StakeAddressBech32 = `stake${string}`;
+export type ChangeAddressBech32 = `addr${string}`;
+
+export const getAddresses = async (wallet: any): Promise<[StakeAddressHex, StakeAddressBech32,ChangeAddressBech32]> => {
+  const networkId = await wallet.getNetworkId();
+  const changeAddrHex = await wallet.getChangeAddress();
+
+  // derive the stake address from the change address to be sure we are getting
+  // the stake address of the currently active account.
+  const changeAddress = Address.from_bytes( Buffer.from(changeAddrHex, 'hex') );
+  const baseChangeAddress = BaseAddress.from_address(changeAddress);
+  if(!baseChangeAddress) throw new Error(`Could not derive base address from change address: ${changeAddrHex}`)
+  const stakeCredential = baseChangeAddress?.stake_cred();
+  if(!stakeCredential) throw new Error(`Could not derive stake credential from change address: ${changeAddrHex}`)
+  const stakeAddress = RewardAddress.new(networkId, stakeCredential).to_address();
+
+  return [
+    stakeAddress.to_hex(),
+    stakeAddress.to_bech32() as StakeAddressBech32,
+    baseChangeAddress.to_address().to_bech32() as ChangeAddressBech32
+  ];
+}
 let CardanoNS = window.cardano;
 
 const ConnectWallet = () => {
   const dispatch = useAppDispatch();
   const [wallet, setWallet] = useState(null);
   const [walletName, setWalletName] = useState("");
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(null as ChangeAddressBech32 | null)
   const [isOpen, setIsOpen] = useState(false);
   const [errorToast, setErrorToast] = useState<{display: boolean; statusText?: string; message?: string; showRetry?: boolean}>({display: false});
   const [walletLoading, setWalletLoading] = useState(false);
@@ -53,11 +78,8 @@ const ConnectWallet = () => {
         setWallet(enabledWallet);
         setWalletName(walletName);
         if (enabledWallet) {
-          const response = await enabledWallet.getChangeAddress();
-          const walletAddr = Address.from_bytes(
-            Buffer.from(response, "hex")
-          ).to_bech32();
-          initiatePrivateWalletSignature(enabledWallet, walletAddr, response);
+          const [stakeAddrHex, stakeAddrBech32,changeAddress] = await getAddresses(enabledWallet);
+          initiatePrivateWalletSignature(enabledWallet,  stakeAddrBech32, stakeAddrHex,changeAddress);
         }
       });
     } catch (e) {
@@ -68,13 +90,13 @@ const ConnectWallet = () => {
   const handleError = (error: any) => {
     if (error.info) {
       setErrorToast({
-          display: true, 
-          message: error.info, 
+          display: true,
+          message: error.info,
           showRetry: error.code === 3})
     } else if (error.response) {
         setErrorToast({
-            display: true, 
-            statusText: error.response.statusText, 
+            display: true,
+            statusText: error.response.statusText,
             message: error.response.data || undefined,
             showRetry: error.status === 403
         })
@@ -94,19 +116,24 @@ const ConnectWallet = () => {
     dispatch(logout())
   }
 
-  const initiatePrivateWalletSignature = async (currentWallet: any, walletAddr_bech32: any, walletAddr: string) => {
+  const initiatePrivateWalletSignature = async (
+    currentWallet: any,
+    stakeAddressBech32: StakeAddressBech32,
+    stakeAddressHex: StakeAddressHex,
+    changeAddressBech32: ChangeAddressBech32
+  ) => {
     const timestamp = (await fetchData.get<any,AxiosResponse<number>,any>('/server-timestamp')).data;
-    const msgToBeSigned = `Sign this message if you are the owner of the ${walletAddr_bech32} address. \n Timestamp: <<${timestamp}>> \n Expiry: 60 seconds`;
+    const msgToBeSigned = `Sign this message if you are the owner of the ${changeAddressBech32} address. \n Timestamp: <<${timestamp}>> \n Expiry: 60 seconds`;
     try {
-        const {key, signature} = await currentWallet.signData(walletAddr, Buffer.from(msgToBeSigned, 'utf8').toString('hex'))
+        const {key, signature} = await currentWallet.signData(stakeAddressHex, Buffer.from(msgToBeSigned, 'utf8').toString('hex'))
         if (key && signature) {
             const token = (await fetchData.post<any,AxiosResponse<string>,any>('/login', {
-                address: walletAddr_bech32,
+                address: stakeAddressBech32,
                 key: key,
                 signature: signature
             })).data;
             localStorage.setItem(LocalStorageKeys.authToken, token)
-            setAddress(walletAddr_bech32)
+            setAddress(changeAddressBech32)
         } else {
             catchError({ message: "Could not obtain the proper key and signature for the wallet. Please try connecting again." })
         }
@@ -122,6 +149,7 @@ const ConnectWallet = () => {
           const response: any = await dispatch(
             getProfileDetails({
               address: address,
+              stakeAddress: address,
               wallet: wallet,
               walletName: walletName,
             })
