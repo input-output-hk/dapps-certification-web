@@ -3,6 +3,7 @@ import { ComponentProps, forwardRef, useEffect, useState } from "react";
 import "./Input.scss";
 import { useFormContext } from "react-hook-form";
 import HelperText from "components/HelperText/HelperText";
+import classNames from "classnames";
 
 interface InputProps extends ComponentProps<"input"> {
   label: string;
@@ -54,15 +55,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
   return (
     <div
-      className={`input-wrapper ${className}`}
+      className={classNames("input-wrapper", className, {
+        disabled: disabled,
+      })}
       onBlur={(e: any) => !e.target.value && setActive(false)}
       onClick={() => setActive(true)}
       data-testid={`${name}-wrapper`}
     >
       <div
-        className={`input ${active ? "active" : ""} ${
-          errors?.[name] || error ? "error" : ""
-        } ${disabled ? "disabled" : ""}`}
+        className={classNames("input", {
+          active: active,
+          error: errors?.[name] || error,
+        })}
         onClick={(_) => {
           setActive(true);
           document.getElementById(id || name || "")?.focus();

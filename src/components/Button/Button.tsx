@@ -30,7 +30,7 @@ const Button: FC<IButtonProps> = ({
 }) => {
   return (
     <button
-      className={`btn ${className} ${isLoading ? "is-loading" : ""} ${"btn-" + displayStyle} ${"btn-" + size}`}
+      className={`btn px-3 py-2 ${className} ${isLoading ? "is-loading" : ""} ${"btn-" + displayStyle} ${"btn-" + size}`}
       type={type}
       onClick={onClick}
       disabled={showLoader || disabled}

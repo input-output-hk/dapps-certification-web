@@ -29,11 +29,13 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       tooltipText = "",
       required = false,
       showInfoIcon = false,
+      disabled = false,
     },
     ref
   ) {
     const {
       formState: { errors },
+      trigger
     } = useFormContext();
 
     const [active, setActive] = useState(false);
@@ -43,6 +45,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         className={classNames("text-area-wrapper relative", {
           error: errors?.[name],
           active: active,
+          disabled: disabled
         })}
         onClick={(_) => {
           setActive(true);
@@ -64,11 +67,13 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
               setActive(true);
               onChange && onChange(e);
             }}
+            onBlur={() => trigger(name)} // trigger text area validation on blur
             minRows={minRows}
             maxRows={maxRows}
             className={classNames("text-area", className)}
             ref={ref}
             onFocusCapture={() => setActive(true)}
+            disabled={disabled}
           />
 
           {errors?.[name] && (

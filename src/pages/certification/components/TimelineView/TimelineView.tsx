@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useConfirm } from "material-ui-confirm";
 
 import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistory.slice";
@@ -15,6 +15,7 @@ import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
 import { processTimeLineConfig } from "components/TimelineItem/timeline.helper";
 import { CertificationTasks, isAnyTaskFailure } from "./../../Certification.helper";
 import LogsView from "components/LogsView/LogsView";
+import Button from "components/Button/Button";
 
 const TIMEOFFSET = 1000;
 
@@ -163,19 +164,26 @@ const TimelineView: React.FC<{
     }, [])
 
     return <>
-        <div className="timeline-view-container" style={{ width: "50%" }}>
-            {uuid ?
+        <div className="timeline-view-container w-full">
+            {uuid &&
                 <>
-                    {apiFetching && <Button 
-                        onClick={abortTestRun}>
-                            Abort
-                        </Button>}
+                    {apiFetching && 
+                        <Button
+                            type="button"
+                            buttonLabel="Abort"
+                            onClick={abortTestRun}
+                            className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
+                        />
+                    }
 
-                    {runStatus === "finished" ?
-                        <Button onClick={viewFullReport}>
-                            Full Report
-                        </Button>
-                    : null }
+                    {runStatus === "finished" &&
+                        <Button
+                            type="button"
+                            buttonLabel="Full Report"
+                            onClick={viewFullReport}
+                            className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
+                        />   
+                    }
 
                     <Timeline
                         statusConfig={timelineConfig}
@@ -221,8 +229,6 @@ const TimelineView: React.FC<{
                         : null}
 
                 </>
-                :
-                <div style={{ textAlign: "center" }}><span>Fill the testing form</span></div>
             }
         </div>
     </>
