@@ -57,11 +57,12 @@ const CreateCertificate = () => {
 
     // to run only once initially
     useEffect(() => {
-        const fetchDataAsync = async () => {
-            try {
-                const balanceResponse = await fetchData.get("/profile/current/balance");
+        Promise.all([
+            fetchData.get("/profile/current/balance"),
+            fetchData.get("/run/" + uuid + "/details")
+        ])
+            .then(([balanceResponse, runDetailsResponse]) => {
                 const availableProfileBalance: number = balanceResponse.data;
-                const runDetailsResponse = await fetchData.get("/run/" + uuid + "/details");
                 const runDetails: Run = runDetailsResponse.data;
                 setCertificationPrice(runDetails.certificationPrice);
                 setPerformTransaction(
@@ -70,11 +71,11 @@ const CreateCertificate = () => {
                         ? true
                         : false
                 );
-            } catch (error) {
+            })
+            .catch((error) => {
                 console.error(error);
-            }
-        };
-        fetchDataAsync();
+            });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onCloseModal = () => { setOpenModal(false) }
