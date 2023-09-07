@@ -6,8 +6,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Avatar from "@mui/material/Avatar";
 import "./AvatarDropDown.scss";
 import DropoverMenu from "components/DropoverMenu/DropoverMenu";
-// import useLocalStorage from "hooks/useLocalStorage";
-// import { LocalStorageKeys } from 'constants/constants';
 
 const AvatarDropDown = () => {
   const navigate = useNavigate();
