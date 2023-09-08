@@ -3,6 +3,8 @@ import { ComponentProps, forwardRef, useEffect, useState } from "react";
 import "./Input.scss";
 import { useFormContext } from "react-hook-form";
 import HelperText from "components/HelperText/HelperText";
+import ArrowTooltip from "components/Tooltip/Tooltip";
+import Icons from "components/Icons/Icons";
 import classNames from "classnames";
 
 interface InputProps extends ComponentProps<"input"> {
@@ -12,6 +14,8 @@ interface InputProps extends ComponentProps<"input"> {
   name: string;
   required?: boolean;
   error?: string;
+  tooltipText?: string;
+  showInfoIcon?: boolean;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
@@ -26,6 +30,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     value,
     id = "",
     error,
+    showInfoIcon = false,
+    tooltipText = "",
     ...props
   },
   ref
@@ -55,7 +61,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
   return (
     <div
-      className={classNames("input-wrapper", className, {
+      className={classNames("input-wrapper relative", className, {
         disabled: disabled,
       })}
       onBlur={(e: any) => !e.target.value && setActive(false)}
@@ -95,18 +101,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             <HelperText
               type="error"
               value={errors[name]?.message as string}
-              showInfoIcon={false}
+              showInfoIcon={showInfoIcon}
             />
           )}
           {error && (
             <HelperText
               type="error"
               value={error as string}
-              showInfoIcon={false}
+              showInfoIcon={showInfoIcon}
             />
           )}
         </div>
       )}
+
+      {tooltipText ? (
+        <ArrowTooltip title={tooltipText}>
+          <Icons type="question" color="grey" />
+        </ArrowTooltip>
+      ) : null}
     </div>
   );
 });

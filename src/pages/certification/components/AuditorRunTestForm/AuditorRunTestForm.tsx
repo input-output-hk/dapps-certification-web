@@ -153,6 +153,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           id="repoURL"
           required={true}
           disabled={submitting}
+          tooltipText="Github Repository URL formats accepted here are - 'https://github.com/<username>/<repository>', 'https://github.com/<username>/<repository>/commit/<commit-hash>'."
           {...form.register("repoURL")}
         />
 
