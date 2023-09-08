@@ -56,7 +56,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         <div className="relative">
           <span className="label absolute">
             {placeholder}
-            {required ? <span style={{ color: "red" }}>*</span> : null}
+            {required ? <span className="ml-2 text-red">*</span> : null}
           </span>
 
           <TextAreaAutoSize
@@ -70,7 +70,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             onBlur={() => trigger(name)} // trigger text area validation on blur
             minRows={minRows}
             maxRows={maxRows}
-            className={classNames("text-area", className)}
+            className={classNames("text-area bg-gray-inputBackground", className)}
             ref={ref}
             onFocusCapture={() => setActive(true)}
             disabled={disabled}

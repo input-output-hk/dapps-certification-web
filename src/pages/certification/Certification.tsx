@@ -24,7 +24,7 @@ const Certification = () => {
     const certificationFormError = () => setSubmitting(false);
 
     return (
-        <div className="content-area bg-slate-contentBg">
+        <div className="content-area bg-slate-contentBackground">
             <div className="px-20 py-14">
                 <div className="content-area-title-section pb-7">
                     <span className="text-2xl text-neutral-500">

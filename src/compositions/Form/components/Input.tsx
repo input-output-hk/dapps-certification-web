@@ -69,7 +69,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       data-testid={`${name}-wrapper`}
     >
       <div
-        className={classNames("input", {
+        className={classNames("input bg-gray-inputBackground", {
           active: active,
           error: errors?.[name] || error,
         })}
