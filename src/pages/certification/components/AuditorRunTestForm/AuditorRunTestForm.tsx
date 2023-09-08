@@ -84,7 +84,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       formData.repoURL.split("/");
     dispatch(setRepoUrl(`https://github.com/${username}/${repoName}`));
 
-    const { commit, name, version } = formData;
+    const { commit, name, version, subject } = formData;
 
     setSubmitting(true);
 
@@ -187,7 +187,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
         <TextArea
           placeholder="DApp Subject"
           maxRows={2}
-          required={false}
+          required={true}
           disabled={submitting}
           {...form.register("subject")}
         />
