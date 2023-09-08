@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useAppSelector } from "store/store";
+import { useAppDispatch, useAppSelector } from "store/store";
 import { useForm } from "hooks/useForm";
 import { fetchData, postData } from "api/api";
 
@@ -12,6 +12,7 @@ import { Form } from "compositions/Form/Form";
 import { Input } from "compositions/Form/components/Input";
 import { getErrorMessage } from "utils/utils";
 
+import { clearRepoUrl, setRepoUrl } from "../../slices/certification.slice";
 import {
   REPO_URL_PATTERN,
   auditorRunTestFormSchema,
@@ -20,12 +21,16 @@ import { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
 
 interface IAuditorRunTestForm {
   isSubmitting: boolean;
+  clearForm?: boolean;
+  testAgain?: boolean;
   onSubmit: (data: { runId: string; commitHash: string }) => any;
   onError: () => void;
 }
 
 const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   isSubmitting,
+  clearForm = false,
+  testAgain = false,
   onSubmit,
   onError,
 }) => {
@@ -35,10 +40,34 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   });
   const repoUrlChanges = form.watch("repoURL");
 
+  const dispatch = useAppDispatch();
+  const { repoUrl } = useAppSelector((state) => state.certification);
   const { userDetails } = useAppSelector((state) => state.auth);
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
-  const [mandatory, setMandatory] = useState(true);
+  const [mandatory, setMandatory] = useState(false);
+
+  // New Test: Clear certification form
+  useEffect(() => {
+    if (clearForm) {
+      form.reset();
+      dispatch(clearRepoUrl());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clearForm]);
+
+  // Test again: Retain repo url in certification form
+  useEffect(() => {
+    if (testAgain)
+      form.reset({
+        repoURL: repoUrl,
+        commit: "",
+        name: "",
+        subject: "",
+        version: "",
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [testAgain]);
 
   const handleError = (errorObj: any) => {
     setShowError(getErrorMessage(errorObj));
@@ -53,6 +82,8 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   const formHandler = (formData: IAuditorRunTestFormFields) => {
     const [, , , username, repoName, , commitHash] =
       formData.repoURL.split("/");
+    dispatch(setRepoUrl(`https://github.com/${username}/${repoName}`));
+
     const { commit, name, version } = formData;
 
     setSubmitting(true);
@@ -87,14 +118,14 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     triggerAPI();
   };
 
-  // Prefill commit field if repo url includes commit hash (?) TBD
+  // Validate commit field based on URL entered
   useEffect(() => {
     if (repoUrlChanges) {
       const matches = repoUrlChanges.match(REPO_URL_PATTERN);
       if (matches && repoUrlChanges.match(/commit/gi)) {
         const commitHash = repoUrlChanges.split("/").pop();
+        // commit hash is available in url and is valid
         if (/^[a-f0-9]{7,40}$/.test(commitHash)) {
-          // commit hash is available in url and is valid
           setMandatory(false);
         }
       } else {

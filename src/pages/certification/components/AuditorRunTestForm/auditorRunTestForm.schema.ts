@@ -12,7 +12,7 @@ export const auditorRunTestFormSchema = yup.object().shape({
     .test({
       name: "github-commit-url",
       test: (value, context) => {
-        const [, , , username, repoName] = value!.split("/"); // Destructure the url
+        const [, , , username, repoName] = value!.split("/");
 
         if (
           !username ||
@@ -32,7 +32,7 @@ export const auditorRunTestFormSchema = yup.object().shape({
           });
         }
 
-        return true; // If all parts meet the criteria, return true
+        return true;
       },
     }),
   commit: yup
@@ -55,7 +55,7 @@ export const auditorRunTestFormSchema = yup.object().shape({
             message: "Invalid commit hash",
           });
         }
-        return true; // If all parts meet the criteria, return true
+        return true;
       },
     })
     .when("repoUrl", (repoUrl, schema) => {
