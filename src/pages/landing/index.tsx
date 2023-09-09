@@ -8,9 +8,9 @@ import SubscriptionSection from "./components/SubscriptionSection";
 import RegisterSection from "./components/RegisterSection";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { register } from "./slices/registration.slice";
+import { register } from "store/slices/register.slice";
 import type { Tier } from "./slices/tiers.slice";
-import type { RegistrationForm } from "./components/RegisterSection";
+import type { RegisterForm } from "store/slices/register.slice";
 
 import "./index.css";
 
@@ -18,7 +18,7 @@ export default function LandingPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isLoggedIn } = useAppSelector((state) => state.auth);
-  const { success } = useAppSelector((state) => state.registration);
+  const { success, processing } = useAppSelector((state) => state.register);
 
   const [step, setStep] = useState<string>('connect');
   const [selectedTier, setSelectedTier] = useState<Tier|null>(null);
@@ -36,7 +36,7 @@ export default function LandingPage() {
     }
   }, [success]);
 
-  const handleRegistration = (form: RegistrationForm) => {
+  const handleRegistration = (form: RegisterForm) => {
     dispatch(register({ form, tierId: selectedTier!.id }));
   };
 
@@ -44,7 +44,7 @@ export default function LandingPage() {
     <Box className="flex flex-row h-screen bg-cover bg-center bg-landing">
       { step === 'connect' && <ConnectSection /> }
       { step === 'subscription' && <SubscriptionSection onSelectTier={setSelectedTier}/> }
-      { selectedTier !== null && <RegisterSection tier={selectedTier} onSubmit={handleRegistration} /> }
+      { selectedTier !== null && <RegisterSection tier={selectedTier} processing={processing} onSubmit={handleRegistration} /> }
     </Box>
   );
 }

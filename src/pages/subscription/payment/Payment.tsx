@@ -16,7 +16,7 @@ function Payment() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { address, wallet } = useAppSelector((state) => state.auth);
+  const { walletAddress: address, wallet } = useAppSelector((state) => state.auth);
   const { error } = useAppSelector((state) => state.walletTransaction);
   const [transactionId, setTransactionId] = useState("");
   const [showError, setShowError] = useState("");

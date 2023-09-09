@@ -6,7 +6,7 @@ import Button from "components/Button/Button";
 import { Input } from "compositions/Form/components/Input";
 import { Form } from "compositions/Form/Form";
 import { fetchData } from "api/api";
-import { getProfileDetails } from "store/slices/auth.slice";
+//import { getProfileDetails } from "store/slices/auth.slice";
 import { useAppDispatch, useAppSelector } from "store/store";
 import "./UserProfile.scss";
 import { userProfileSchema } from "./userProfile.schema";
@@ -145,12 +145,13 @@ const UserProfile = () => {
       fetchData.put("/profile/current", reqData).then(async () => {
       /** For mock */
       // await fetchData.get("static/data/current-profile.json", formData);
-        const response = await dispatch(
-          getProfileDetails({address: address, wallet: wallet, walletName: walletName})
-          /** For mock */
-          // getProfileDetails({url: "static/data/new-profile.json"})
-        );
-        setUserDetails(response.payload);
+        // TODO: FIX THIS
+        // const response = await dispatch(
+        //   getProfileDetails({address: address, wallet: wallet, walletName: walletName})
+        //   /** For mock */
+        //   // getProfileDetails({url: "static/data/new-profile.json"})
+        // );
+        //setUserDetails(response.payload);
         dispatch(clearAccessToken())
         setSubmitting(false)
         navigate('/')

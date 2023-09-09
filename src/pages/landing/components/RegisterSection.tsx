@@ -14,23 +14,24 @@ const REFRESH_TIME = 30;
 
 interface Props {
   tier: Tier,
-  onSubmit: (form: RegistrationForm) => void
+  processing: boolean;
+  onSubmit: (form: RegisterForm) => void
 }
 
-export interface RegistrationForm {
-  company: string;
+export interface RegisterForm {
+  companyName: string;
+  contactEmail: string;
   email: string;
-  address: string;
-  city: string;
-  country: string;
-  twitter: string;
+  fullName: string;
   linkedin: string;
+  twitter: string;
+  website: string;
 }
 
 export default (props: Props) => {
   const dispatch = useAppDispatch();
   const { price } = useAppSelector((state) => state.price);
-  const { register, handleSubmit, formState: { errors } } = useForm<RegistrationForm>();
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
   const [count, setCount] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
 
@@ -76,9 +77,17 @@ export default (props: Props) => {
               className="mb-6"
               required fullWidth variant="standard"
               label="Company name" type="text"
-              error={errors.company !== undefined}
-              helperText={errors.company !== undefined ? 'The field value is invalid' : undefined}
-              {...register("company", { required: true })}
+              error={errors.companyName !== undefined}
+              helperText={errors.companyName !== undefined ? 'The field value is invalid' : undefined}
+              {...register("companyName", { required: true })}
+            />
+            <TextField
+              className="mb-6"
+              required fullWidth variant="standard"
+              label="Contact email" type="email"
+              error={errors.contactEmail !== undefined}
+              helperText={errors.contactEmail !== undefined ? 'The field value is invalid' : undefined}
+              {...register("contactEmail", { required: true, pattern: /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-_]+\.[A-Za-z]{2,64}$/i })}
             />
             <TextField
               className="mb-6"
@@ -91,26 +100,10 @@ export default (props: Props) => {
             <TextField
               className="mb-6"
               required fullWidth variant="standard"
-              label="Address" type="text"
-              error={errors.address !== undefined}
-              helperText={errors.address !== undefined ? 'The field value is invalid' : undefined}
-              {...register("address", { required: true })}
-            />
-            <TextField
-              className="mb-6"
-              required fullWidth variant="standard"
-              label="City, zip code" type="text"
-              error={errors.city !== undefined}
-              helperText={errors.city !== undefined ? 'The field value is invalid' : undefined}
-              {...register("city", { required: true })}
-            />
-            <TextField
-              className="mb-6"
-              required fullWidth variant="standard"
-              label="Country" type="text"
-              error={errors.country !== undefined}
-              helperText={errors.country !== undefined ? 'The field value is invalid' : undefined}
-              {...register("country", { required: true })}
+              label="Full name" type="text"
+              error={errors.fullName !== undefined}
+              helperText={errors.fullName !== undefined ? 'The field value is invalid' : undefined}
+              {...register("fullName", { required: true })}
             />
             <TextField
               className="mb-6"
@@ -123,15 +116,23 @@ export default (props: Props) => {
             <TextField
               className="mb-6"
               fullWidth variant="standard"
-              label="LinkedIn" type="text"
+              label="LinkedIn" type="url"
               error={errors.linkedin !== undefined}
               helperText={errors.linkedin !== undefined ? 'The field value is invalid' : undefined}
               {...register("linkedin", { pattern: /^(http(s)?:\/\/)?([\w]+\.)?linkedin\.com\/(pub|in|profile|company)\/([a-zA-Z0-9_-]+)$/i })}
             />
+            <TextField
+              className="mb-6"
+              fullWidth variant="standard"
+              label="Website" type="url"
+              error={errors.website !== undefined}
+              helperText={errors.website !== undefined ? 'The field value is invalid' : undefined}
+              {...register("website", { pattern: /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,255}\.[a-z]{2,6}(\b([-a-zA-Z0-9@:%_\+.~#()?&\/\/=]*))?$/i })}
+            />
             <Button
               type="submit" variant="contained" size="large"
               className="mt-8 py-3 px-14 normal-case bg-main"
-              disabled={total <= 0}
+              disabled={total <= 0 || props.processing}
             >
               Pay (₳{total.toFixed(2)})
             </Button>
