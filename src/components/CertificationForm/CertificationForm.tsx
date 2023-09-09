@@ -72,8 +72,8 @@ const CertificationForm: React.FC<{
   initData: any;
   form: any;
   onSubmit: (data: any) => any;
-  onFormCancel: () => void;
-}> = ({ config, submitting, initData, form, onSubmit, onFormCancel }) => {
+  onFormReset: () => void;
+}> = ({ config, submitting, initData, form, onSubmit, onFormReset }) => {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: fieldArrayName,
@@ -185,8 +185,8 @@ const CertificationForm: React.FC<{
           type="button"
           disabled={submitting}
           displayStyle="secondary"
-          buttonLabel={"Cancel"}
-          onClick={onFormCancel}
+          buttonLabel={"Reset"}
+          onClick={onFormReset}
         />
 
         <Button

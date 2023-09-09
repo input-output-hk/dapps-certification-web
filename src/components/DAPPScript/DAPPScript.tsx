@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form";
+
 import Button from "components/Button/Button";
 import { Input } from "compositions/Form/components/Input";
+
 import "./DAPPScript.scss";
-import { useFormContext } from "react-hook-form";
 
 export interface IInfo {
   label: string;
@@ -25,9 +28,17 @@ const DAPPScript = ({
   fieldArrayName,
   config,
 }: DAPPScriptProps) => {
-  const { register, watch } = useFormContext();
+  const { register, watch, formState: { errors } } = useFormContext();
   const allScripts = watch(fieldArrayName);
   const length = !allScripts ? 1 : allScripts.length;
+  const [error, setError] = useState<any>([]);
+
+  // Deeply nested errors to be captured on every component change
+  useEffect(() => {
+    if (errors?.[fieldArrayName]) {
+      setError(errors?.[fieldArrayName]);
+    }
+  }, [errors, fieldArrayName]);
 
   return (
     <div className="bordered card-layout card-padding" key={value.id}>
@@ -51,6 +62,7 @@ const DAPPScript = ({
             id={`${field.id}-${value.id}`}
             {...register(`${fieldArrayName}.${index}.${field.id}`)}
             key={`scriptFields-${value.id}-${idx}`}
+            error={error?.[index]?.[field.id]?.message}
           />
         ))}
 
@@ -65,6 +77,7 @@ const DAPPScript = ({
               id={`${field.id}-${value.id}`}
               {...register(`${fieldArrayName}.${index}.${field.id}`)}
               key={`smartContractInfo-${value.id}-${idx}`}
+              error={error?.[index]?.[field.id]?.message}
             />
           ))}
         </div>

@@ -38,7 +38,7 @@ const CertificationMetadata: React.FC<{
     onCloseForm()
   };
 
-  const transformDappScripts = (scripts: []) => {
+  const transformDappScripts = (scripts: IScriptObject[]) => {
     return scripts.map((script: any) => {
       const { scriptHash, contractAddress, ...rest } = script;
       return({
@@ -123,7 +123,7 @@ const CertificationMetadata: React.FC<{
           }}
           form={form}
           onSubmit={formHandler}
-          onFormCancel={() => {
+          onFormReset={() => {
             form.reset();
             onCloseModal();
           }}

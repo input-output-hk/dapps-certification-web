@@ -100,7 +100,7 @@ const ReportUpload = () => {
         let errorMsg = "Something went wrong. Please try again.";
         if (errorObj?.response?.data) {
           errorMsg =
-            errorObj.response.statusText + " - " + errorObj.response.data;
+            (errorObj.response.statusText || 'Error') + " - " + errorObj.response.data;
         }
         setShowError(errorMsg);
         const timeout = setTimeout(() => {
@@ -109,11 +109,12 @@ const ReportUpload = () => {
         }, 5000);
         setSubmitting(false);
       });
-
-    setShowError("");
-    setOpenModal(true);
-    exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + subject + ".json");
-    exportObjectToJsonFile(response.data.onchain, "On-Chain_" + subject + ".json");
+    if (response?.data) {
+      setShowError("");
+      setOpenModal(true);
+      exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + subject + ".json");
+      exportObjectToJsonFile(response.data.onchain, "On-Chain_" + subject + ".json");
+    }
     setSubmitting(false);
   };
 
@@ -130,30 +131,11 @@ const ReportUpload = () => {
           }}
           form={form}
           onSubmit={formHandler}
-          onFormCancel={() => {
+          onFormReset={() => {
             form.reset();
           }}
         />
       </div>
-
-      {/* <Upload
-            isMultiple={false}
-            highlightText="Upload a PDF"
-            uploadFiles={(file) => {
-              console.log("file", file);
-              setFiles(file);
-            }}
-            showPreview
-            tooltipText={`Please upload a ${SUPPORTED_FORMATS.join(",")} file within 5MB size`}
-            maxFileSize={FILE_SIZE}
-            acceptedTypes={SUPPORTED_FORMATS.join(",")}
-            uploadedFiles={files}
-            required={true}
-            className="bordered"
-            onClick={(files) => console.log(files)}
-            name="auditReport"
-            showDefaultError
-          /> */}
 
       {showError ? <Toast message={showError} /> : null}
 
