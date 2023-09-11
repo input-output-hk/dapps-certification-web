@@ -22,7 +22,7 @@ export interface UserProfile {
 
 interface AuthState {
   isSessionFetched: boolean;
-  isLoggedIn: boolean;
+  isConnected: boolean;
   hasAnActiveSubscription: boolean;
   profile: UserProfile | null;
   features: string[];
@@ -31,13 +31,14 @@ interface AuthState {
   walletName: string | null;
   walletAddress: string | null;
   activeWallets: string[];
-  error: boolean;
   errorMessage: string | null;
+  errorRetry: boolean;
+  loading: boolean;
 }
 
 const initialState: AuthState = {
   isSessionFetched: false,
-  isLoggedIn: false,
+  isConnected: false,
   hasAnActiveSubscription: false,
   profile: null,
   features: [],
@@ -46,8 +47,9 @@ const initialState: AuthState = {
   walletName: null,
   walletAddress: null,
   activeWallets: ['lace', 'nami', 'yoroi'],
-  error: false,
   errorMessage: null,
+  errorRetry: false,
+  loading: false,
 };
 
 declare global {
@@ -58,7 +60,7 @@ declare global {
 
 const CardanoNS = window.cardano;
 
-export const connectWallet = createAsyncThunk('connectWallet', async (payload: { walletName: string }, { rejectWithValue }) => {
+export const connectWallet = createAsyncThunk('connectWallet', async (payload: { walletName: string }, { rejectWithValue, dispatch }) => {
   try {
     const { walletName } = payload;
     const wallet = await CardanoNS[walletName].enable();
@@ -73,12 +75,14 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
     
     const message = `Sign this message if you are the owner of the ${address} address. \n Timestamp: <<${timestamp}>> \n Expiry: 60 seconds`;
 
-    const { key, signature } = await wallet.signData(address, Buffer.from(message, 'utf8').toString('hex'));
+    const { key, signature } = await wallet.signData(response, Buffer.from(message, 'utf8').toString('hex'));
     if (!key || !signature) throw new Error();
     
     const loginRes = await fetchData.post('/login', { address, key, signature });
     if (loginRes.status !== 200) throw new Error();
     localStorage.setItem(LocalStorageKeys.authToken, loginRes.data);
+
+    const res = await dispatch(fetchSession({}));
     
     return { wallet, walletName, networkId, walletAddress: address };
   } catch (error: any) {
@@ -98,7 +102,7 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
   }
 });
 
-export const fetchSession = createAsyncThunk('fetchSession', async ({}, { rejectWithValue }) => {
+export const fetchSession = createAsyncThunk('fetchSession', async (payload: any, { rejectWithValue }) => {
   try {
     const response = await fetchData.get('/profile/current/subscriptions/active-features');
     if (response.status !== 200) throw new Error();
@@ -108,7 +112,7 @@ export const fetchSession = createAsyncThunk('fetchSession', async ({}, { reject
   }
 });
 
-export const fetchProfile = createAsyncThunk('fetchProfile', async ({}, { rejectWithValue }) => {
+export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: any, { rejectWithValue }) => {
   try {
     const response = await fetchData.get('/profile/current');
     if (response.status !== 200) throw new Error();
@@ -130,40 +134,37 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(connectWallet.pending, (state) => {
-        state.isLoggedIn = false;
-        state.isSessionFetched = false;
-        state.hasAnActiveSubscription = false;
-        state.features = [];
-        state.profile = null;
+        state.isConnected = false;
         state.networkId = null;
         state.wallet = null;
         state.walletName = null;
         state.walletAddress = null;
-        state.error = false;
         state.errorMessage = null;
+        state.errorRetry = false;
+        state.loading = true;
       })
       .addCase(connectWallet.fulfilled, (state, actions) => {
-        state.isLoggedIn = true;
+        state.isConnected = true;
         state.networkId = actions.payload.networkId;
         state.wallet = actions.payload.wallet;
         state.walletName = actions.payload.walletName;
         state.walletAddress = actions.payload.walletAddress;
+        state.loading = false;
       })
       .addCase(connectWallet.rejected, (state, actions) => {
-        state.error = true;
-        state.errorMessage = actions.payload as string;
+        state.errorMessage = (actions.payload as any).message;
+        state.errorRetry = (actions.payload as any).showRetry;
+        state.loading = false;
       })
       .addCase(fetchSession.pending, (state) => {
         state.features = [];
         state.hasAnActiveSubscription = false;
         state.isSessionFetched = false;
-        state.isLoggedIn = false;
       })
       .addCase(fetchSession.fulfilled, (state, actions) => {
         state.features = actions.payload;
         state.hasAnActiveSubscription = state.features.includes('l2-upload-report') && state.features.includes('l1-run');
         state.isSessionFetched = true;
-        state.isLoggedIn = true;
       })
       .addCase(fetchSession.rejected, (state) => {
         state.isSessionFetched = true;

@@ -45,7 +45,7 @@ const Certification = () => {
   });
 
   const { uuid } = useAppSelector((state) => state.certification);
-  const { isLoggedIn, userDetails, subscribedFeatures } = useAppSelector((state) => state.auth);
+  // const { isLoggedIn, userDetails, subscribedFeatures } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
@@ -65,14 +65,14 @@ const Certification = () => {
   const [repoName, setRepository] = useState('');
   const [coverageFile, setCoverageFile] = useState("");
   
-  useEffect(() => {
-    if (userDetails?.dapp?.owner) {
-      setUsername(userDetails.dapp.owner)
-    }
-    if (userDetails?.dapp?.repo) {
-      setRepository(userDetails.dapp.repo)
-    }
-  }, [userDetails])
+  // useEffect(() => {
+  //   if (userDetails?.dapp?.owner) {
+  //     setUsername(userDetails.dapp.owner)
+  //   }
+  //   if (userDetails?.dapp?.repo) {
+  //     setRepository(userDetails.dapp.repo)
+  //   }
+  // }, [userDetails])
 
   const resetStates = () => {
     setRunState("")
@@ -248,130 +248,133 @@ const Certification = () => {
       handleErrorScenario
   )
 
+  // TODO: FIX THIS
+  return null;
+
   // if not logged in, prevent loader as well
-  if (!isLoggedIn) {
-    return null;
-  }
-  // Show loader until subscribed features is fetched
-  else if (isLoggedIn && !subscribedFeatures) {
-    return <Loader />;
-  }
-  // else
-  return (
-    <>
-      {subscribedFeatures?.indexOf("l1-run") === -1 ? 
-      <div id="searchContainerEmpty">
-        <p>You do not have a valid subscription to perform the test run. <br/> <Link to="/subscription">Click here</Link> to review our packages and pick one to proceed.</p>
-      </div>
-      : <div
-        id="searchContainer"
-        className={runStatus === "finished" ? "hidden" : ""}
-      >
-        <h2>
-          Enter Github repository details of your Dapp to start the
-          certification process.
-        </h2>
-        <div className="search-form common-top">
-          <Form form={form} onSubmit={formHandler}>
-            <Input
-              label="Commit Hash"
-              type="text"
-              id="commit"
-              disabled={submitting}
-              {...form.register("commit")}
-            />
-            <div className="footer">
-              <Button
-                type="submit"
-                buttonLabel={"Start Testing"}
-                showLoader={
-                  submitting &&
-                  (runStatus !== "finished" && runState !== "failed")
-                }
-                disabled={!form.formState.isValid || submitting}
-                onClick={(_) => setFormSubmitted(true)}
-              />
-              {(apiFetching && submitting) && (
-                <Button
-                  type="button"
-                  displayStyle="primary-outline"
-                  buttonLabel="Abort Run"
-                  onClick={(_) => abortRun()}
-                />
-              )}
-            </div>
-          </Form>
-        </div>
-      </div>
-      }
-      {formSubmitted && (
-        <>
-          <div id="resultContainer" data-testid="resultContainer">
-            {runStatus === "finished" ? (
-              <button
-                className="back-btn"
-                onClick={(e) => {
-                  resetStates();
-                }}
-              >
-                {" "}
-                <img
-                  src="images/back.png"
-                  alt="back_btn"
-                />
-              </button>
-            ) : null}
-            <header>
-              <h2
-                id="breadcrumb"
-                data-testid="breadcrumb"
-                style={{alignSelf:"center"}}
-                className={runStatus === "finished" ? "" : "hidden"}
-              >
-                <a target="_blank" rel="noreferrer" href={githubLink}>
-                  {username}/{repoName}
-                </a>
-              </h2>
-              <div style={{float:"right", marginLeft:"5px"}}>
-                {Object.keys(resultData).length ? (<>
-                  <Button
-                    className="report-download"
-                    onClick={(_) => handleDownloadResultData(resultData)}
-                    buttonLabel="Download Report"
-                    iconUrl={DownloadIcon}
-                  />
-                  <CreateCertificate />
-                </>) : null}
-              </div>
-            </header>
-            <Timeline
-              statusConfig={timelineConfig}
-              unitTestSuccess={unitTestSuccess}
-              hasFailedTasks={isAnyTaskFailure(resultData)}
-            />
-          </div>
+  // if (!isLoggedIn) {
+  //   return null;
+  // }
+  // // Show loader until subscribed features is fetched
+  // else if (isLoggedIn && !subscribedFeatures) {
+  //   return <Loader />;
+  // }
+  // // else
+  // return (
+  //   <>
+  //     {subscribedFeatures?.indexOf("l1-run") === -1 ? 
+  //     <div id="searchContainerEmpty">
+  //       <p>You do not have a valid subscription to perform the test run. <br/> <Link to="/subscription">Click here</Link> to review our packages and pick one to proceed.</p>
+  //     </div>
+  //     : <div
+  //       id="searchContainer"
+  //       className={runStatus === "finished" ? "hidden" : ""}
+  //     >
+  //       <h2>
+  //         Enter Github repository details of your Dapp to start the
+  //         certification process.
+  //       </h2>
+  //       <div className="search-form common-top">
+  //         <Form form={form} onSubmit={formHandler}>
+  //           <Input
+  //             label="Commit Hash"
+  //             type="text"
+  //             id="commit"
+  //             disabled={submitting}
+  //             {...form.register("commit")}
+  //           />
+  //           <div className="footer">
+  //             <Button
+  //               type="submit"
+  //               buttonLabel={"Start Testing"}
+  //               showLoader={
+  //                 submitting &&
+  //                 (runStatus !== "finished" && runState !== "failed")
+  //               }
+  //               disabled={!form.formState.isValid || submitting}
+  //               onClick={(_) => setFormSubmitted(true)}
+  //             />
+  //             {(apiFetching && submitting) && (
+  //               <Button
+  //                 type="button"
+  //                 displayStyle="primary-outline"
+  //                 buttonLabel="Abort Run"
+  //                 onClick={(_) => abortRun()}
+  //               />
+  //             )}
+  //           </div>
+  //         </Form>
+  //       </div>
+  //     </div>
+  //     }
+  //     {formSubmitted && (
+  //       <>
+  //         <div id="resultContainer" data-testid="resultContainer">
+  //           {runStatus === "finished" ? (
+  //             <button
+  //               className="back-btn"
+  //               onClick={(e) => {
+  //                 resetStates();
+  //               }}
+  //             >
+  //               {" "}
+  //               <img
+  //                 src="images/back.png"
+  //                 alt="back_btn"
+  //               />
+  //             </button>
+  //           ) : null}
+  //           <header>
+  //             <h2
+  //               id="breadcrumb"
+  //               data-testid="breadcrumb"
+  //               style={{alignSelf:"center"}}
+  //               className={runStatus === "finished" ? "" : "hidden"}
+  //             >
+  //               <a target="_blank" rel="noreferrer" href={githubLink}>
+  //                 {username}/{repoName}
+  //               </a>
+  //             </h2>
+  //             <div style={{float:"right", marginLeft:"5px"}}>
+  //               {Object.keys(resultData).length ? (<>
+  //                 <Button
+  //                   className="report-download"
+  //                   onClick={(_) => handleDownloadResultData(resultData)}
+  //                   buttonLabel="Download Report"
+  //                   iconUrl={DownloadIcon}
+  //                 />
+  //                 <CreateCertificate />
+  //               </>) : null}
+  //             </div>
+  //           </header>
+  //           <Timeline
+  //             statusConfig={timelineConfig}
+  //             unitTestSuccess={unitTestSuccess}
+  //             hasFailedTasks={isAnyTaskFailure(resultData)}
+  //           />
+  //         </div>
           
-          {/* To show 'View Logs' always  */}
-          <InformationTable logs={logInfo} />
+  //         {/* To show 'View Logs' always  */}
+  //         <InformationTable logs={logInfo} />
           
-          {unitTestSuccess === false && Object.keys(resultData).length ? (
-            <>
-              <ResultContainer unitTestSuccess={unitTestSuccess} result={resultData} />
-            </>
-          ) : null}
+  //         {unitTestSuccess === false && Object.keys(resultData).length ? (
+  //           <>
+  //             <ResultContainer unitTestSuccess={unitTestSuccess} result={resultData} />
+  //           </>
+  //         ) : null}
 
-          {unitTestSuccess && Object.keys(resultData).length ? (
-            <>
-              <FileCoverageContainer githubLink={githubLink} result={resultData} coverageFile={coverageFile}/>
-              <ResultContainer result={resultData} />
-            </>
-          ) : null}
-        </>
-      )}
+  //         {unitTestSuccess && Object.keys(resultData).length ? (
+  //           <>
+  //             <FileCoverageContainer githubLink={githubLink} result={resultData} coverageFile={coverageFile}/>
+  //             <ResultContainer result={resultData} />
+  //           </>
+  //         ) : null}
+  //       </>
+  //     )}
 
-      {errorToast ? <Toast /> : null}
-    </>
-  )
+  //     {errorToast ? <Toast /> : null}
+  //   </>
+  // )
 };
 
 export default Certification;

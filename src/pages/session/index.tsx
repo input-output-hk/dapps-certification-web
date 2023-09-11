@@ -52,7 +52,7 @@ export default () => {
 
   const { hasAnActiveSubscription, isSessionFetched } = useAppSelector((state) => state.auth);
 
-  useEffect(() => { dispatch(fetchSession()); }, []);
+  useEffect(() => { dispatch(fetchSession({})); }, []);
 
   useEffect(() => {
     if (location.pathname === '/' && hasAnActiveSubscription) {

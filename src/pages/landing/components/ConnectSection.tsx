@@ -1,13 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
-import useLocalStorage from "hooks/useLocalStorage";
+import React, { useEffect, useState } from "react";
 
-import { Address } from "@emurgo/cardano-serialization-lib-browser";
-import { AxiosResponse } from "axios";
-
-import { LocalStorageKeys } from "constants/constants";
-import { fetchData } from "api/api";
-import { useAppDispatch } from "store/store";
-import { logout } from "store/slices/auth.slice";
+import { useAppDispatch, useAppSelector } from "store/store";
+import { connectWallet } from "store/slices/auth.slice";
 
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, IconButton, CircularProgress, Snackbar, Alert } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -24,16 +18,32 @@ const CardanoNS = window.cardano;
 
 export default () => {
   const dispatch = useAppDispatch();
-  const [isOpen, setIsOpen] = useState(false);
-  const [errorToast, setErrorToast] = useState<{display: boolean; statusText?: string; message?: string; showRetry?: boolean}>({display: false});
+  const { loading, errorMessage, errorRetry, activeWallets } = useAppSelector(state => state.auth);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [walletName, setWalletName] = useState<string|null>(null);
 
-  const openConnectWalletModal = useCallback(() => setIsOpen(true), []);
-  const onCloseModal = useCallback(() => setIsOpen(false), []);
-
-  const retryConnectWallet = () => {
-    setErrorToast({ display: false });
-    openConnectWalletModal();
+  const handleSelectWallet = (walletName: string) => {
+    setWalletName(walletName);
+    dispatch(connectWallet({ walletName }));
   }
+
+  const handleRetry = () => {
+    setShowError(false);
+    dispatch(connectWallet({ walletName: walletName! }));
+  }
+
+  const handleCloseSnackbar = () => {
+    setShowError(false);
+    setWalletName(null);
+  }
+
+  useEffect(() => {
+    if (errorMessage !== null) {
+      setShowError(true);
+      setShowModal(false);
+    }
+  }, [errorMessage]);
 
   return (
     <>
@@ -49,7 +59,7 @@ export default () => {
             <Button
               variant="contained" size="large"
               className="py-3 px-4 normal-case font-medium bg-main"
-              onClick={openConnectWalletModal}
+              onClick={() => setShowModal(true)}
             >
               Connect your wallet
             </Button>
@@ -57,50 +67,50 @@ export default () => {
         </Box>
       </Box>
 
-      <Dialog open={isOpen} onClose={onCloseModal}>
+      <Dialog open={showModal} onClose={() => setShowModal(false)}>
         <DialogTitle className="pr-24">
           <span>Connect your wallet</span>
-          <IconButton size="small" className="absolute top-4 right-4" onClick={onCloseModal}>
+          <IconButton size="small" className="absolute top-4 right-4" onClick={() => setShowModal(false)}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent className="flex flex-col items-center px-4 pt-4 pb-8 gap-4">
-          {wallet ? null : !CardanoNS ? (
+          {walletName ? null : !CardanoNS ? (
             <Typography>No wallet extensions installed yet!</Typography>
           ) : (
-            wallets.map((wallet: string, index: number) =>
-              CardanoNS && CardanoNS[wallet] ? (
-                <div key={index} className="wallet-card" onClick={(_) => loadWallet(wallet)}>
-                  <img className="wallet-card-image" src={CardanoNS[wallet].icon} alt={CardanoNS[wallet].name} />
-                  <span className="wallet-card-name">{CardanoNS[wallet].name}</span>
+            activeWallets.map((walletName: string, index: number) =>
+              CardanoNS && CardanoNS[walletName] ? (
+                <div key={index} className="wallet-card" onClick={() => handleSelectWallet(walletName)}>
+                  <img className="wallet-card-image" src={CardanoNS[walletName].icon} alt={CardanoNS[walletName].name} />
+                  <span className="wallet-card-name">{CardanoNS[walletName].name}</span>
                 </div>
               ) : null
             )
           )}
-          {walletLoading ? <CircularProgress color="secondary" size={50} /> : null}
+          {loading ? <CircularProgress color="secondary" size={50} /> : null}
         </DialogContent>
       </Dialog>
 
       <Snackbar
-        open={errorToast.display}
-        autoHideDuration={3000}
-        onClose={() => setErrorToast({ display: false })}
+        open={showError}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert
           severity="error" variant="filled"
-          onClose={() => setErrorToast({ display: false })}
-          action={errorToast.showRetry && (
+          onClose={handleCloseSnackbar}
+          action={errorRetry && (
             <Button
               className="normal-case"
               color="inherit" size="small" variant="outlined"
-              onClick={retryConnectWallet}
+              onClick={handleRetry}
             >
               Retry
             </Button>
           )}
         >
-          {errorToast.message}
+          {errorMessage}
         </Alert>
       </Snackbar>
     </>

@@ -12,9 +12,9 @@ export interface RegisterForm {
   contactEmail: string;
   email: string;
   fullName: string;
-  linkedin: string;
-  twitter: string;
-  website: string;
+  linkedin?: string;
+  twitter?: string;
+  website?: string;
 }
 
 export interface RegisterRequest {
@@ -25,7 +25,6 @@ export interface RegisterRequest {
 interface RegisterState {
   processing: boolean;
   success: boolean;
-  error: boolean;
   errorMessage: string | null;
   transactionId: string | null;
 }
@@ -33,7 +32,6 @@ interface RegisterState {
 const initialState: RegisterState = {
   processing: false,
   success: false,
-  error: false,
   errorMessage: null,
   transactionId: null,
 };
@@ -45,7 +43,7 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
     if (putProfileRes.status !== 200) throw { response: putProfileRes };
 
     const registerSubscriptionRes = await fetchData.post(`/profile/current/subscriptions/${request.tierId}`);
-    if (registerSubscriptionRes.status !== 200) throw { message: registerSubscriptionRes.data };
+    if (registerSubscriptionRes.status !== 201) throw { message: registerSubscriptionRes.data };
     const subscriptionId = registerSubscriptionRes.data.id as string;
 
     const subscriptionsRes = await fetchData.get('/profile/current/subscriptions');
@@ -96,7 +94,7 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
     return transactionId;
 
   } catch (error: any) {
-    return rejectWithValue(error.message);
+    return rejectWithValue(error.message.toString());
   }
 });
 
@@ -109,7 +107,6 @@ export const registerSlice = createSlice({
       .addCase(register.pending, (state) => {
         state.processing = true;
         state.success = false;
-        state.error = false;
         state.errorMessage = null;
         state.transactionId = null;
       })
@@ -120,7 +117,6 @@ export const registerSlice = createSlice({
       })
       .addCase(register.rejected, (state, actions) => {
         state.processing = false;
-        state.error = true;
         state.errorMessage = actions.payload as string;
       })
   },

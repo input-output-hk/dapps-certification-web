@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useInterval } from "usehooks-ts";
 import { useForm } from "react-hook-form";
 
-import { Container, Box, Typography, Button, TextField } from "@mui/material";
+import { Container, Box, Typography, Button, TextField, Snackbar, Alert } from "@mui/material";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { fetchPrice } from "../slices/price.slice";
 import type { Tier } from "../slices/tiers.slice";
+import type { RegisterForm } from "store/slices/register.slice";
 
 import "../index.css";
 
@@ -14,26 +15,21 @@ const REFRESH_TIME = 30;
 
 interface Props {
   tier: Tier,
-  processing: boolean;
   onSubmit: (form: RegisterForm) => void
-}
-
-export interface RegisterForm {
-  companyName: string;
-  contactEmail: string;
-  email: string;
-  fullName: string;
-  linkedin: string;
-  twitter: string;
-  website: string;
 }
 
 export default (props: Props) => {
   const dispatch = useAppDispatch();
   const { price } = useAppSelector((state) => state.price);
+  const { processing, errorMessage } = useAppSelector((state) => state.register);
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
+  const [showError, setShowError] = useState<boolean>(false);
   const [count, setCount] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+
+  useEffect(() => {
+    if (errorMessage !== null) setShowError(true);
+  }, [errorMessage]);
 
   useEffect(() => {
     if (props.tier !== null) {
@@ -62,6 +58,15 @@ export default (props: Props) => {
     props.tier !== null ? 1000 : null
   );
 
+  const onSubmit = (form: RegisterForm) => {
+    props.onSubmit({
+      ...form,
+      linkedin: form.linkedin!.length > 0 ? form.linkedin : undefined,
+      twitter: form.twitter!.length > 0 ? form.twitter : undefined,
+      website: form.website!.length > 0 ? form.website : undefined,
+    })
+  }
+
   return (
     <>
       <Box className="white-box pt-24 text-center">
@@ -72,7 +77,7 @@ export default (props: Props) => {
           Please complete your user profile information
         </Typography>
         <Container maxWidth="sm">
-          <form onSubmit={handleSubmit(props.onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               className="mb-6"
               required fullWidth variant="standard"
@@ -132,7 +137,7 @@ export default (props: Props) => {
             <Button
               type="submit" variant="contained" size="large"
               className="mt-8 py-3 px-14 normal-case bg-main"
-              disabled={total <= 0 || props.processing}
+              disabled={total <= 0 || processing}
             >
               Pay (₳{total.toFixed(2)})
             </Button>
@@ -142,6 +147,20 @@ export default (props: Props) => {
           </form>
         </Container>
       </Box>
+
+      <Snackbar
+        open={showError}
+        autoHideDuration={5000}
+        onClose={() => setShowError(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          severity="error" variant="filled"
+          onClose={() => setShowError(false)}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

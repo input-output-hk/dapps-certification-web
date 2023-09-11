@@ -33,7 +33,7 @@ interface Certificate {
 const CreateCertificate = () => {
     const dispatch = useDispatch();
     const { uuid } = useAppSelector((state) => state.certification);
-    const { address, wallet } = useAppSelector((state) => state.auth);
+    const { walletAddress: address, wallet } = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
