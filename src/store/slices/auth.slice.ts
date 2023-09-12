@@ -7,6 +7,7 @@ import { fetchData } from "api/api";
 import type { RootState } from "../rootReducer";
 
 export interface UserProfile {
+  address?: string;
   authors?: string;
   contacts?: string;
   dapp: {

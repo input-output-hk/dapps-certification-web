@@ -43,13 +43,6 @@ const UserProfile = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const githubAccessCode = searchParams.get("code");
 
-  const [, setUserDetails] = useLocalStorage(
-    LocalStorageKeys.userDetails,
-    localStorage.getItem(LocalStorageKeys.userDetails)
-      ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
-      : null
-  );
-
   const form: any = useForm({
     schema: userProfileSchema,
     mode: "onChange",
@@ -143,9 +136,12 @@ const UserProfile = () => {
       if (website) { reqData['website'] = website }
 
       fetchData.put("/profile/current", reqData).then(async () => {
+      /** For mock */
+      // await fetchData.get("static/data/current-profile.json", formData);
         const response = await dispatch(fetchProfile({}));
+        // TODO: FIX THIS
         console.log(response);
-        //setUserDetails(response.payload);
+        // setUserDetails(response.payload);
         dispatch(clearAccessToken())
         setSubmitting(false)
         navigate('/')
@@ -156,7 +152,8 @@ const UserProfile = () => {
         }
         setShowError(errorMsg);
         const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000)
-        setUserDetails({ dapp: null });        
+        // TODO: FIX THIS
+        // removeUserDetails();        
       })
     };
     submitProfile();

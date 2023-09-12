@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "store/store";
 
@@ -30,10 +30,9 @@ interface Certificate {
     "transactionId": string;
 }
 
-const CreateCertificate = () => {
+const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { uuid } = useAppSelector((state) => state.certification);
-    const { walletAddress: address, wallet } = useAppSelector((state) => state.auth);
+    const { walletAddress: address, wallet, profile } = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
@@ -106,7 +105,7 @@ const CreateCertificate = () => {
     const triggerSubmitCertificate = async (txnId?: string) => {
         fetchData.post('/run/' + uuid + '/certificate' + (txnId ? '?transactionid=' + txnId : ''))
             .catch(handleError)
-            .then((response: any) => {
+            .then(() => {
                 fetchRunDetails(txnId)
             })
     }
@@ -116,7 +115,7 @@ const CreateCertificate = () => {
         setShowError("")
         if (performTransaction) {
             const response = await dispatch(
-                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet: wallet, address: address })
+                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet, address, payer: profile?.address , })
             );
             if (response.payload) {
                 triggerSubmitCertificate(response.payload)
