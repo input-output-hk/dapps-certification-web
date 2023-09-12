@@ -72,9 +72,6 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
     let fee = BigNum.from_str(oneAdaInLovelaces.toString()); // 1 ADA in lovelaces - min req for cardano wallet txn
     if (fee.less_than(subscriptionPrice)) fee = subscriptionPrice;
 
-    console.log(fee);
-    console.log(getState());
-
     const { wallet, walletAddress: address } = (getState() as RootState).auth;
     const paymentRes = await dispatch(payFromWallet({ wallet, address, fee }));
     if (paymentRes?.error?.message) throw paymentRes?.error;
@@ -82,13 +79,15 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
 
     let isActive = false;
     while (!isActive) {
-      const res = await fetchData.get('/profile/current/subscriptions');
-      const subscription = res.data.find((item: any) => item.id === subscriptionId);
-      if (subscription && subscription.status === 'active' && !dayjs().isAfter(dayjs(subscription.endDate))) {
-        isActive = true;
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
+      try {
+        const res = await fetchData.get('/profile/current/subscriptions');
+        const subscription = res.data.find((item: any) => item.id === subscriptionId);
+        if (subscription && subscription.status === 'active' && !dayjs().isAfter(dayjs(subscription.endDate))) {
+          isActive = true;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      } catch (error: any) {}
     }
 
     return transactionId;
@@ -113,7 +112,7 @@ export const registerSlice = createSlice({
       .addCase(register.fulfilled, (state, actions) => {
         state.processing = false;
         state.success = true;
-        state.transactionId = actions.payload.transactionId;
+        state.transactionId = actions.payload;
       })
       .addCase(register.rejected, (state, actions) => {
         state.processing = false;

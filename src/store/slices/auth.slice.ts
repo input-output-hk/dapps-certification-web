@@ -4,6 +4,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { LocalStorageKeys } from "constants/constants";
 import { fetchData } from "api/api";
 
+import type { RootState } from "../rootReducer";
+
 export interface UserProfile {
   authors?: string;
   contacts?: string;
@@ -34,6 +36,8 @@ interface AuthState {
   errorMessage: string | null;
   errorRetry: boolean;
   loading: boolean;
+  listeningWalletChanges: boolean;
+  resetWalletChanges: boolean;
 }
 
 const initialState: AuthState = {
@@ -50,6 +54,8 @@ const initialState: AuthState = {
   errorMessage: null,
   errorRetry: false,
   loading: false,
+  listeningWalletChanges: false,
+  resetWalletChanges: false,
 };
 
 declare global {
@@ -112,6 +118,37 @@ export const fetchSession = createAsyncThunk('fetchSession', async (payload: any
   }
 });
 
+export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', async (payload: any, { dispatch, getState }) => {
+  let isListening = true;
+  while (isListening) {
+    try {
+      let forceLogout = false;
+      const { wallet, walletAddress, networkId } = (getState() as RootState).auth;
+      
+      if (wallet !== null && walletAddress !== null) {
+        const response = await wallet.getChangeAddress();
+        const newAddress = Address.from_bytes(Buffer.from(response, 'hex')).to_bech32();
+        forceLogout = newAddress !== walletAddress;
+      }
+
+      if (!forceLogout && wallet !== null && networkId !== null) {
+        const newNetworkId = await wallet.getNetworkId();
+        forceLogout = newNetworkId !== networkId;
+      }
+
+      if (forceLogout) {
+        await dispatch(logout());
+        isListening = false;
+        return true;
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        isListening = (getState() as RootState).auth.listeningWalletChanges;
+      }
+    } catch (error: any) {}
+  }
+  return false;
+});
+
 export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: any, { rejectWithValue }) => {
   try {
     const response = await fetchData.get('/profile/current');
@@ -128,11 +165,21 @@ export const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       localStorage.clear();
-      return initialState;
+      return {
+        ...initialState,
+        isSessionFetched: true
+      };
+    },
+    stopListenWalletChanges: (state) => {
+      return {
+        ...state,
+        listeningWalletChanges: false
+      };
     }
   },
   extraReducers: (builder) => {
     builder
+      // CONNECT WALLET
       .addCase(connectWallet.pending, (state) => {
         state.isConnected = false;
         state.networkId = null;
@@ -142,6 +189,8 @@ export const authSlice = createSlice({
         state.errorMessage = null;
         state.errorRetry = false;
         state.loading = true;
+        state.resetWalletChanges = false;
+        state.listeningWalletChanges = false;
       })
       .addCase(connectWallet.fulfilled, (state, actions) => {
         state.isConnected = true;
@@ -156,6 +205,8 @@ export const authSlice = createSlice({
         state.errorRetry = (actions.payload as any).showRetry;
         state.loading = false;
       })
+
+      // FETCH SESSION
       .addCase(fetchSession.pending, (state) => {
         state.features = [];
         state.hasAnActiveSubscription = false;
@@ -169,6 +220,22 @@ export const authSlice = createSlice({
       .addCase(fetchSession.rejected, (state) => {
         state.isSessionFetched = true;
       })
+
+      // START LISTEN WALLET CHANGES
+      .addCase(startListenWalletChanges.pending, (state) => {
+        state.listeningWalletChanges = true;
+        state.resetWalletChanges = false;
+      })
+      .addCase(startListenWalletChanges.fulfilled, (state, actions) => {
+        state.listeningWalletChanges = false;
+        state.resetWalletChanges = actions.payload;
+      })
+      .addCase(startListenWalletChanges.rejected, (state) => {
+        state.listeningWalletChanges = false;
+        state.resetWalletChanges = false;
+      })
+
+      // FETCH PROFILE
       .addCase(fetchProfile.pending, (state) => {
         state.profile = null;
       })
@@ -181,6 +248,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, stopListenWalletChanges } = authSlice.actions;
 
 export default authSlice.reducer;

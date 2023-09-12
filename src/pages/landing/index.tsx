@@ -5,10 +5,10 @@ import { Box } from "@mui/material";
 import ConnectSection from "./components/ConnectSection";
 import SubscriptionSection from "./components/SubscriptionSection";
 import RegisterSection from "./components/RegisterSection";
-import PaymentModal from "./components/PaymentModal";
+import RegisterModal from "./components/RegisterModal";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchSession } from "store/slices/auth.slice";
+import { fetchSession, startListenWalletChanges, stopListenWalletChanges } from "store/slices/auth.slice";
 import { register } from "store/slices/register.slice";
 import type { Tier } from "./slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
@@ -17,31 +17,35 @@ import "./index.css";
 
 export default function LandingPage() {
   const dispatch = useAppDispatch();
-  const { isConnected } = useAppSelector((state) => state.auth);
-  const { success, transactionId } = useAppSelector((state) => state.register);
+  const { isConnected, resetWalletChanges } = useAppSelector((state) => state.auth);
+  const { transactionId, processing, success } = useAppSelector((state) => state.register);
 
   const [step, setStep] = useState<string>('connect');
   const [selectedTier, setSelectedTier] = useState<Tier|null>(null);
-  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     if (isConnected && step === 'connect') {
       setStep('subscription');
-      // TODO: START WATCHING FOR WALLET CHANGES
+      dispatch(startListenWalletChanges({}));
     }
   }, [isConnected]);
 
   useEffect(() => {
-    if (success) setShowSuccess(true);
-  }, [success]);
+    if (resetWalletChanges) {
+      setStep('connect');
+      setSelectedTier(null);
+    }
+  }, [resetWalletChanges]);
 
   const handleRegistration = (form: RegisterForm) => {
     dispatch(register({ form, tierId: selectedTier!.id }));
+    dispatch(stopListenWalletChanges());
   };
 
-  const handleSuccess = () => {
-    setShowSuccess(false);
-    dispatch(fetchSession({}));
+  const handleContinue = () => {
+    if (transactionId !== null) {
+      dispatch(fetchSession({}));
+    }
   };
 
   return (
@@ -49,7 +53,7 @@ export default function LandingPage() {
       { step === 'connect' && <ConnectSection /> }
       { step === 'subscription' && <SubscriptionSection onSelectTier={setSelectedTier}/> }
       { selectedTier !== null && <RegisterSection tier={selectedTier} onSubmit={handleRegistration} /> }
-      <PaymentModal show={showSuccess} onClose={handleSuccess} transactionId={transactionId!} />
+      <RegisterModal show={processing||success} onClose={handleContinue} transactionId={transactionId} />
     </Box>
   );
 }
