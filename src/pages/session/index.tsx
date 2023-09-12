@@ -5,9 +5,6 @@ import { Box, Alert, CircularProgress } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "store/store";
 import { fetchSession } from "store/slices/auth.slice";
 
-import Header from "components/Header/Header";
-import NavBar from "components/NavBar/NavBar";
-
 import "./index.css";
 
 const Banner = () => {
@@ -28,20 +25,9 @@ const Banner = () => {
 
 const PageLayout = () => {
   return (
-    <div className="app">
-      <NavBar />
-      <div className="content">
-        <Header />
-        <section id="globalBanners">
-          <Banner />
-        </section>
-        <section data-testid="contentWrapper" id="contentWrapper">
-          <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
-            <Outlet />
-          </Suspense>
-        </section>
-      </div>
-    </div>
+    <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
+      <Outlet />
+    </Suspense>
   );
 };
 
