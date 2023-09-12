@@ -94,8 +94,20 @@ const ReportUpload = () => {
 
     setSubmitting(true);
 
-    const response: any = await fetchData
+    await fetchData
       .post("/auditor/reports", payload)
+      .then(response => {
+        if (response.status === 204) {
+          throw Error()
+        }
+        if (response?.data) {
+          setShowError("");
+          setOpenModal(true);
+          exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + subject + ".json");
+          exportObjectToJsonFile(response.data.onchain, "On-Chain_" + subject + ".json");
+        }
+        setSubmitting(false);
+      })
       .catch((errorObj) => {
         let errorMsg = "Something went wrong. Please try again.";
         if (errorObj?.response?.data) {
@@ -109,13 +121,6 @@ const ReportUpload = () => {
         }, 5000);
         setSubmitting(false);
       });
-    if (response?.data) {
-      setShowError("");
-      setOpenModal(true);
-      exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + subject + ".json");
-      exportObjectToJsonFile(response.data.onchain, "On-Chain_" + subject + ".json");
-    }
-    setSubmitting(false);
   };
 
   return (

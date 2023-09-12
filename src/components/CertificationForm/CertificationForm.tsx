@@ -185,7 +185,7 @@ const CertificationForm: React.FC<{
           type="button"
           disabled={submitting}
           displayStyle="secondary"
-          buttonLabel={"Reset"}
+          buttonLabel={"Cancel"}
           onClick={onFormReset}
         />
 

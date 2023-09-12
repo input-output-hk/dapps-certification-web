@@ -70,7 +70,10 @@ export const certificationMetadataSchema = yup.object().shape(
           .max(64, "Please enter a valid script hash with 64 characters.")
           .matches(/[0-9a-fA-F]{64}/, "Please enter a valid script hash with 64 characters"),
         contractAddress: yup.string()
-        .matches(/^(addr_test1|addr1)[a-zA-Z0-9]{53,}$/, "Please enter a valid script address"),
+        .matches(/^(addr_test1|addr1)[a-zA-Z0-9]{53,}$/, {
+          message: "Please enter a valid script address",
+          excludeEmptyString: true
+        }),
       era: yup.string(),
         compiler: yup.string(),
         compilerVersion: yup.string(),

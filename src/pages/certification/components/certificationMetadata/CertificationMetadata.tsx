@@ -89,8 +89,20 @@ const CertificationMetadata: React.FC<{
 
     setSubmitting(true);
 
-    const response: any = await fetchData
+    await fetchData
       .post("/run/" + uuid + "/certificate", payload)
+      .then(response => {
+        if (response.status === 204) {
+          throw Error()
+        }
+        if (response?.data) {
+          setShowError("");
+          setOpenModal(true);
+          exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + uuid + ".json");
+          exportObjectToJsonFile(response.data.onchain, "On-Chain_" + uuid + ".json");
+        }
+        setSubmitting(false);
+      })
       .catch((errorObj) => {
         let errorMsg = "Something went wrong. Please try again.";
         if (errorObj?.response?.data) {
@@ -104,11 +116,6 @@ const CertificationMetadata: React.FC<{
         }, 5000);
         setSubmitting(false);
       });
-    setShowError("");
-    setOpenModal(true);
-    exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + uuid + ".json");
-    exportObjectToJsonFile(response.data.onchain, "On-Chain_" + uuid + ".json");
-    setSubmitting(false);
   };
 
   return (
