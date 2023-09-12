@@ -103,7 +103,7 @@ export const CERTIFICATION_METADATA_FIELDS = {
         {
           label: "Contract Address",
           type: "text",
-          required: true,
+          required: false,
           id: "contractAddress",
         },
       ],

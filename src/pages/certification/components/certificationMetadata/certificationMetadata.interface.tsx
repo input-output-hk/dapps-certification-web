@@ -13,7 +13,7 @@ export interface IAuditReport {
       repository?: string;
     };
     scriptHash: string;
-    contractAddress: string;
+    contractAddress?: string;
   }
   
   export interface OffChainMetadataSchema {

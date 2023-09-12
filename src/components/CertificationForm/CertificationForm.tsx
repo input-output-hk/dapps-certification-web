@@ -153,7 +153,7 @@ const CertificationForm: React.FC<{
         />
       ))}
 
-      <div className="separator-label">DAPP Script</div>
+      <div className="separator-label">DApp Script</div>
       <div className="relative">
         <div className="absolute action-button addScript-btn">
           <Button

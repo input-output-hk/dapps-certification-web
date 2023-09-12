@@ -37,9 +37,9 @@ const DAPPScript = ({
   useEffect(() => {
     if (errors?.[fieldArrayName]) {
       setError(errors?.[fieldArrayName]);
-    }
+    } 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [errors?.[fieldArrayName]]);
 
   return (
     <div className="bordered card-layout card-padding" key={value.id}>

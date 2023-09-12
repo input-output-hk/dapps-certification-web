@@ -125,7 +125,7 @@ export const REPORT_UPLOAD_FIELDS = {
         {
           label: "Contract Address",
           type: "text",
-          required: true,
+          required: false,
           id: "contractAddress",
         },
       ],
