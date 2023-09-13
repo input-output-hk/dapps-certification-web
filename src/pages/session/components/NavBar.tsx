@@ -6,7 +6,7 @@ import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, Lis
 import HomeIcon from '@mui/icons-material/HomeOutlined';
 import TestingIcon from '@mui/icons-material/BarChartOutlined';
 import TestingHistoryIcon from '@mui/icons-material/HistoryOutlined';
-import CertificationIcon from '@mui/icons-material/ReceiptOutlined';
+import ReportUploadIcon from '@mui/icons-material/ReceiptOutlined';
 import UserProfileIcon from '@mui/icons-material/PersonOutlined';
 import SupportIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import DocumentationIcon from '@mui/icons-material/SupportOutlined';
@@ -43,9 +43,9 @@ const NavBar = () => {
           <ListItemIcon><TestingHistoryIcon className={getIconClassName('/history')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">Testing History</ListItemText>
         </MenuItem>
-        <MenuItem className={getItemClassName('/certification')} onClick={() => navigate('/certification')}>
-          <ListItemIcon><CertificationIcon className={getIconClassName('/certification')} /></ListItemIcon>
-          <ListItemText className="text-white font-medium">Certification</ListItemText>
+        <MenuItem className={getItemClassName('/audit-report-upload')} onClick={() => navigate('/audit-report-upload')}>
+          <ListItemIcon><ReportUploadIcon className={getIconClassName('/audit-report-upload')} /></ListItemIcon>
+          <ListItemText className="text-white font-medium">Auditor Report Upload</ListItemText>
         </MenuItem>
         <MenuItem className={getItemClassName('/profile')} onClick={() => navigate('/profile')}>
           <ListItemIcon><UserProfileIcon className={getIconClassName('/profile')} /></ListItemIcon>
@@ -61,9 +61,6 @@ const NavBar = () => {
         </MenuItem>
 
         <Divider />
-        <MenuItem className="nav-bar-item" onClick={() => navigate('/audit-report-upload')}>
-          <ListItemText className="text-white font-medium">Report Upload</ListItemText>
-        </MenuItem>
       </MenuList>
     </Box>
   );
