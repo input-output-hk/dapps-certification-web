@@ -6,7 +6,8 @@ const Session = lazy(() => import("../pages/session"));
 const Landing = lazy(() => import("../pages/landing"));
 const Certification = lazy(() => import("../pages/certification/Certification"));
 const TestHistory = lazy(() => import("../pages/testHistory/TestHistory"));
-const ReportUpload = lazy(() => import("../pages/auditing/reportUpload/ReportUpload"));
+const ReportUpload = lazy(() => import("../pages/auditing/reportUpload/ReportUpload"))
+const CertificationResult = lazy(() => import("../pages/certification/certification-result/CertificationResult"));
 
 const ComingSoon = () => (
   <Typography>Coming soon...</Typography>
@@ -26,6 +27,7 @@ const App = () => {
           <Route path="support" element={<ComingSoon />} />
           <Route path="documentation" element={<ComingSoon />} />
           <Route path="audit-report-upload" element={<ReportUpload />} />
+          <Route path="/report/:uuid" element={<CertificationResult />} />
         </Route>
       </Routes>
     </Suspense>
