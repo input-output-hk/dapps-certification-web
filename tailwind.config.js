@@ -14,6 +14,8 @@ module.exports = {
         inactive: '#EAEAEA',
         app: '#F0F0F7',
         text: '#4E4F5C',
+        tableHeader: '#F5F6FA',
+        tableHeaderText: '#A3A6B4',
       },
       backgroundImage: {
         landing: 'url(assets/images/landing-background.png)',
