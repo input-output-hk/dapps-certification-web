@@ -10,7 +10,7 @@ interface Props {
   transactionId: string|null;
 }
 
-export default (props: Props) => {
+const RegisterModal = (props: Props) => {
   return (
     <Dialog open={props.show} onClose={props.onClose}>
       <DialogTitle>
@@ -38,3 +38,5 @@ export default (props: Props) => {
     </Dialog>
   );
 }
+
+export default RegisterModal;

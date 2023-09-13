@@ -12,7 +12,7 @@ interface Props {
   onSelectTier: (tier: Tier) => void
 }
 
-export default (props: Props) => {
+const SubscriptionSection = (props: Props) => {
   const dispatch = useAppDispatch();
   const { tiers } = useAppSelector((state) => state.tiers);
   const [tierId, setTierId] = useState<string|null>(null);
@@ -65,3 +65,5 @@ export default (props: Props) => {
     </Box>
   );
 }
+
+export default SubscriptionSection;

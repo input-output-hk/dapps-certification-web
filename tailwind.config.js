@@ -13,6 +13,7 @@ module.exports = {
         active: '#3A87FF',
         inactive: '#EAEAEA',
         app: '#F0F0F7',
+        text: '#4E4F5C',
       },
       backgroundImage: {
         landing: 'url(assets/images/landing-background.png)',

@@ -8,6 +8,7 @@ import { payFromWallet } from "store/slices/walletTransaction.slice";
 import type { RootState } from "../rootReducer";
 
 export interface RegisterForm {
+  address: string;
   companyName: string;
   contactEmail: string;
   email: string;
@@ -38,6 +39,8 @@ const initialState: RegisterState = {
 
 export const register = createAsyncThunk("register", async (request: RegisterRequest, { rejectWithValue, dispatch, getState }) => {
   try {
+
+    request.form.address = (getState() as RootState).auth.walletAddress!;
 
     const putProfileRes = await fetchData.put('/profile/current', request.form);
     if (putProfileRes.status !== 200) throw { response: putProfileRes };

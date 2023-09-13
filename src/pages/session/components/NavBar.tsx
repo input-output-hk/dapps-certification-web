@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
@@ -13,7 +13,7 @@ import DocumentationIcon from '@mui/icons-material/SupportOutlined';
 
 import "../index.css";
 
-export default () => {
+const NavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -61,15 +61,6 @@ export default () => {
         </MenuItem>
 
         <Divider />
-        <MenuItem className="nav-bar-item" onClick={() => navigate('/subscription')}>
-          <ListItemText className="text-white font-medium">Subscription</ListItemText>
-        </MenuItem>
-        <MenuItem className="nav-bar-item" onClick={() => navigate('/subscription/payment')}>
-          <ListItemText className="text-white font-medium">Subscription &gt; Payment</ListItemText>
-        </MenuItem>
-        <MenuItem className="nav-bar-item" onClick={() => navigate('/subscription/history')}>
-          <ListItemText className="text-white font-medium">Subscription &gt; History</ListItemText>
-        </MenuItem>
         <MenuItem className="nav-bar-item" onClick={() => navigate('/audit-report-upload')}>
           <ListItemText className="text-white font-medium">Report Upload</ListItemText>
         </MenuItem>
@@ -77,3 +68,5 @@ export default () => {
     </Box>
   );
 }
+
+export default NavBar;

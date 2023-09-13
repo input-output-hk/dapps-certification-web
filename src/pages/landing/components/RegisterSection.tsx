@@ -18,7 +18,7 @@ interface Props {
   onSubmit: (form: RegisterForm) => void
 }
 
-export default (props: Props) => {
+const RegisterSection = (props: Props) => {
   const dispatch = useAppDispatch();
   const { price } = useAppSelector((state) => state.price);
   const { processing, errorMessage } = useAppSelector((state) => state.register);
@@ -164,3 +164,5 @@ export default (props: Props) => {
     </>
   );
 }
+
+export default RegisterSection;

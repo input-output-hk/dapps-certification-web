@@ -16,7 +16,7 @@ declare global {
 
 const CardanoNS = window.cardano;
 
-export default () => {
+const ConnectSection = () => {
   const dispatch = useAppDispatch();
   const { loading, errorMessage, errorRetry, activeWallets } = useAppSelector(state => state.auth);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -116,3 +116,5 @@ export default () => {
     </>
   );
 }
+
+export default ConnectSection;

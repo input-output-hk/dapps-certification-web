@@ -89,7 +89,7 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
     if (loginRes.status !== 200) throw new Error();
     localStorage.setItem(LocalStorageKeys.authToken, loginRes.data);
 
-    const res = await dispatch(fetchSession({}));
+    await dispatch(fetchSession({}));
     
     return { wallet, walletName, networkId, walletAddress: address };
   } catch (error: any) {
