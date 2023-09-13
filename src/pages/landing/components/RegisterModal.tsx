@@ -7,6 +7,7 @@ import "../index.css";
 interface Props {
   show: boolean;
   onClose: () => void;
+  success: boolean;
   transactionId: string|null;
 }
 
@@ -14,10 +15,10 @@ const RegisterModal = (props: Props) => {
   return (
     <Dialog open={props.show} onClose={props.onClose}>
       <DialogTitle>
-        {props.transactionId !== null ? 'Successfully initiated subscription' : 'Processing payment...'}
+        {props.success ? 'Successfully initiated subscription' : 'Processing payment...'}
       </DialogTitle>
       <DialogContent className="flex flex-col pt-4 pb-8 items-center">
-        {props.transactionId !== null ? (
+        {props.success ? (props.transactionId &&
           <Typography>
             View your performed payment transaction&nbsp;
             <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${props.transactionId}`}>
@@ -28,7 +29,7 @@ const RegisterModal = (props: Props) => {
           <CircularProgress color="secondary" size={50} />
         )}
       </DialogContent>
-      {props.transactionId !== null && (
+      {props.success && (
         <DialogActions>
           <Button variant="contained" className="normal-case bg-main" onClick={props.onClose}>
             Continue

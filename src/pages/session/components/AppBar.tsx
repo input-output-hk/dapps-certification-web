@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { logout } from "store/slices/auth.slice";
+import { LocalStorageKeys } from "constants/constants";
 
 import { AppBar as MuiAppBar, Toolbar, Avatar, IconButton, Button, Menu, MenuItem, ListItemIcon } from "@mui/material";
 
@@ -14,11 +15,9 @@ const AppBar = () => {
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
 
-  const { profile } = useAppSelector((state) => state.auth);
-
   const getProfileAddress = () => {
-    if (!profile || !profile.address) return '...';
-    return `${profile.address.slice(0,4)}...${profile.address.slice(-4)}`;
+    const address = localStorage.getItem(LocalStorageKeys.address);
+    return address ? `${address.slice(0,4)}...${address.slice(-4)}` : '...';
   }
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {

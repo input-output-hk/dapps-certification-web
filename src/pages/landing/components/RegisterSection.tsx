@@ -55,7 +55,7 @@ const RegisterSection = (props: Props) => {
         setCount(count - 1);
       }
     },
-    props.tier !== null ? 1000 : null
+    props.tier !== null && !processing ? 1000 : null
   );
 
   const onSubmit = (form: RegisterForm) => {

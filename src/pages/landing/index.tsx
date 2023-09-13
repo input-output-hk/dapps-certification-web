@@ -43,7 +43,7 @@ export default function LandingPage() {
   };
 
   const handleContinue = () => {
-    if (transactionId !== null) {
+    if (success) {
       dispatch(fetchSession({}));
       dispatch(clear());
     }
@@ -54,7 +54,7 @@ export default function LandingPage() {
       { step === 'connect' && <ConnectSection /> }
       { step === 'subscription' && <SubscriptionSection onSelectTier={setSelectedTier}/> }
       { selectedTier !== null && <RegisterSection tier={selectedTier} onSubmit={handleRegistration} /> }
-      <RegisterModal show={processing||success} onClose={handleContinue} transactionId={transactionId} />
+      <RegisterModal show={processing||success} onClose={handleContinue} success={success} transactionId={transactionId} />
     </Box>
   );
 }
