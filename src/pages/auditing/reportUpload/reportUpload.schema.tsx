@@ -80,7 +80,7 @@ export const reportUploadSchema = yup.object().shape({
       repoUrl: yup.string()
         .matches(
           /^(?:https?:\/\/)?(?:www\.)?github\.com\/[\w-]+\/[\w.-]+$/, {
-            message: "Please enter a valid github repo URL",
+            message: "Please enter a valid GitHub repository URL",
             excludeEmptyString: true 
           }
         )
