@@ -41,19 +41,8 @@ interface Certificate {
 
 const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-<<<<<<< HEAD
-    const { address, wallet, subscribedFeatures } = useAppSelector(
-        (state) => state.auth
-    );
-    const [certifying, setCertifying] = useState(false);
-    const [certified, setCertified] = useState(false);
-    const [transactionId, setTransactionId] = useState("");
-    const [showError, setShowError] = useState("");
-    const [openModal, setOpenModal] = useState(false);
-    const [disableCertify, setDisableCertify] = useState(false);
-=======
     const { uuid } = useAppSelector((state) => state.certification);        
-    const { address, wallet,userDetails:{address: payer} } = useAppSelector((state) => state.auth);
+    const { address, wallet, subscribedFeatures, userDetails:{address: payer} } = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
@@ -61,7 +50,6 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const [ openModal, setOpenModal ] = useState(false);
     const [ openMetadataModal, setOpenMetadataModal ] = useState(false);
     const [ disableCertify, setDisableCertify ] = useState(false);
->>>>>>> d9a646175a51b3a9f423ea30e1f0038264c28e49
     const [certificationPrice, setCertificationPrice] = useState(0);
     const [performTransaction, setPerformTransaction] = useState(true);
 
