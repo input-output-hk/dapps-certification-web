@@ -1,6 +1,6 @@
-import { Address } from "@emurgo/cardano-serialization-lib-browser";
-
+import { Address, BaseAddress, RewardAddress } from "@emurgo/cardano-serialization-lib-browser";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
 import { LocalStorageKeys } from "constants/constants";
 import { fetchData } from "api/api";
 
@@ -33,6 +33,7 @@ interface AuthState {
   wallet: any;
   walletName: string | null;
   walletAddress: string | null;
+  stakeAddress: string | null;
   activeWallets: string[];
   errorMessage: string | null;
   errorRetry: boolean;
@@ -51,6 +52,7 @@ const initialState: AuthState = {
   wallet: null,
   walletName: null,
   walletAddress: null,
+  stakeAddress: null,
   activeWallets: ['lace', 'nami', 'yoroi'],
   errorMessage: null,
   errorRetry: false,
@@ -67,31 +69,54 @@ declare global {
 
 const CardanoNS = window.cardano;
 
+type StakeAddressHex = string;
+type StakeAddressBech32 = `stake${string}`;
+type ChangeAddressBech32 = `addr${string}`;
+
+const getAddresses = async (wallet: any): Promise<[StakeAddressHex, StakeAddressBech32,ChangeAddressBech32]> => {
+  const networkId = await wallet.getNetworkId();
+  const changeAddrHex = await wallet.getChangeAddress();
+
+  // derive the stake address from the change address to be sure we are getting
+  // the stake address of the currently active account.
+  const changeAddress = Address.from_bytes( Buffer.from(changeAddrHex, 'hex') );
+  const baseChangeAddress = BaseAddress.from_address(changeAddress);
+  if(!baseChangeAddress) throw new Error(`Could not derive base address from change address: ${changeAddrHex}`)
+  const stakeCredential = baseChangeAddress?.stake_cred();
+  if(!stakeCredential) throw new Error(`Could not derive stake credential from change address: ${changeAddrHex}`)
+  const stakeAddress = RewardAddress.new(networkId, stakeCredential).to_address();
+
+  return [
+    stakeAddress.to_hex(),
+    stakeAddress.to_bech32() as StakeAddressBech32,
+    baseChangeAddress.to_address().to_bech32() as ChangeAddressBech32
+  ];
+}
+
 export const connectWallet = createAsyncThunk('connectWallet', async (payload: { walletName: string }, { rejectWithValue, dispatch }) => {
   try {
     const { walletName } = payload;
     const wallet = await CardanoNS[walletName].enable();
     const networkId = await wallet.getNetworkId();
 
-    const response = await wallet.getChangeAddress();
-    const address = Address.from_bytes(Buffer.from(response, 'hex')).to_bech32();
+    const [stakeAddrHex, stakeAddrBech32, changeAddressBech32] = await getAddresses(wallet);
 
     const timestampRes = await fetchData.get('/server-timestamp');
     if (timestampRes.status !== 200) throw new Error();
     const timestamp = timestampRes.data;
     
-    const message = `Sign this message if you are the owner of the ${address} address. \n Timestamp: <<${timestamp}>> \n Expiry: 60 seconds`;
+    const message = `Sign this message if you are the owner of the ${changeAddressBech32} address. \n Timestamp: <<${timestamp}>> \n Expiry: 60 seconds`;
 
-    const { key, signature } = await wallet.signData(response, Buffer.from(message, 'utf8').toString('hex'));
+    const { key, signature } = await wallet.signData(stakeAddrHex, Buffer.from(message, 'utf8').toString('hex'));
     if (!key || !signature) throw new Error();
     
-    const loginRes = await fetchData.post('/login', { address, key, signature });
+    const loginRes = await fetchData.post('/login', { address: stakeAddrBech32, key, signature });
     if (loginRes.status !== 200) throw new Error();
     localStorage.setItem(LocalStorageKeys.authToken, loginRes.data);
 
     await dispatch(fetchSession({}));
     
-    return { wallet, walletName, networkId, walletAddress: address };
+    return { wallet, walletName, networkId, walletAddress: changeAddressBech32, stakeAddress: stakeAddrBech32 };
   } catch (error: any) {
     const payload = {
       showRetry: true,
@@ -124,12 +149,11 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
   while (isListening) {
     try {
       let forceLogout = false;
-      const { wallet, walletAddress, networkId } = (getState() as RootState).auth;
+      const { wallet, stakeAddress, networkId } = (getState() as RootState).auth;
       
-      if (wallet !== null && walletAddress !== null) {
-        const response = await wallet.getChangeAddress();
-        const newAddress = Address.from_bytes(Buffer.from(response, 'hex')).to_bech32();
-        forceLogout = newAddress !== walletAddress;
+      if (wallet !== null && stakeAddress !== null) {
+        const newStakeAddress = (await getAddresses(wallet))[1];
+        forceLogout = newStakeAddress !== stakeAddress;
       }
 
       if (!forceLogout && wallet !== null && networkId !== null) {
@@ -187,6 +211,7 @@ export const authSlice = createSlice({
         state.wallet = null;
         state.walletName = null;
         state.walletAddress = null;
+        state.stakeAddress = null;
         state.errorMessage = null;
         state.errorRetry = false;
         state.loading = true;
@@ -199,6 +224,7 @@ export const authSlice = createSlice({
         state.wallet = actions.payload.wallet;
         state.walletName = actions.payload.walletName;
         state.walletAddress = actions.payload.walletAddress;
+        state.stakeAddress = actions.payload.stakeAddress;
         state.loading = false;
       })
       .addCase(connectWallet.rejected, (state, actions) => {

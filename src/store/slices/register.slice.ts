@@ -39,9 +39,6 @@ const initialState: RegisterState = {
 
 export const register = createAsyncThunk("register", async (request: RegisterRequest, { rejectWithValue, dispatch, getState }) => {
   try {
-
-    request.form.address = (getState() as RootState).auth.walletAddress!;
-
     const putProfileRes = await fetchData.put('/profile/current', request.form);
     if (putProfileRes.status !== 200) throw { response: putProfileRes };
 
@@ -75,8 +72,8 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
     let fee = BigNum.from_str(oneAdaInLovelaces.toString()); // 1 ADA in lovelaces - min req for cardano wallet txn
     if (fee.less_than(subscriptionPrice)) fee = subscriptionPrice;
 
-    const { wallet, walletAddress: address } = (getState() as RootState).auth;
-    const paymentRes = await dispatch(payFromWallet({ wallet, address, fee }));
+    const { wallet, walletAddress: address, stakeAddress: payer } = (getState() as RootState).auth;
+    const paymentRes = await dispatch(payFromWallet({ wallet, address, fee, payer }));
     if (paymentRes?.error?.message) throw paymentRes?.error;
     const transactionId = paymentRes.payload;
 
@@ -103,7 +100,9 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
 export const registerSlice = createSlice({
   name: "register",
   initialState,
-  reducers: {},
+  reducers: {
+    clear: () => initialState
+  },
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
@@ -123,5 +122,7 @@ export const registerSlice = createSlice({
       })
   },
 });
+
+export const { clear } = registerSlice.actions;
 
 export default registerSlice.reducer;

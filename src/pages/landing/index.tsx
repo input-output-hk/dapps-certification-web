@@ -9,7 +9,7 @@ import RegisterModal from "./components/RegisterModal";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { fetchSession, startListenWalletChanges, stopListenWalletChanges } from "store/slices/auth.slice";
-import { register } from "store/slices/register.slice";
+import { register, clear } from "store/slices/register.slice";
 import type { Tier } from "./slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
 
@@ -45,6 +45,7 @@ export default function LandingPage() {
   const handleContinue = () => {
     if (transactionId !== null) {
       dispatch(fetchSession({}));
+      dispatch(clear());
     }
   };
 
