@@ -13,6 +13,8 @@ import IconButton from "@mui/material/IconButton";
 import GridViewIcon from '@mui/icons-material/GridView';
 import Typography from "@mui/material/Typography";
 import ColViz from "./components/ColViz/ColViz";
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 import "./Table.css";
 
@@ -114,20 +116,12 @@ const TableComponent: FC<any> = ({
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                     >
                       {column.render("Header").toUpperCase()}
-                      <span>
+                      <span className="ml-1 relative top-[4px]">
                         {column.isSorted ? (
                           column.isSortedDesc ? (
-                            <img
-                              className="sort-icon"
-                              src="/images/descIcon.svg"
-                              alt="descIcon"
-                            />
+                            <ArrowDownwardIcon fontSize="small" />
                           ) : (
-                            <img
-                              className="sort-icon"
-                              src="/images/ascIcon.svg"
-                              alt="ascIcon"
-                            />
+                            <ArrowUpwardIcon fontSize="small" />
                           )
                         ) : (
                           ""
