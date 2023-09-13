@@ -42,7 +42,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 
   const dispatch = useAppDispatch();
   const { repoUrl } = useAppSelector((state) => state.certification);
-  const { userDetails } = useAppSelector((state) => state.auth);
+  const { profile } = useAppSelector((state) => state.auth);
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
   const [mandatory, setMandatory] = useState(false);
@@ -92,7 +92,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       try {
         const checkout = commitHash || commit;
         const profileResponse = await fetchData.put("/profile/current", {
-          ...userDetails,
+          ...profile,
           dapp: {
             owner: username,
             repo: repoName,

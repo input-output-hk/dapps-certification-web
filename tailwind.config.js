@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
@@ -15,6 +14,7 @@ module.exports = {
         },
         blue: {
           DEFAULT: "#3b86ff",
+          active: '#3A87FF'
         },
         red: {
           DEFAULT: "#d54848",
@@ -23,15 +23,27 @@ module.exports = {
           input: "#cecfd0",
           inputBackground: "#f8f8f8",
           label: "#808495",
-          title: "#5e5d75"
+          title: "#5e5d75",
+          secondary: "#A6A7AD",
+          inactive: '#EAEAEA'
         },
         slate: {
           contentBackground: "#f0f0f7",
           table: {
             head: "#f5f6fa",
             headText: "#b0b3bf",
-          }
-        }
+          },
+          main: "#43425D",
+          mainDark: '#3C3B53',
+          mainLight: '#A5A4BF',
+          mainActive: '#A3A0FB',
+          app: '#F0F0F7',
+          text: '#4E4F5C'
+        },
+        transparent: 'transparent'
+      },
+      backgroundImage: {
+        landing: 'url(assets/images/landing-background.png)',
       },
       borderRadius: {
         3: "3px",

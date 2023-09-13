@@ -1,8 +1,11 @@
 import { useState } from "react";
+// import { useAppSelector } from "store/store";
 import CertificationForm from "./components/AuditorRunTestForm/AuditorRunTestForm";
 import TimelineView from "./components/TimelineView/TimelineView";
 
 const Certification = () => {
+    // const { features: subscribedFeatures } = useAppSelector((state) => state.auth);
+
     const [submitting, setSubmitting] = useState(false);
     const [runId, setRunId] = useState("");
     const [commitHash, setRunCommitHash] = useState("");
