@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "store/store";
 
@@ -39,9 +39,9 @@ interface Certificate {
     transactionId: string;
 }
 
-const CreateCertificate = () => {
+const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { uuid } = useAppSelector((state) => state.certification);
+<<<<<<< HEAD
     const { address, wallet, subscribedFeatures } = useAppSelector(
         (state) => state.auth
     );
@@ -50,8 +50,18 @@ const CreateCertificate = () => {
     const [transactionId, setTransactionId] = useState("");
     const [showError, setShowError] = useState("");
     const [openModal, setOpenModal] = useState(false);
-    const [openMetadataModal, setOpenMetadataModal] = useState(false);
     const [disableCertify, setDisableCertify] = useState(false);
+=======
+    const { uuid } = useAppSelector((state) => state.certification);        
+    const { address, wallet,userDetails:{address: payer} } = useAppSelector((state) => state.auth);
+    const [ certifying, setCertifying ] = useState(false);
+    const [ certified, setCertified ] = useState(false);
+    const [ transactionId, setTransactionId ] = useState("")
+    const [ showError, setShowError ] = useState("");
+    const [ openModal, setOpenModal ] = useState(false);
+    const [ openMetadataModal, setOpenMetadataModal ] = useState(false);
+    const [ disableCertify, setDisableCertify ] = useState(false);
+>>>>>>> d9a646175a51b3a9f423ea30e1f0038264c28e49
     const [certificationPrice, setCertificationPrice] = useState(0);
     const [performTransaction, setPerformTransaction] = useState(true);
 
@@ -136,7 +146,7 @@ const CreateCertificate = () => {
     const triggerSubmitCertificate = async (txnId?: string) => {
         fetchData.post('/run/' + uuid + '/certificate' + (txnId ? '?transactionid=' + txnId : ''))
             .catch(handleError)
-            .then((response: any) => {
+            .then(() => {
                 fetchRunDetails(txnId)
             })
     }
@@ -146,7 +156,7 @@ const CreateCertificate = () => {
         setShowError("")
         if (performTransaction) {
             const response = await dispatch(
-                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet: wallet, address: address })
+                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet, address, payer, })
             );
             if (response.payload) {
                 triggerSubmitCertificate(response.payload)

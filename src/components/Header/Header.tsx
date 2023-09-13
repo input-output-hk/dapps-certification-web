@@ -1,6 +1,5 @@
 import { useEffect, useState, memo, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Address } from "@emurgo/cardano-serialization-lib-browser";
 import { useAppDispatch, useAppSelector } from "store/store";
 import {
   logout,
@@ -13,13 +12,13 @@ import "./Header.scss";
 import { useDelayedApi } from "hooks/useDelayedApi";
 import { fetchData } from "api/api";
 import useLocalStorage from "hooks/useLocalStorage";
-import ConnectWallet from "components/ConnectWallet/ConnectWallet";
+import ConnectWallet,{getAddresses} from "components/ConnectWallet/ConnectWallet";
 import AvatarDropDown from "components/AvatarDropdown/AvatarDropdown";
 import DropoverMenu from "components/DropoverMenu/DropoverMenu";
 import { LocalStorageKeys } from 'constants/constants';
 
 const Header = () => {
-  const { isLoggedIn, address, wallet, network } = useAppSelector(
+  const { isLoggedIn, address, wallet, network, userDetails: { address: stakeAddress } } = useAppSelector(
     (state) => state.auth
   );
   const dispatch = useAppDispatch();
@@ -32,7 +31,7 @@ const Header = () => {
     localStorage.getItem(LocalStorageKeys.isLoggedIn) === "true" ? true : false
   );
 
-  const [, setUserDetails] = useLocalStorage(
+  const [, setUserDetails, removeUserDetails] = useLocalStorage(
     LocalStorageKeys.userDetails,
     localStorage.getItem(LocalStorageKeys.userDetails)
       ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
@@ -96,30 +95,33 @@ const Header = () => {
   // }, [isLoggedIn]);
 
   useEffect(() => {
-    setPollForAddress(wallet && address && isLoggedIn);
-    setPollForNetwork(wallet && address && isLoggedIn && network !== null);
-  }, [wallet, address, isLoggedIn, network]);
+    setPollForAddress(wallet && stakeAddress && isLoggedIn);
+    setPollForNetwork(wallet && stakeAddress && isLoggedIn && network !== null);
+  }, [wallet, stakeAddress, isLoggedIn, network]);
 
   const forceUserLogout = () => {
     // account/network has been changed. Force logout the user
     setPollForAddress(false);
     setPollForNetwork(false);
     dispatch(logout());
-    setUserDetails({ dapp: null });
+    removeUserDetails()
     setIsLoggedIn(false);
   };
 
   useDelayedApi(
     async () => {
       setPollForAddress(false);
-      let newAddress = "";
+      let newStakeAddress = "";
+      let newAddress = ""
       if (wallet) {
-        const response = await wallet.getChangeAddress().catch((e: any) => console.error('Failed to get change address:', e));
-        newAddress = Address.from_bytes(
-          Buffer.from(response, "hex")
-        ).to_bech32();
+        newStakeAddress = (await getAddresses(wallet))[1];
+        newAddress = (await getAddresses(wallet))[2];
       }
+
       if (newAddress && address !== newAddress) {
+         localStorage.setItem(LocalStorageKeys.address, newAddress)
+      }
+      if (newStakeAddress && stakeAddress !== newStakeAddress) {
         forceUserLogout();
       } else {
         setPollForAddress(true);
@@ -192,18 +194,18 @@ const Header = () => {
       <>
         <li>
           <Link to="support">Support</Link>
-        </li>        
+        </li>
         <li>
           <Link to="subscription">Subscription</Link>
         </li>
         {featureList.indexOf('l2-upload-report') !== -1 ? (
           <li>
-            <DropoverMenu 
-              name="auditing" 
+            <DropoverMenu
+              name="auditing"
               mainElm={<AuditMainMenu />}
               listItems={<AuditSubMenu />}></DropoverMenu>
-            
-            
+
+
           </li>
         ) : null}
         <li>

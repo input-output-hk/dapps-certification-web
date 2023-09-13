@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 function isValidJSON(text: string) {
   try {
     const result = JSON.parse(text);
-    return (typeof result === 'object' && result !== null);
+    return (typeof result === "object" && result !== null);
   } catch (e) {
     return false;
   }
@@ -13,7 +13,7 @@ function isValidJSON(text: string) {
 function useLocalStorage<T>(
   key: string,
   initialValue: T
-): [T, Dispatch<SetStateAction<T>>] {
+): [T, Dispatch<SetStateAction<T>>, () => void] {
   // Get from local storage then
   // parse stored json or return initialValue
   const readValue = () => {
@@ -72,6 +72,22 @@ function useLocalStorage<T>(
     }
   };
 
+  const removeValue = () => {
+    if (typeof window === "undefined") {
+      console.warn(
+        `Tried removing localStorage key “${key}” even though environment is not a client`
+      );
+    }
+
+    try {
+      window.localStorage.removeItem(key);
+      setStoredValue(initialValue);
+      window.dispatchEvent(new Event("local-storage"));
+    } catch (error) {
+      console.warn(`Error removing localStorage key “${key}”:`, error);
+    }
+  };
+
   useEffect(() => {
     setStoredValue(readValue());
 
@@ -92,7 +108,7 @@ function useLocalStorage<T>(
     // eslint-disable-next-line
   }, []);
 
-  return [storedValue, setValue];
+  return [storedValue, setValue, removeValue];
 }
 
 export default useLocalStorage;
