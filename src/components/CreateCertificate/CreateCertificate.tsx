@@ -41,7 +41,6 @@ interface Certificate {
 
 const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { uuid } = useAppSelector((state) => state.certification);        
     const { address, wallet, subscribedFeatures, userDetails:{address: payer} } = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
