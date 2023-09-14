@@ -58,6 +58,7 @@ const registerSubscription = async (tierId: string) => {
 const getUserSubscriptionById = async (subscriptionId: string) => {
   const res = await fetchData.get('/profile/current/subscriptions');
   if (res.status !== 200) throw { message: res.data };
+  if (!res.data.length) throw { message: "Unable to proceed with the current Subscription. Payment made will be refunded into your profile balance to be used for future transactions. Please retry Subscription."}
   return res.data.find((item: any) => item.id === subscriptionId);
 }
 
