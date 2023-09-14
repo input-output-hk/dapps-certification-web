@@ -69,19 +69,19 @@ const getUserBalance = async () => {
 }
 
 const calculateFee = async (subscriptionPrice: BigNum, balance: BigNum) => {
-  let isBalanceEnough = false;
+  let lessBalance = false;
   if (balance.less_than(subscriptionPrice)) {
-    isBalanceEnough = true;
+    lessBalance = true;
   } else {
     const difference = balance.checked_sub(subscriptionPrice);
-    isBalanceEnough = difference.less_than(BigNum.from_str('0'));
+    lessBalance = difference.less_than(BigNum.from_str('0'));
   }
 
   const oneAdaInLovelaces = 1000000;
   let fee = BigNum.from_str(oneAdaInLovelaces.toString()); // 1 ADA in lovelaces - min req for cardano wallet txn
   if (fee.less_than(subscriptionPrice)) fee = subscriptionPrice;
 
-  return { isBalanceEnough, fee };
+  return { lessBalance, fee };
 }
 
 const doPayment = async (dispatch: any, wallet: any, walletAddress: string, stakeAddress: string, fee: BigNum) => {
@@ -107,11 +107,13 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
       const subscriptionPrice = BigNum.from_str(subscription.price.toString());
       const balance = await getUserBalance();
 
-      const { isBalanceEnough, fee } = await calculateFee(subscriptionPrice, balance);
-      if (!isBalanceEnough) throw { message: 'Not enough balance' };
-
-      const { wallet, walletAddress, stakeAddress } = (getState() as RootState).auth;
-      transactionId = await doPayment(dispatch, wallet, walletAddress!, stakeAddress!, fee);
+      const { lessBalance, fee } = await calculateFee(subscriptionPrice, balance);
+      if (!lessBalance) {
+        // do nothing; auto pay from balance
+      } else {
+        const { wallet, walletAddress, stakeAddress } = (getState() as RootState).auth;
+        transactionId = await doPayment(dispatch, wallet, walletAddress!, stakeAddress!, fee);
+      }
     }
 
     let isActive = false;
@@ -123,7 +125,9 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
         } else {
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
-      } catch (error: any) {}
+      } catch (error: any) {
+        return rejectWithValue(error.message.toString());
+      }
     }
 
     return transactionId;
