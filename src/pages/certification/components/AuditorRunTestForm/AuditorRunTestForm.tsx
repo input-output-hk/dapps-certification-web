@@ -23,7 +23,7 @@ interface IAuditorRunTestForm {
   isSubmitting: boolean;
   clearForm?: boolean;
   testAgain?: boolean;
-  onSubmit: (data: { runId: string; commitHash: string }) => any;
+  onSubmit: (data: { runId: string; commitHash: string, repo: string }) => any;
   onError: () => void;
 }
 
@@ -45,7 +45,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   const { profile } = useAppSelector((state) => state.auth);
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
-  const [mandatory, setMandatory] = useState(false);
+  const [mandatory, setMandatory] = useState(true);
 
   // New Test: Clear certification form
   useEffect(() => {
@@ -107,7 +107,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             localStorage.setItem(LocalStorageKeys.certificationUuid, response.data);
             localStorage.setItem(LocalStorageKeys.commit, checkout);
             // Emit uuid, checkout
-            onSubmit({ runId: response.data, commitHash: checkout });
+            onSubmit({ runId: response.data, commitHash: checkout, repo: username + "/" + repoName });
           }
         }
       } catch (e) {
@@ -132,6 +132,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
         // url invalid
         setMandatory(true);
       }
+      form.trigger("commit");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repoUrlChanges]);

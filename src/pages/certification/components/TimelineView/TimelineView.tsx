@@ -30,9 +30,11 @@ interface PlanObj {
 
 const TimelineView: React.FC<{
   uuid: string;
+  repo: string;
+  commitHash: string;
   onAbort: () => void;
   triggerFormReset: () => void;
-}> = ({ uuid, onAbort, triggerFormReset }) => {
+}> = ({ uuid, repo, commitHash, onAbort, triggerFormReset }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
@@ -59,7 +61,7 @@ const TimelineView: React.FC<{
   };
 
   const viewFullReport = () => {
-    navigate("/report/" + uuid, { state: { certifiable: true } });
+    navigate("/report/" + uuid, { state: { certifiable: true, repo: repo, commitHash: commitHash } });
   };
 
   const handleTestingTimelineDetails = (
@@ -213,7 +215,7 @@ const TimelineView: React.FC<{
               open={runState === "failed"}
             />
 
-            {runStatus === "certifying" ? (
+            {runStatus === "certifying" || "finished" ? (
               <>
                 <div id="testingProgressContainer">
                   <table className="min-w-full text-left text-sm font-light">

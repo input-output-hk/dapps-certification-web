@@ -20,7 +20,7 @@ import {
   processTimeLineConfig,
 } from "components/TimelineItem/timeline.helper";
 import { isAnyTaskFailure } from "../Certification.helper";
-import { exportObjectToJsonFile } from "../../../utils/utils";
+import { ellipsizeString, exportObjectToJsonFile } from "../../../utils/utils";
 import DownloadIcon from "assets/images/download.svg";
 import "../Certification.scss";
 
@@ -90,6 +90,18 @@ const CertificationResult = () => {
 
   return (
     <>
+    <div className="content-area">
+            <div className="content-area-title-section pb-7">
+                <span className="text-2xl text-neutral-500">
+                  {(state?.repo && state?.commitHash) ? 
+                    state.repo + ": " + ellipsizeString(state.commitHash, 7, 3)
+                  : (param?.uuid ? "Result: " + ellipsizeString(param?.uuid, 5, 3) : "Result")}
+                </span>
+            </div>
+            <div
+                id="certificationWrapper"
+                className="content-area-box shadow-lg bg-white px-5 py-4 flex flex-row"
+            >
       <div className="flex col common-bottom">
         <header>
           <h3>Test Result</h3>
@@ -136,7 +148,7 @@ const CertificationResult = () => {
           <ResultContainer result={resultData} />
         </>
       ) : null}
-
+</div></div>
       {errorToast ? <Toast /> : null}
     </>
   );

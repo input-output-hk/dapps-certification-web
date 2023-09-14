@@ -1,0 +1,23 @@
+/* a, .link {
+    cursor: pointer;
+    color: $blue;
+    text-decoration: none;
+    &:hover,
+    &:focus {
+      color: $darker-blue;
+      text-decoration: underline;
+    }
+  }
+  button.link {
+    font-family: monospace;
+  }
+  
+  .text-right {
+    float: right;
+  }
+  
+  .disabled, [disabled] {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+  } */

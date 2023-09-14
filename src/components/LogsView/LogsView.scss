@@ -2,7 +2,7 @@
 
 #logContainer {
     margin: 40px 0;
-    position: relative;
+    text-align: end;
 }
 #viewLogsBtn {
     margin-right: 1rem;
@@ -16,6 +16,10 @@
     word-break: break-all;
     background-color: #424242;
     color: #ccc;
+    top: 190px;
+    left: 50px;
+    width: calc(100% - 100px);
+    z-index: 1;
     .log-header {
         height: 30px;
         position: sticky;
@@ -31,6 +35,7 @@
         .minimize-btn {
             cursor: pointer;
             font-size: xxx-large;
+            float: right;
         }
     }
     .log-content {

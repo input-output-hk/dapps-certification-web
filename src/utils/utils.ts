@@ -90,3 +90,7 @@ export const getErrorMessage = (errorObj: any) => {
     }
     return errorMsg;
 }
+
+export const ellipsizeString = (data: string, firstSet: number, lastSet: number) => {
+  return data ? `${data.slice(0, firstSet)}...${data.slice(-lastSet)}` : '...'
+}

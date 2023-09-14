@@ -2,7 +2,7 @@
   "name": "react-web",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://dapps-certification.scdev.aws.iohkdev.io/",
+  "proxy": "https://excuse.ro:443/",
   "homepage": "http://localhost:3000/",
   "dependencies": {
     "@emotion/react": "^11.11.1",
