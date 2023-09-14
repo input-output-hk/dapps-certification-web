@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Outlet } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchProfile } from "store/slices/auth.slice";
+import { LocalStorageKeys } from "constants/constants";
 
 import { Box, Alert } from "@mui/material";
 
@@ -12,10 +11,10 @@ import NavBar from './NavBar';
 import "../index.css";
 
 const Banner = () => {
-  const { networkId } = useAppSelector((state) => state.auth);
+  const networkId = localStorage.getItem(LocalStorageKeys.networkId);
   const networkEnvVar = process.env.REACT_APP_WALLET_NETWORK;
 
-  if (networkId === null || networkId === 1) return null;
+  if (networkId === null || networkId === '1') return null;
 
   return (
     <Box className="flex-0 pt-4 px-4">
@@ -30,12 +29,6 @@ const Banner = () => {
 }
 
 const AppLayout = () => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(fetchProfile({}));
-  }, []);
-
   return (
     <Box className="flex flex-row h-screen bg-slate-app">
       <NavBar />
