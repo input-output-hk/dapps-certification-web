@@ -15,11 +15,11 @@ import "../index.css";
 const AppBar = () => {
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
+  const [address] = useLocalStorage(LocalStorageKeys.address,
+    localStorage.getItem(LocalStorageKeys.address) ? localStorage.getItem(LocalStorageKeys.address) : ""
+  );
 
   const getProfileAddress = () => {
-    const [address] = useLocalStorage(LocalStorageKeys.address,
-      localStorage.getItem(LocalStorageKeys.address) ? localStorage.getItem(LocalStorageKeys.address) : ""
-    );
     return address ? `${address.slice(0,4)}...${address.slice(-4)}` : '...';
   }
 
