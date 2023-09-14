@@ -21,7 +21,7 @@ const RegisterModal = (props: Props) => {
         {props.success ? (props.transactionId &&
           <Typography>
             View your performed payment transaction&nbsp;
-            <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${props.transactionId}`}>
+            <a target="_blank" rel="noreferrer" className="link" href={`https://preprod.cardanoscan.io/transaction/${props.transactionId}`}>
               here
             </a>
           </Typography>
