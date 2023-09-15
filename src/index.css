@@ -1,23 +1,22 @@
-/* a, .link {
-    cursor: pointer;
-    color: $blue;
-    text-decoration: none;
-    &:hover,
-    &:focus {
-      color: $darker-blue;
-      text-decoration: underline;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+  .anim-rotate {
+    @apply animate-spin;
+  }
+
+  .disabled {
+    @apply opacity-50 cursor-default pointer-events-none;
+  }
+
+  a, .link {
+    @apply cursor-pointer text-blue-active no-underline;
+    &:hover, &:focus {
+      @apply text-blue-activeDark underline;
     }
   }
-  button.link {
-    font-family: monospace;
-  }
-  
-  .text-right {
-    float: right;
-  }
-  
-  .disabled, [disabled] {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
-  } */
+
+}
