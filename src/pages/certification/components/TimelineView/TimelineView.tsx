@@ -18,6 +18,9 @@ import {
 } from "./../../Certification.helper";
 import LogsView from "components/LogsView/LogsView";
 import Button from "components/Button/Button";
+import ProgressCard from "components/ProgressCard/ProgressCard";
+import CreateCertificate from "components/CreateCertificate/CreateCertificate";
+import DownloadResult from "../DownloadResult/DownloadResult";
 
 const TIMEOFFSET = 1000;
 
@@ -32,9 +35,10 @@ const TimelineView: React.FC<{
   uuid: string;
   repo: string;
   commitHash: string;
+  runEnded: (ended: boolean) => void;
   onAbort: () => void;
   triggerFormReset: () => void;
-}> = ({ uuid, repo, commitHash, onAbort, triggerFormReset }) => {
+}> = ({ uuid, repo, commitHash, runEnded, onAbort, triggerFormReset }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
@@ -125,6 +129,12 @@ const TimelineView: React.FC<{
       config = processTimeLineConfig(config, state, status, res);
       handleTestingTimelineDetails(status, state, res);
       if (status === "finished") {
+        const isArrayResult = Array.isArray(res.data.result);
+        const resultJson = isArrayResult
+          ? res.data.result[0]
+          : res.data.result;
+        setResultData(resultJson)
+        runEnded(true)
         // navigate to result page
         // clearPersistentStates();
         // navigate("/report/" + uuid, { state: { repoUrl: githubLink, certifiable: true } });
@@ -194,29 +204,35 @@ const TimelineView: React.FC<{
               />
             )}
 
-            {runStatus === "finished" && (
+            {runStatus === "finished" && (<>
               <Button
                 type="button"
                 buttonLabel="Full Report"
                 onClick={viewFullReport}
                 className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
               />
-            )}
+              <CreateCertificate uuid={uuid} />
+              <DownloadResult resultData={resultData} />
+            </>)}
 
-            <Timeline
-              statusConfig={timelineConfig}
-              unitTestSuccess={unitTestSuccess}
-              hasFailedTasks={isAnyTaskFailure(resultData)}
-            />
+            {runStatus !== "finished" && ( <>
+              <Timeline
+                statusConfig={timelineConfig}
+                unitTestSuccess={unitTestSuccess}
+                hasFailedTasks={isAnyTaskFailure(resultData)}
+              />
 
-            <LogsView
-              runId={uuid}
-              endPolling={runStatus === "finished" || runState === "failed"}
-              open={runState === "failed"}
-            />
+              <LogsView
+                runId={uuid}
+                endPolling={runStatus === "finished" || runState === "failed"}
+                open={runState === "failed"}
+              />
+            </>)}
 
-            {runStatus === "certifying" || "finished" ? (
+            {runStatus === "certifying" || runStatus === "finished" ? (
               <>
+                {runStatus === "finished" && <ProgressCard title={"Code Coverage"} color={"green"} currentValue={50} totalValue={100}/>}
+                <ProgressCard title={"Property Based Testing"} color={"green"} currentValue={100} totalValue={1000}/>
                 <div id="testingProgressContainer">
                   <table className="min-w-full text-left text-sm font-light">
                     <thead className="font-medium dark:border-neutral-500 bg-slate-table-head text-slate-table-headText font-medium">

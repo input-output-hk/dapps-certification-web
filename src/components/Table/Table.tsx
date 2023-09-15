@@ -30,6 +30,7 @@ const TableComponent: FC<any> = ({
   showColViz,
   updateMyData,
   skipPageReset,
+  showAllRows = false
 }) => {
   const data = useMemo(() => dataSet, [dataSet]);
   const [showPivot, setShowPivot] = useState(false);
@@ -180,13 +181,22 @@ const TableComponent: FC<any> = ({
           {data.length === 0 && <div className="no-data"><p style={{textAlign: "center", margin: "10px auto"}}>No data found</p></div>}
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 20]}
+          rowsPerPageOptions={showAllRows ? [{value: -1, label: "all"}] : [5, 10, 20]}
           component="div"
           count={data.length}
           rowsPerPage={rowsPerPage}
           page={pageNo}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            '.MuiTablePagination-root':{
+              display: 'none !important'
+            },
+            '.MuiTablePagination-toolbar': {
+              display: 'none !important'
+            }
+
+          }}
         />
       </Paper>
     </Box>

@@ -143,7 +143,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
         <Button
           type="submit"
           buttonLabel="Test"
-          showLoader={submitting || isSubmitting}
+          // showLoader={submitting || isSubmitting}
           disabled={!form.formState.isValid || submitting}
           className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
         />

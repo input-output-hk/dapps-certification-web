@@ -39,7 +39,7 @@ const LogsView: FC<{ runId: string, endPolling?: boolean, oneTime?: boolean, ope
 
     return (
         <>
-            <div id="logContainer">
+            <div id="logContainer" className="w-full">
                 <span
                     id="viewLogsBtn"
                     className={`link ${showLogs ? "hidden" : ""}`}
