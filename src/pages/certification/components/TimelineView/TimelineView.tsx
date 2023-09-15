@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useConfirm } from "material-ui-confirm";
 
-import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistory.slice";
+import { deleteTestHistoryData } from "pages/testingHistory/slices/deleteTestHistory.slice";
 
 import { useAppDispatch } from "store/store";
 import { fetchData } from "api/api";

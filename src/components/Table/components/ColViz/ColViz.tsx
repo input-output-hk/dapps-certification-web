@@ -2,9 +2,19 @@ import React, { FC, useEffect, useState } from "react";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { uniqueId } from "lodash";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 
-const ColViz: FC<any> = ({ columns, updateColumnOptions }) => {
+interface Props {
+  columns: any;
+  updateColumnOptions: any,
+  anchorEl: HTMLElement|null;
+  onClose: () => void;
+}
+
+const ColViz: FC<Props> = ({ columns, updateColumnOptions, anchorEl, onClose }) => {
   const [columnDetails, setColumnDetails] = useState([]);
 
   useEffect(() => {
@@ -17,17 +27,17 @@ const ColViz: FC<any> = ({ columns, updateColumnOptions }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnDetails]);
 
-  const handleChange = (e: any, id: any) => {
-    e.stopPropagation();
+  const handleChange = (id: any) => {
     const updatedColumns = columnDetails.map((column: any) => {
       if (column.accessor === id) {
-        column.columnVisible = e.target.checked;
+        column.columnVisible = !column.columnVisible;
       }
       return column;
     });
     atLeastOneItemChecked(updatedColumns);
     // setColumnDetails(updatedColumns);
   };
+
   const atLeastOneItemChecked = (colArray: any) => {
     const find = colArray.filter((column: any) => column.Header.length && column.columnVisible === true);
     if (find.length === 1) {
@@ -57,34 +67,44 @@ const ColViz: FC<any> = ({ columns, updateColumnOptions }) => {
       };
     });
   };
+
   return (
-    <div className="colviz-wrapper" key={uniqueId("colviz")}>
-      <ul data-testid="colviz-list-wrapper" key={uniqueId("colviz")}>
-        {columnDetails.map((column: any, index: any) => {
-          if (column.Header.length) {
-            return (
-              <li key={uniqueId("colviz")}>
-                <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={column.columnVisible}
-                        onChange={(e) => handleChange(e, column.accessor)}
-                        disabled={column.checkBoxDisabled}
-                        data-testid={`${column?.Header}-checkbox`}
-                      />
-                    }
-                    label={column.Header}
-                  />
-                </FormGroup>
-              </li>
-            );
-          } else {
-            return <span key={uniqueId("colviz")}></span>
-          }
-        })}
-      </ul>
-    </div>
+    <Menu
+      anchorEl={anchorEl}
+      open={anchorEl !== null}
+      onClose={onClose}
+      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      PaperProps={{
+        elevation: 0,
+        sx: {
+          overflow: 'visible',
+          filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+          mt: 1.5,
+          '&:before': {
+            content: '""',
+            display: 'block',
+            position: 'absolute',
+            top: 0,
+            right: 14,
+            width: 10,
+            height: 10,
+            bgcolor: 'background.paper',
+            transform: 'translateY(-50%) rotate(45deg)',
+            zIndex: 0,
+          },
+        },
+      }}
+    >
+      {columnDetails.filter((column: any) => column.Header.length).map((column: any, index: any) => (
+        <MenuItem key={index} onClick={() => !column.checkBoxDisabled ? handleChange(column.accessor) : null}>
+          <ListItemIcon>
+            <Checkbox checked={column.columnVisible} disabled={column.checkBoxDisabled} />
+          </ListItemIcon>
+          <ListItemText>{column.Header}</ListItemText>
+        </MenuItem>
+      ))}
+    </Menu>
   );
 }
 

@@ -42,6 +42,8 @@ module.exports = {
           text: '#4E4F5C'
         },
         transparent: 'transparent'
+        tableHeader: '#F5F6FA',
+        tableHeaderText: '#A3A6B4',
       },
       backgroundImage: {
         landing: 'url(assets/images/landing-background.png)',
