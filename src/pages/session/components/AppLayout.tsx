@@ -30,7 +30,7 @@ const Banner = () => {
 
 const AppLayout = () => {
   return (
-    <Box className="flex flex-row h-screen bg-app">
+    <Box className="flex flex-row h-screen bg-app overflow-hidden">
       <NavBar />
       <Box className="flex-1 flex flex-col relative pt-16">
         <AppBar />
