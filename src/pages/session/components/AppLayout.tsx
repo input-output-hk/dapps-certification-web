@@ -2,7 +2,6 @@ import React from 'react';
 import { Outlet } from "react-router-dom";
 
 import { LocalStorageKeys } from "constants/constants";
-import { useLocalStorage } from "usehooks-ts";
 
 import { Box, Alert } from "@mui/material";
 
@@ -12,9 +11,7 @@ import NavBar from './NavBar';
 import "../index.css";
 
 const Banner = () => {
-  const [networkId] = useLocalStorage(LocalStorageKeys.networkId,
-    localStorage.getItem(LocalStorageKeys.networkId) ? localStorage.getItem(LocalStorageKeys.networkId) : ""
-  );
+  const networkId = localStorage.getItem(LocalStorageKeys.networkId);
   const networkEnvVar = process.env.REACT_APP_WALLET_NETWORK;
 
   return networkId === '0' ? (

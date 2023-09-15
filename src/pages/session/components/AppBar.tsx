@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from "store/store";
 import { logout } from "store/slices/auth.slice";
 import { LocalStorageKeys } from "constants/constants";
-import { useLocalStorage } from "usehooks-ts";
-
 import { AppBar as MuiAppBar, Toolbar, Avatar, IconButton, Button, Menu, MenuItem, ListItemIcon } from "@mui/material";
 
 import MenuIcon from '@mui/icons-material/ExpandMore';
@@ -15,11 +13,9 @@ import "../index.css";
 const AppBar = () => {
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
-  const [address] = useLocalStorage(LocalStorageKeys.address,
-    localStorage.getItem(LocalStorageKeys.address) ? localStorage.getItem(LocalStorageKeys.address) : ""
-  );
 
   const getProfileAddress = () => {
+    const address = localStorage.getItem(LocalStorageKeys.address);
     return address ? `${address.slice(0,4)}...${address.slice(-4)}` : '...';
   }
 
