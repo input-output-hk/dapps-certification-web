@@ -1,5 +1,6 @@
 import Button from "components/Button/Button";
 import { useState } from "react";
+import { ellipsizeString } from "utils/utils";
 
 // import { useAppSelector } from "store/store";
 import CertificationForm from "./components/AuditorRunTestForm/AuditorRunTestForm";
@@ -51,8 +52,8 @@ const Certification = () => {
         <div className="content-area">
             <div className="content-area-title-section pb-7 flex justify-between">
                 <span className="text-2xl text-neutral-700 font-medium">
-                    {runId && commitHash
-                        ? "Run: " + commitHash.slice(0, 7)
+                    {runId
+                        ? "Run: " + ellipsizeString(runId)
                         : "Testing Tool"}
                 </span>
                 {runEnded && (
