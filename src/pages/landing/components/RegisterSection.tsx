@@ -97,7 +97,7 @@ const RegisterSection = (props: Props) => {
             <TextField
               className="mb-6"
               required fullWidth variant="standard"
-              label="Email" type="email"
+              label="Company Email" type="email"
               error={errors.email !== undefined}
               helperText={errors.email !== undefined ? 'The field value is invalid' : undefined}
               {...register("email", { required: true, pattern: /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-_]+\.[A-Za-z]{2,64}$/i })}
