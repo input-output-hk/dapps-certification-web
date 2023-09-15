@@ -41,7 +41,7 @@ module.exports = {
           app: '#F0F0F7',
           text: '#4E4F5C'
         },
-        transparent: 'transparent'
+        transparent: 'transparent',
         tableHeader: '#F5F6FA',
         tableHeaderText: '#A3A6B4',
       },
