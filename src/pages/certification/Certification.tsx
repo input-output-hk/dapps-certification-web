@@ -24,7 +24,6 @@ import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistor
 import { useConfirm } from "material-ui-confirm";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "components/Loader/Loader";
-import { setSubscribedFeatures } from "store/slices/auth.slice";
 import { LocalStorageKeys } from "constants/constants";
 import useLocalStorage from "hooks/useLocalStorage";
 
@@ -38,7 +37,7 @@ const Certification = () => {
   const navigate = useNavigate();
 
   const { uuid } = useAppSelector((state) => state.certification);
-  const { isLoggedIn, userDetails, subscribedFeatures } = useAppSelector((state) => state.auth);
+  const { features: subscribedFeatures } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
@@ -215,7 +214,8 @@ const Certification = () => {
         console.error('Failed to fetch active features:', features.error);
         return;
       }
-      await dispatch(setSubscribedFeatures(features.data));
+      // TODO: FIX THIS
+      //await dispatch(setSubscribedFeatures(features.data));
     })()
 
     // Run on unmount
@@ -232,14 +232,15 @@ const Certification = () => {
     // eslint-disable-next-line
   }, [uuid]);
 
-  useEffect(() => {
-    if (userDetails?.dapp?.owner) {
-      setUsername(userDetails.dapp.owner);
-    }
-    if (userDetails?.dapp?.repo) {
-      setRepository(userDetails.dapp.repo);
-    }
-  }, [userDetails]);
+  // TODO: FIX THIS
+  // useEffect(() => {
+  //   if (userDetails?.dapp?.owner) {
+  //     setUsername(userDetails.dapp.owner);
+  //   }
+  //   if (userDetails?.dapp?.repo) {
+  //     setRepository(userDetails.dapp.repo);
+  //   }
+  // }, [userDetails]);
 
   useEffect(() => {
     runStatus === "certifying" ? setRefetchMin(2) : setRefetchMin(5);
@@ -271,15 +272,6 @@ const Certification = () => {
       handleErrorScenario
   )
 
-  // if not logged in, prevent loader as well
-  if (!isLoggedIn) {
-    return null;
-  }
-  // Show loader until subscribed features is fetched
-  else if (isLoggedIn && !subscribedFeatures) {
-    return <Loader />;
-  }
-  // else
   return (
     <>
       {subscribedFeatures?.indexOf("l1-run") === -1 ? 

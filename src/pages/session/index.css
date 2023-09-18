@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+  .nav-bar-item, .nav-bar-item-active {
+    @apply py-4 px-4 border-l-4 border-solid border-transparent;
+  }
+
+  .nav-bar-item-active {
+    @apply bg-mainDark border-mainActive;
+  }
+
+  .nav-bar-icon {
+    @apply text-mainLight;
+  }
+
+  .nav-bar-icon-active {
+    @apply text-mainActive;
+  }
+
+}

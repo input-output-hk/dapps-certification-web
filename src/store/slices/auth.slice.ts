@@ -1,87 +1,283 @@
+import { Address, BaseAddress, RewardAddress } from "@emurgo/cardano-serialization-lib-browser";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchData } from "api/api";
-import { LocalStorageKeys } from "constants/constants";
-import { IUserProfile } from "pages/userProfile/userProfile.interface";
 
-// Define a type for the slice state
-interface AuthState {
-  isLoggedIn: boolean;
-  address: string;
-  wallet: any;
-  userDetails: IUserProfile;
-  loading: boolean;
-  network: number | null;
-  subscribedFeatures: Array<"l1-run" | "l2-upload-report"> | null;
+import { LocalStorageKeys } from "constants/constants";
+import { fetchData } from "api/api";
+
+import type { RootState } from "../rootReducer";
+
+export interface UserProfile {
+  address?: string;
+  authors?: string;
+  contacts?: string;
+  dapp: {
+    name: string;
+    owner: string;
+    repo: string;
+    version: string;
+    githubToken?: string | null;
+  } | null;
+  linkedin?: string;
+  twitter?: string;
+  vendor?: string;
+  website?: string;
 }
 
-// Define the initial state using that type
+interface AuthState {
+  isSessionFetched: boolean;
+  isConnected: boolean;
+  hasAnActiveSubscription: boolean;
+  profile: UserProfile | null;
+  features: string[];
+  networkId: number | null;
+  wallet: any;
+  walletName: string | null;
+  walletAddress: string | null;
+  stakeAddress: string | null;
+  activeWallets: string[];
+  errorMessage: string | null;
+  errorRetry: boolean;
+  loading: boolean;
+  listeningWalletChanges: boolean;
+  resetWalletChanges: boolean;
+}
+
 const initialState: AuthState = {
-  isLoggedIn: false,
-  address: '',
+  isSessionFetched: false,
+  isConnected: false,
+  hasAnActiveSubscription: false,
+  profile: null,
+  features: [],
+  networkId: null,
   wallet: null,
-  userDetails: {dapp: null},
+  walletName: null,
+  walletAddress: null,
+  stakeAddress: null,
+  activeWallets: ['lace', 'nami', 'yoroi'],
+  errorMessage: null,
+  errorRetry: false,
   loading: false,
-  network: null,
-  subscribedFeatures: null,
+  listeningWalletChanges: false,
+  resetWalletChanges: false,
 };
 
-const clearLSCache = () => {
-  localStorage.clear();
+declare global {
+  interface Window {
+    cardano: any;
+  }
 }
 
-export const getProfileDetails: any = createAsyncThunk("getProfileDetails", async (data: any, { rejectWithValue }) => {
-  localStorage.setItem(LocalStorageKeys.address, data.address)
-  const response = await fetchData.get("/profile/current")
-  // FOR MOCK - const response = await fetchData.get(data.url || 'static/data/current-profile.json', data)
-  return response.data
-})
+const CardanoNS = window.cardano;
 
-export const authSlice = createSlice({
-  name: "auth",
-  // `createSlice` will infer the state type from the `initialState` argument
-  initialState,
-  reducers: {
-    clearCache: (state) => {
-      clearLSCache();
-    },
-    logout: (state) => {
-      clearLSCache();
-      state.loading = false;
-      return initialState
-    },
-    setNetwork: (state, actions) => {
-      state.network = actions.payload
-    },
-    setSubscribedFeatures: (state, actions) => {
-      state.subscribedFeatures = actions.payload
+type StakeAddressHex = string;
+type StakeAddressBech32 = `stake${string}`;
+type ChangeAddressBech32 = `addr${string}`;
+
+const getAddresses = async (wallet: any): Promise<[StakeAddressHex, StakeAddressBech32,ChangeAddressBech32]> => {
+  const networkId = await wallet.getNetworkId();
+  const changeAddrHex = await wallet.getChangeAddress();
+
+  // derive the stake address from the change address to be sure we are getting
+  // the stake address of the currently active account.
+  const changeAddress = Address.from_bytes( Buffer.from(changeAddrHex, 'hex') );
+  const baseChangeAddress = BaseAddress.from_address(changeAddress);
+  if(!baseChangeAddress) throw new Error(`Could not derive base address from change address: ${changeAddrHex}`)
+  const stakeCredential = baseChangeAddress?.stake_cred();
+  if(!stakeCredential) throw new Error(`Could not derive stake credential from change address: ${changeAddrHex}`)
+  const stakeAddress = RewardAddress.new(networkId, stakeCredential).to_address();
+
+  return [
+    stakeAddress.to_hex(),
+    stakeAddress.to_bech32() as StakeAddressBech32,
+    baseChangeAddress.to_address().to_bech32() as ChangeAddressBech32
+  ];
+}
+
+export const connectWallet = createAsyncThunk('connectWallet', async (payload: { walletName: string }, { rejectWithValue, dispatch }) => {
+  try {
+    const { walletName } = payload;
+    const wallet = await CardanoNS[walletName].enable();
+    const networkId = await wallet.getNetworkId();
+
+    const [stakeAddrHex, stakeAddrBech32, changeAddressBech32] = await getAddresses(wallet);
+
+    const timestampRes = await fetchData.get('/server-timestamp');
+    if (timestampRes.status !== 200) throw new Error();
+    const timestamp = timestampRes.data;
+    
+    const message = `Sign this message if you are the owner of the ${changeAddressBech32} address. \n Timestamp: <<${timestamp}>> \n Expiry: 60 seconds`;
+
+    const { key, signature } = await wallet.signData(stakeAddrHex, Buffer.from(message, 'utf8').toString('hex'));
+    if (!key || !signature) throw new Error();
+    
+    const loginRes = await fetchData.post('/login', { address: stakeAddrBech32, key, signature });
+    if (loginRes.status !== 200) throw new Error();
+
+    localStorage.setItem(LocalStorageKeys.authToken, loginRes.data);
+    localStorage.setItem(LocalStorageKeys.address, changeAddressBech32);
+    localStorage.setItem(LocalStorageKeys.networkId, networkId);
+
+    await dispatch(fetchSession({}));
+    
+    return { wallet, walletName, networkId, walletAddress: changeAddressBech32, stakeAddress: stakeAddrBech32 };
+  } catch (error: any) {
+    const payload = {
+      showRetry: true,
+      message: 'Could not obtain the proper key and signature for the wallet. Please try connecting again.'
+    };
+    if (error.info) {
+      payload.showRetry = error.code === 3;
+      payload.message = error.info;
     }
-  },
-  extraReducers: (builder) => {
-    builder.addCase(getProfileDetails.pending, (state) => {state.loading = true;})
-      .addCase(getProfileDetails.fulfilled, (state, actions) => {
-        state.loading = false;
-        state.isLoggedIn = true;
-        state.userDetails = actions.payload;
-        localStorage.setItem(LocalStorageKeys.isLoggedIn, "true");
-        if (actions?.meta?.arg?.address) {
-          state.address = actions.meta.arg.address;
-          localStorage.setItem(LocalStorageKeys.address, state.address)
-          if (actions?.meta?.arg?.wallet) {
-            state.wallet = actions.meta.arg.wallet;
-          }
-          if (actions?.meta?.arg?.walletName) {
-            localStorage.setItem(LocalStorageKeys.walletName, actions?.meta?.arg?.walletName)
-          }
-        }
-      })
-      .addCase(getProfileDetails.rejected, (state) => {
-        clearLSCache()
-        return initialState
-      })
+    if (error.response) {
+      error.showRetry = error.status === 403;
+      error.message = error.response.data || 'An error ocurred.';
+    }
+    return rejectWithValue(payload);
   }
 });
 
+export const fetchSession = createAsyncThunk('fetchSession', async (payload: any, { rejectWithValue }) => {
+  try {
+    const response = await fetchData.get('/profile/current/subscriptions/active-features');
+    if (response.status !== 200) throw new Error();
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  }
+});
 
-export const { logout, clearCache, setNetwork, setSubscribedFeatures} = authSlice.actions;
+export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', async (payload: any, { dispatch, getState }) => {
+  let isListening = true;
+  while (isListening) {
+    try {
+      let forceLogout = false;
+      const { wallet, stakeAddress, networkId } = (getState() as RootState).auth;
+      
+      if (wallet !== null && stakeAddress !== null) {
+        const newStakeAddress = (await getAddresses(wallet))[1];
+        forceLogout = newStakeAddress !== stakeAddress;
+      }
+
+      if (!forceLogout && wallet !== null && networkId !== null) {
+        const newNetworkId = await wallet.getNetworkId();
+        forceLogout = newNetworkId !== networkId;
+      }
+
+      if (forceLogout) {
+        await dispatch(logout());
+        isListening = false;
+        return true;
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        isListening = (getState() as RootState).auth.listeningWalletChanges;
+      }
+    } catch (error: any) {}
+  }
+  return false;
+});
+
+export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: any, { rejectWithValue }) => {
+  try {
+    const response = await fetchData.get('/profile/current');
+    if (response.status !== 200) throw new Error();
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  }
+});
+
+export const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    logout: (state) => {
+      localStorage.clear();
+      return {
+        ...initialState,
+        isSessionFetched: true
+      };
+    },
+    stopListenWalletChanges: (state) => {
+      return {
+        ...state,
+        listeningWalletChanges: false
+      };
+    }
+  },
+  extraReducers: (builder) => {
+    builder
+      // CONNECT WALLET
+      .addCase(connectWallet.pending, (state) => {
+        state.isConnected = false;
+        state.networkId = null;
+        state.wallet = null;
+        state.walletName = null;
+        state.walletAddress = null;
+        state.stakeAddress = null;
+        state.errorMessage = null;
+        state.errorRetry = false;
+        state.loading = true;
+        state.resetWalletChanges = false;
+        state.listeningWalletChanges = false;
+      })
+      .addCase(connectWallet.fulfilled, (state, actions) => {
+        state.isConnected = true;
+        state.networkId = actions.payload.networkId;
+        state.wallet = actions.payload.wallet;
+        state.walletName = actions.payload.walletName;
+        state.walletAddress = actions.payload.walletAddress;
+        state.stakeAddress = actions.payload.stakeAddress;
+        state.loading = false;
+      })
+      .addCase(connectWallet.rejected, (state, actions) => {
+        state.errorMessage = (actions.payload as any).message;
+        state.errorRetry = (actions.payload as any).showRetry;
+        state.loading = false;
+      })
+
+      // FETCH SESSION
+      .addCase(fetchSession.pending, (state) => {
+        state.features = [];
+        state.hasAnActiveSubscription = false;
+        state.isSessionFetched = false;
+      })
+      .addCase(fetchSession.fulfilled, (state, actions) => {
+        state.features = actions.payload;
+        state.hasAnActiveSubscription = state.features.includes('l2-upload-report') && state.features.includes('l1-run');
+        state.isSessionFetched = true;
+      })
+      .addCase(fetchSession.rejected, (state) => {
+        state.isSessionFetched = true;
+      })
+
+      // START LISTEN WALLET CHANGES
+      .addCase(startListenWalletChanges.pending, (state) => {
+        state.listeningWalletChanges = true;
+        state.resetWalletChanges = false;
+      })
+      .addCase(startListenWalletChanges.fulfilled, (state, actions) => {
+        state.listeningWalletChanges = false;
+        state.resetWalletChanges = actions.payload;
+      })
+      .addCase(startListenWalletChanges.rejected, (state) => {
+        state.listeningWalletChanges = false;
+        state.resetWalletChanges = false;
+      })
+
+      // FETCH PROFILE
+      .addCase(fetchProfile.pending, (state) => {
+        state.profile = null;
+      })
+      .addCase(fetchProfile.fulfilled, (state, actions) => {
+        state.profile = actions.payload;
+      })
+      .addCase(fetchProfile.rejected, (state) => {
+        state.profile = null;
+      })
+  },
+});
+
+export const { logout, stopListenWalletChanges } = authSlice.actions;
 
 export default authSlice.reducer;

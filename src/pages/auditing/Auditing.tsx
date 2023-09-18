@@ -1,4 +1,3 @@
-import MaintenancePage from "pages/maintenance/Maintenance";
 import ReportUpload from "./reportUpload/ReportUpload";
 
 const Auditing = () => {
