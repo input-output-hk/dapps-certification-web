@@ -40,7 +40,7 @@ const RegisterSection = (props: Props) => {
 
   useEffect(() => {
     if (props.tier !== null && price > 0) {
-      setTotal(props.tier.usdPrice * price);
+      setTotal(props.tier.usdPrice / price);
     } else {
       setTotal(0);
     }
@@ -136,7 +136,7 @@ const RegisterSection = (props: Props) => {
             />
             <Button
               type="submit" variant="contained" size="large"
-              className="mt-8 py-3 px-14 normal-case bg-main"
+              className="payment-button"
               disabled={total <= 0 || processing}
             >
               Pay (₳{total.toFixed(2)})
