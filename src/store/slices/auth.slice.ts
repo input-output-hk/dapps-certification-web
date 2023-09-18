@@ -112,7 +112,10 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
     
     const loginRes = await fetchData.post('/login', { address: stakeAddrBech32, key, signature });
     if (loginRes.status !== 200) throw new Error();
+
     localStorage.setItem(LocalStorageKeys.authToken, loginRes.data);
+    localStorage.setItem(LocalStorageKeys.address, changeAddressBech32);
+    localStorage.setItem(LocalStorageKeys.networkId, networkId);
 
     await dispatch(fetchSession({}));
     

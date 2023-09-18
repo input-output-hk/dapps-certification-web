@@ -14,23 +14,27 @@ import "./ReportUpload.scss";
 import Dropdown from "components/Dropdown/Dropdown";
 import TextArea from "components/TextArea/TextArea";
 import { useFieldArray } from "react-hook-form";
-import { useAppSelector } from "store/store";
+import { useAppDispatch, useAppSelector } from "store/store";
 import { IScriptObject, OffChainMetadataSchema } from "./reportUpload.interface";
 import { fetchData } from "api/api";
 import Modal from "components/Modal/Modal";
 import { exportObjectToJsonFile } from "utils/utils";
+import { RootState } from "store/rootReducer";
+import { fetchProfile } from "store/slices/auth.slice";
 
 export const fieldArrayName: string = "dAppScripts";
 
 const ReportUpload = () => {
   const navigate = useNavigate();
-  const { userDetails }  = useAppSelector((state: any) => state.auth);
+  const dispatch = useAppDispatch();
+  const { profile }  = useAppSelector((state: RootState) => state.auth);
   const [openModal, setOpenModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     // to be called only once initially
     addNewDappScript()
+    dispatch(fetchProfile({}));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -122,17 +126,17 @@ const ReportUpload = () => {
   const initializeFormState = () => {
     form.clearErrors(); // clear form errors
     
-    const { twitter, website } = userDetails // TBD - subject, name, contact
+    const { twitter, website } = profile!; // TBD - subject, name, contact
     let formData: any = { twitter, website }
     setSubmitting(false)
     form.reset(formData)
   }
 
   useEffect(() => {
-    initializeFormState()
+    if (profile !== null) initializeFormState()
     // initializeFormState() is to not to be triggered on every re-render of the dep-array below but whenever the form or userDetails is updated alone
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userDetails, form]);
+  }, [profile, form]);
 
   // const [files, setFiles] = useState<any>();
   // const uploadReport = () => {};

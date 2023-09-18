@@ -6,7 +6,7 @@ import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, Lis
 import HomeIcon from '@mui/icons-material/HomeOutlined';
 import TestingIcon from '@mui/icons-material/BarChartOutlined';
 import TestingHistoryIcon from '@mui/icons-material/HistoryOutlined';
-import CertificationIcon from '@mui/icons-material/ReceiptOutlined';
+import ReportUploadIcon from '@mui/icons-material/ReceiptOutlined';
 import UserProfileIcon from '@mui/icons-material/PersonOutlined';
 import SupportIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import DocumentationIcon from '@mui/icons-material/SupportOutlined';
@@ -29,7 +29,6 @@ const NavBar = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-
       <MenuList>
         <MenuItem className={getItemClassName('/home')} onClick={() => navigate('/home')}>
           <ListItemIcon><HomeIcon className={getIconClassName('/home')} /></ListItemIcon>
@@ -43,9 +42,9 @@ const NavBar = () => {
           <ListItemIcon><TestingHistoryIcon className={getIconClassName('/history')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">Testing History</ListItemText>
         </MenuItem>
-        <MenuItem className={getItemClassName('/certification')} onClick={() => navigate('/certification')}>
-          <ListItemIcon><CertificationIcon className={getIconClassName('/certification')} /></ListItemIcon>
-          <ListItemText className="text-white font-medium">Certification</ListItemText>
+        <MenuItem className={getItemClassName('/audit-report-upload')} onClick={() => navigate('/audit-report-upload')}>
+          <ListItemIcon><ReportUploadIcon className={getIconClassName('/audit-report-upload')} /></ListItemIcon>
+          <ListItemText className="text-white font-medium">Auditor Report Upload</ListItemText>
         </MenuItem>
         <MenuItem className={getItemClassName('/profile')} onClick={() => navigate('/profile')}>
           <ListItemIcon><UserProfileIcon className={getIconClassName('/profile')} /></ListItemIcon>
@@ -55,14 +54,9 @@ const NavBar = () => {
           <ListItemIcon><SupportIcon className={getIconClassName('/support')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">Support</ListItemText>
         </MenuItem>
-        <MenuItem className={getItemClassName('/documentation')} onClick={() => navigate('/documentation')}>
-          <ListItemIcon><DocumentationIcon className={getIconClassName('/documentation')} /></ListItemIcon>
+        <MenuItem className="nav-bar-item" onClick={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}>
+          <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
           <ListItemText className="text-white font-medium">Documentation</ListItemText>
-        </MenuItem>
-
-        <Divider />
-        <MenuItem className="nav-bar-item" onClick={() => navigate('/audit-report-upload')}>
-          <ListItemText className="text-white font-medium">Report Upload</ListItemText>
         </MenuItem>
       </MenuList>
     </Box>
