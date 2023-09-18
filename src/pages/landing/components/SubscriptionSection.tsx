@@ -53,7 +53,7 @@ const SubscriptionSection = (props: Props) => {
               <Button
                 variant="contained" size="large"
                 disabled={!tier.enabled}
-                className={!tierId || tierId === tier.id ? 'subscription-button-active' : 'subscription-button'}
+                className={tierId !== tier.id ? 'subscription-button-active' : 'subscription-button'}
                 onClick={() => onSelect(tier)}
               >
                 {tierId === tier.id ? 'Selected' : 'Select'}

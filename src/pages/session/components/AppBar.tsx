@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from "store/store";
 import { logout } from "store/slices/auth.slice";
 import { LocalStorageKeys } from "constants/constants";
-
 import { AppBar as MuiAppBar, Toolbar, Avatar, IconButton, Button, Menu, MenuItem, ListItemIcon } from "@mui/material";
 
 import MenuIcon from '@mui/icons-material/ExpandMore';
