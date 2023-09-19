@@ -1,4 +1,5 @@
 export interface IUserProfile {
+  "address"?: string,
   "authors"?: string,
   "contacts"?: string,
   "dapp": {
