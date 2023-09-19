@@ -1,59 +1,75 @@
+import React, { useEffect, useState } from "react";
 import { Box, Container, Typography } from "@mui/material";
 import TableComponent from "components/Table/Table"
 import Toast from "components/Toast/Toast"
-import React, { useEffect, useState } from "react";
-import { processData } from "./fullReportTable.helper";
+import { processData, renderCharts } from "./fullReportTable.helper";
 
-const FullReportTable = (data: any) => {
+const FullReportTable: React.FC<{
+  data: { [x: string]: any },
+  unitTestSuccess?: boolean
+}> = ({
+  data,
+  unitTestSuccess = true
+}) => {
 
     const tableData = processData(data)
 
     const columns = React.useMemo(() => [
-        {
-          Header: "Property Name",
-          accessor: "property",
+      {
+        Header: "Property Name",
+        accessor: "label",
+      },
+      {
+        Header: "Status",
+        accessor: "status",
+        style: {
+          textAlign: 'center'
         },
-        {
-          Header: "Successes",
-          accessor: "count",
-          disableSortBy: true,
-          
-        },
-        // {
-        //   Header: "Failures",
-        //   accessor: "count",
-        //   disableSortBy: true,
-          
-        // },
-        // {
-        //   Header: "Discarded",
-        //   accessor: "count",
-        //   disableSortBy: true,
-          
-        // },
-        {
-          Header: "Status",
-          accessor: "status",
-          disableSortBy: true,
-          
+        disableSortBy: true,
+        Cell: (props: any) => {
+          if (props.row.original.status === 'success') {
+            return <img
+              className="image"
+              src="/images/passed.svg"
+              alt="success"
+            />
+          } else if (props.row.original.status === 'failure') {
+            return <img
+              className="image"
+              src="/images/failed.svg"
+              alt="failure"
+            />
+          } else { return null; }
         }
+      }
     ],
-    [])
+      [])
 
     return (<>
-    <Container className="pt-4 w-full block">
+      <Container className="pt-4 w-full block">
 
-      <Box>
-      <div id="fullReportTable" className="w-full block">
-        <span>Properties</span>
-        <TableComponent dataSet={tableData} columns={columns} showColViz={true} showAllRows={true}/>
-      </div>
-      {/* {(errorToast && errorToast.display) ? (
+        <Box>
+          <div id="fullReportTable" className="w-full block">
+            <span>Properties</span>
+            <TableComponent
+              dataSet={tableData}
+              columns={columns}
+              showColViz={true}
+              showAllRows={true}
+              collapsibleRows={true}
+              // rowProps={(row: any) => ({
+              //   collapsibleContent: (
+              //     renderCharts(row.values.dataObj)
+              //   )
+              // })}
+            />
+          </div>
+          {/* {(errorToast && errorToast.display) ? (
         ((errorToast.message && errorToast.statusText) ? 
         <Toast message={errorToast.message} title={errorToast.statusText}/> :
         <Toast />))
       : null} */}
-    </Box></Container></>)
-}
+        </Box></Container></>)
+  }
 
 export default FullReportTable;

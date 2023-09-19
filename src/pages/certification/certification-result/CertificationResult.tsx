@@ -96,7 +96,11 @@ const CertificationResult = () => {
                 {state?.certifiable ? <CreateCertificate uuid={param.uuid as string} /> : null}
               </div>
               <div className="flex items-center justify-evenly my-10">
-                <ProgressCard title={"Code Coverage"} currentValue={50} totalValue={100} />
+                <FileCoverageContainer 
+                  githubLink={state?.repoUrl || ""}
+                  result={resultData}
+                  coverageFile={coverageFile}
+                />
                 <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000} />
 
               </div>
@@ -106,7 +110,7 @@ const CertificationResult = () => {
 
         <div
           id="certificationWrapper"
-          className="content-area-box shadow-lg bg-white px-5 py-4 flex flex-row"
+          className="content-area-box shadow-lg bg-white px-5 py-4"
         >
           <LogsView
             runId={param.uuid as string}
@@ -115,7 +119,7 @@ const CertificationResult = () => {
             oneTime={true}
           />
 
-          <FullReportTable data={resultData}/>
+          <FullReportTable data={resultData} unitTestSuccess={unitTestSuccess}/>
         </div>
         
       </div>

@@ -85,3 +85,12 @@ export interface Log {
   Text: string,
   Source: string
 }
+
+export const filterTaskKeysBy = (type: string) => {
+  return CertificationTasks.filter(item => item.type === type).map(item => item.key);
+}
+
+export const getCertificationTaskName = (key: string) => {
+  const obj: {key: string, label: string} | any = CertificationTasks.find(item => item.key === key)
+  return obj.label;
+};

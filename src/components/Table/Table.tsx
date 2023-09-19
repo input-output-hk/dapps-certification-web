@@ -1,22 +1,54 @@
 import React, { useMemo, FC, useState } from "react";
+import { usePagination, useTable, useSortBy } from "react-table";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import { usePagination, useTable, useSortBy } from "react-table";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Box from "@mui/material/Box";
 import TablePagination from "@mui/material/TablePagination";
+import Collapse from "@mui/material/Collapse";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import GridViewIcon from '@mui/icons-material/GridView';
 import Typography from "@mui/material/Typography";
-import ColViz from "./components/ColViz/ColViz";
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
+import ColViz from "./components/ColViz/ColViz";
+import { renderCharts } from "pages/certification/certification-result/fullReportTable.helper";
+
 import "./Table.css";
+
+const Row = (props: any) => {
+  const {row, index, collapsible} = props
+  const [open, setOpen] = useState(false);
+  const onRowClick = () => {if (collapsible) { setOpen(!open); console.log('clicked')}}
+  const rowClassNames = `${collapsible && 'clickable-row'} ${open && 'open'}`
+  return (<>
+    <TableRow {...row.getRowProps({
+      onClick: onRowClick,
+      className: rowClassNames,
+      key: index
+    })}>
+        {row.cells.map((cell: any) => (
+          <TableCell className="border-none" {...cell.getCellProps()}>
+            {cell.render("Cell")}
+          </TableCell>
+        ))}
+    </TableRow>
+    {collapsible && <TableRow className="pull-down-row">
+        <TableCell>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box>
+              {renderCharts(row.original.dataObj)}
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>}
+  </>)
+}
 
 const TableComponent: FC<any> = ({
   dataSet,
@@ -24,7 +56,9 @@ const TableComponent: FC<any> = ({
   showColViz,
   updateMyData,
   skipPageReset,
-  showAllRows = false
+  showAllRows = false,
+  collapsibleRows = false,
+  rowProps = null
 }) => {
   const data = useMemo(() => dataSet, [dataSet]);
   const [pageNo, setPageNo] = useState(0);
@@ -135,16 +169,17 @@ const TableComponent: FC<any> = ({
             </TableHead>
             <TableBody {...getTableBodyProps()}>
               <>
-                {page.map((row: any, i) => {
+                {page.map((row: any, i: number) => {
                   prepareRow(row);
                   return (
-                    <TableRow {...row.getRowProps()}>
-                      {row.cells.map((cell: any) => (
-                        <TableCell className="border-none" {...cell.getCellProps()}>
-                          {cell.render("Cell")}
-                        </TableCell>
-                      ))}
-                    </TableRow>
+                    <Row row={row} index={i} collapsible={collapsibleRows} />
+                    // <TableRow {...row.getRowProps()}>
+                    //   {row.cells.map((cell: any) => (
+                    //     <TableCell className="border-none" {...cell.getCellProps()}>
+                    //       {cell.render("Cell")}
+                    //     </TableCell>
+                    //   ))}
+                    // </TableRow>
                   );
                 })}
               </>

@@ -11,7 +11,7 @@ import { useDelayedApi } from "hooks/useDelayedApi";
 
 import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
-import { processTimeLineConfig } from "components/TimelineItem/timeline.helper";
+import { processFinishedJson, processTimeLineConfig } from "components/TimelineItem/timeline.helper";
 import {
   CertificationTasks,
   isAnyTaskFailure,
@@ -135,6 +135,8 @@ const TimelineView: React.FC<{
           : res.data.result;
         setResultData(resultJson)
         runEnded(true)
+        const unitTestResult = processFinishedJson(resultJson);
+        setUnitTestSuccess(unitTestResult);
         // navigate to result page
         // clearPersistentStates();
         // navigate("/report/" + uuid, { state: { repoUrl: githubLink, certifiable: true } });
