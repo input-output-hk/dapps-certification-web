@@ -26,22 +26,10 @@ const Header = () => {
   const [pollForAddress, setPollForAddress] = useState(false);
   const [pollForNetwork, setPollForNetwork] = useState(false);
   const [featureList, setFeatureList] = useState<String[]>([]);
-  const [isLogged, setIsLoggedIn] = useLocalStorage(
-    LocalStorageKeys.isLoggedIn,
-    localStorage.getItem(LocalStorageKeys.isLoggedIn) === "true" ? true : false
-  );
 
-  const [, setUserDetails, removeUserDetails] = useLocalStorage(
-    LocalStorageKeys.userDetails,
-    localStorage.getItem(LocalStorageKeys.userDetails)
-      ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
-      : null
-  );
-
-  const [, setSubscriptions] = useLocalStorage(
-    LocalStorageKeys.hasSubscriptions,
-    localStorage.getItem(LocalStorageKeys.hasSubscriptions) === "true" ? true : false
-  );
+  const [isLogged, setIsLoggedIn] = useLocalStorage(LocalStorageKeys.isLoggedIn, false);
+  const [, setUserDetails, removeUserDetails] = useLocalStorage(LocalStorageKeys.userDetails, null); 
+  const [, setSubscriptions] = useLocalStorage(LocalStorageKeys.hasSubscriptions, false);
 
   useEffect(() => {
     // check if address, walletName is in localStorage - login user without having to connect to wallet again
@@ -52,15 +40,18 @@ const Header = () => {
       (async () => {
         try {
           const enabledWallet = await window.cardano[walletNameCache].enable();
-          const response: any = await dispatch(
+          await dispatch(
             getProfileDetails({
               address: addressCache,
               wallet: enabledWallet,
               walletName: walletNameCache,
             })
-          );
-          setUserDetails(response.payload);
-          setIsLoggedIn(true);
+          ).catch((err: any) => {
+              forceUserLogout()
+          }).then((response: any) => {
+            setUserDetails(response.payload);
+            setIsLoggedIn(true);
+          })
 
           enabledWallet.getNetworkId().then(async (data: number) => {
             dispatch(setNetwork(data));

@@ -55,17 +55,9 @@ const ConnectWallet = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [errorToast, setErrorToast] = useState<{display: boolean; statusText?: string; message?: string; showRetry?: boolean}>({display: false});
   const [walletLoading, setWalletLoading] = useState(false);
-  const [, setIsLoggedIn] = useLocalStorage(
-    LocalStorageKeys.isLoggedIn,
-    localStorage.getItem(LocalStorageKeys.isLoggedIn) === "true" ? true : false
-  );
-
-  const [, setUserDetails, removeUserDetails] = useLocalStorage(
-    LocalStorageKeys.userDetails,
-    localStorage.getItem(LocalStorageKeys.userDetails)
-      ? JSON.parse(localStorage.getItem(LocalStorageKeys.userDetails)!)
-      : null
-  );
+  
+  const [, setIsLoggedIn] = useLocalStorage(LocalStorageKeys.isLoggedIn, false);
+  const [, setUserDetails, removeUserDetails] = useLocalStorage(LocalStorageKeys.userDetails, null);
 
   const openConnectWalletModal = useCallback(() => setIsOpen(true), []);
 
