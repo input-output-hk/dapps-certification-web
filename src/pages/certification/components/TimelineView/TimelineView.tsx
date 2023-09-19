@@ -218,7 +218,7 @@ const TimelineView: React.FC<{
                 onClick={viewFullReport}
                 className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
               />
-              <div className="flex justify-around">
+              <div className="flex justify-around mb-20 flex-wrap gap-[8px]">
                 {unitTestSuccess && <CreateCertificate uuid={uuid} />}
                 <DownloadResult resultData={resultData} />
               </div>
@@ -250,7 +250,7 @@ const TimelineView: React.FC<{
                   {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000}/> */}
                 </div>
                 {unitTestSuccess && 
-                <div id="testingProgressContainer">
+                <div id="testingProgressContainer" className="mt-20">
                   <table className="min-w-full text-left text-sm font-light">
                     <thead className="font-medium dark:border-neutral-500 bg-slate-table-head text-slate-table-headText font-medium">
                       <tr>

@@ -138,7 +138,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   }, [repoUrlChanges]);
 
   return (
-    <div>
+    <div className={isSubmitting ? "disabled" : ""}>
       <Form form={form} onSubmit={formHandler}>
         <Button
           type="submit"

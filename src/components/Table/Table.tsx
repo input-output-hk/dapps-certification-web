@@ -21,13 +21,13 @@ import ColViz from "./components/ColViz/ColViz";
 import "./Table.css";
 
 const Row = (props: any) => {
-  const {row, rowProps, index, collapsible} = props
+  const {row, rowProps, collapsible} = props
   const [open, setOpen] = useState(false);
   const onRowClick = () => {if (collapsible) { setOpen(!open); }}
   const rowClassNames = `${collapsible && 'clickable-row'} ${open && 'open'}`
   
   return (<>
-    <TableRow {...row.getRowProps()} onClick={onRowClick} className={rowClassNames} key={index}>
+    <TableRow {...row.getRowProps()} onClick={onRowClick} className={rowClassNames}>
         {row.cells.map((cell: any) => (
           <TableCell className="border-none" {...cell.getCellProps()}>
             {cell.render("Cell")}
@@ -138,8 +138,8 @@ const TableComponent: FC<any> = ({
             {...getTableProps()}
           >
             <TableHead className="bg-tableHeader">
-              {headerGroups.map((headerGroup: any) => (
-                <TableRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroups.map((headerGroup: any, index) => (
+                <TableRow {...headerGroup.getHeaderGroupProps()} key={index}>
                   {headerGroup.headers.map((column: any, index: number) => (
                     <TableCell
                       key={index}
@@ -168,7 +168,7 @@ const TableComponent: FC<any> = ({
                 {page.map((row: any, i: number) => {
                   prepareRow(row);
                   return (
-                    <Row row={row} rowProps={rowProps} index={i} collapsible={collapsibleRows} />
+                    <Row key={i} row={row} rowProps={rowProps} collapsible={collapsibleRows} />
                   );
                 })}
               </>
@@ -181,10 +181,10 @@ const TableComponent: FC<any> = ({
           )}
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={showAllRows ? [{value: -1, label: "all"}] : [5, 10, 20]}
+          rowsPerPageOptions={showAllRows ? [{label:"All", value: -1}] : [5, 10, 20]}
           component="div"
           count={data.length}
-          rowsPerPage={rowsPerPage}
+          rowsPerPage={showAllRows ? -1 : rowsPerPage}
           page={pageNo}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}

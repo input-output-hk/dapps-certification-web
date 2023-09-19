@@ -95,6 +95,7 @@ const FileCoverageContainer: React.FC<{
             // );  
             return coverageReport[file] && coverageIndexReport[file] ? 
                 <ProgressCard 
+                    key={index}
                     title={"Code Coverage"}
                     displayText={file}
                     currentValue={coverageReport[file].length}

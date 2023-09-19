@@ -4,6 +4,11 @@
 
 @layer components {}
 
+.text-center {
+    text-align: center;
+    text-align: -webkit-center;
+}
+
 tr.clickable-row {
     cursor: pointer;
 }
