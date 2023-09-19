@@ -23,6 +23,8 @@
 }
 
 .text-center {
+  text-align: center;
+  text-align: -moz-center;
   text-align: -webkit-center;
 }
 

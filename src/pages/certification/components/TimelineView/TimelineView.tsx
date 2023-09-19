@@ -21,6 +21,7 @@ import Button from "components/Button/Button";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import DownloadResult from "../DownloadResult/DownloadResult";
+import FileCoverageContainer from "../FileCoverageContainer";
 
 const TIMEOFFSET = 1000;
 
@@ -46,6 +47,7 @@ const TimelineView: React.FC<{
   const [runStatus, setRunStatus] = useState("");
   const [runState, setRunState] = useState("");
   const [refetchMin, setRefetchMin] = useState(5);
+  const [coverageFile, setCoverageFile] = useState("");
   const [fetchRunStatus, setFetchRunStatus] = useState(false);
   const [apiFetching, setApiFetching] = useState(false);
   const [timelineConfig, setTimelineConfig] = useState(TIMELINE_CONFIG);
@@ -133,6 +135,9 @@ const TimelineView: React.FC<{
         const resultJson = isArrayResult
           ? res.data.result[0]
           : res.data.result;
+        if (isArrayResult) {
+          setCoverageFile(res.data.result[1]);
+        }
         setResultData(resultJson)
         runEnded(true)
         const unitTestResult = processFinishedJson(resultJson);
@@ -213,8 +218,10 @@ const TimelineView: React.FC<{
                 onClick={viewFullReport}
                 className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
               />
-              <CreateCertificate uuid={uuid} />
-              <DownloadResult resultData={resultData} />
+              <div className="flex justify-around">
+                {unitTestSuccess && <CreateCertificate uuid={uuid} />}
+                <DownloadResult resultData={resultData} />
+              </div>
             </>)}
 
             {runStatus !== "finished" && ( <>
@@ -233,8 +240,16 @@ const TimelineView: React.FC<{
 
             {runStatus === "certifying" || runStatus === "finished" ? (
               <>
-                {runStatus === "finished" && <ProgressCard title={"Code Coverage"} color={"green"} currentValue={50} totalValue={100}/>}
-                <ProgressCard title={"Property Based Testing"} color={"green"} currentValue={100} totalValue={1000}/>
+                <div className="flex justify-around">
+                  {runStatus === "finished" && <FileCoverageContainer
+                      githubLink={repo || ""}
+                      result={resultData}
+                      coverageFile={coverageFile}
+                    />
+                  }
+                  {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000}/> */}
+                </div>
+                {unitTestSuccess && 
                 <div id="testingProgressContainer">
                   <table className="min-w-full text-left text-sm font-light">
                     <thead className="font-medium dark:border-neutral-500 bg-slate-table-head text-slate-table-headText font-medium">
@@ -279,7 +294,7 @@ const TimelineView: React.FC<{
                       })}
                     </tbody>
                   </table>
-                </div>
+                </div>}
               </>
             ) : null}
           </>

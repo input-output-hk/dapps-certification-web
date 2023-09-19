@@ -96,9 +96,10 @@ const FileCoverageContainer: React.FC<{
             return coverageReport[file] && coverageIndexReport[file] ? 
                 <ProgressCard 
                     title={"Code Coverage"}
+                    displayText={file}
                     currentValue={coverageReport[file].length}
                     totalValue={coverageIndexReport[file].length}
-                    tooltipText={"Code coverage is a measure of how much of your on-chain code has been executed during testing"}
+                    // tooltipText={"Code coverage is a measure of how much of your on-chain code has been executed during testing"}
                 />
                 : null;
         }) : null;

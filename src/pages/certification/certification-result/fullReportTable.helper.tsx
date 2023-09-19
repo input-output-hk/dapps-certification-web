@@ -1,5 +1,5 @@
 import PieChart from "components/charts/PieChart/PieChart";
-import { CertificationTasks, filterTaskKeysBy, getCertificationTaskName, processTablesDataForChart, VisualizableDataKeys } from "../Certification.helper";
+import { CertificationTasks, filterTaskKeysBy, getCertificationTaskName, processTablesDataForChart, taskKeys, VisualizableDataKeys } from "../Certification.helper";
 
 
 
@@ -16,10 +16,23 @@ export const processData = (resultData: any) => {
         dataObj?: any; //the whole data object
     }[] = []
 
-    resultKeys.forEach((key: string) => {
+    taskKeys().forEach((key: string) => {
         const dataObj = resultData[key];
         if (dataObj) {
-            const testStatus = dataObj.tag.toLowerCase()
+            let testStatus = null;
+            if (resultKeys.indexOf(key) !== -1) {
+                testStatus = dataObj.tag.toLowerCase()
+            } else if (unitTestKeys.indexOf(key) !== -1) {
+                testStatus = dataObj.filter((item: any) => {
+                    let testTag = ''
+                    if (key === "_certRes_DLTests") {
+                        testTag = item[1].tag
+                    } else if (key === "_certRes_unitTestResults") {
+                        testTag = item.resultOutcome.tag
+                    }
+                    return testTag && testTag === 'Failure'
+                })?.length ? 'failure' : 'success'
+            }
             tableData.push({
                 task: key,
                 label: getCertificationTaskName(key),
@@ -28,7 +41,7 @@ export const processData = (resultData: any) => {
             })
         }
     })
-
+    
 
     return tableData;
 }

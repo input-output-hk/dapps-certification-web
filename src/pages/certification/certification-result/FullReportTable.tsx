@@ -22,9 +22,7 @@ const FullReportTable: React.FC<{
       {
         Header: "Status",
         accessor: "status",
-        style: {
-          textAlign: 'center'
-        },
+        align: "center",
         disableSortBy: true,
         Cell: (props: any) => {
           if (props.row.original.status === 'success') {
@@ -50,7 +48,7 @@ const FullReportTable: React.FC<{
 
         <Box>
           <div id="fullReportTable" className="w-full block">
-            <span>Properties</span>
+            <span className="block my-5">Properties</span>
             <TableComponent
               dataSet={tableData}
               columns={columns}

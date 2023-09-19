@@ -7,9 +7,10 @@ const ProgressCard: React.FC<{
   title: string;
   currentValue: number;
   totalValue: number;
+  displayText?: string;
   color?: string;
   tooltipText?: string
-}> = ({ color = "stroke-green", currentValue, totalValue, title, tooltipText }) => {
+}> = ({ color = "stroke-green", currentValue, totalValue, displayText, title, tooltipText }) => {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
@@ -23,9 +24,13 @@ const ProgressCard: React.FC<{
           <h5 className="text-neutral truncate max-w-full">
             {title}
           </h5>
-          <span className="inline-block font-semibold text-2xl">
-            {currentValue} / {totalValue}
-          </span>
+          {displayText ? 
+            <span className="inline-block font-medium text-neutral-900 text-sm">{displayText}</span> 
+            : 
+            <span className="inline-block font-semibold text-2xl">
+              {currentValue} / {totalValue}
+            </span>
+          }
         </div>
         <div className="mt-5 sm:mt-0 w-fit">
           <CircularProgressBar progress={progress} color={color} />

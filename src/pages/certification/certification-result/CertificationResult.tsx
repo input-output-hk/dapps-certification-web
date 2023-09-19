@@ -96,12 +96,12 @@ const CertificationResult = () => {
                 {state?.certifiable ? <CreateCertificate uuid={param.uuid as string} /> : null}
               </div>
               <div className="flex items-center justify-evenly my-10">
-                <FileCoverageContainer 
+                {unitTestSuccess && <FileCoverageContainer 
                   githubLink={state?.repoUrl || ""}
                   result={resultData}
                   coverageFile={coverageFile}
-                />
-                <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000} />
+                />}
+                {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000} /> */}
 
               </div>
             </>) : null}

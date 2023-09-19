@@ -60,7 +60,6 @@ const Certification = () => {
                     <div className="flex gap-x-4">
                         <Button
                             type="button"
-                            displayStyle="primary-outline"
                             size="small"
                             buttonLabel="Test again"
                             onClick={triggerReset}
@@ -68,7 +67,6 @@ const Certification = () => {
                         />
                         <Button
                             type="button"
-                            displayStyle="primary-outline"
                             size="small"
                             buttonLabel="New test"
                             onClick={triggerNewTest}

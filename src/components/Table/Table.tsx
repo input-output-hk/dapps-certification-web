@@ -41,7 +41,7 @@ const Row = (props: any) => {
     {collapsible && <TableRow className="pull-down-row">
         <TableCell>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box>
+            <Box className="flex justify-around flex-wrap">
               {renderCharts(row.original.dataObj)}
             </Box>
           </Collapse>
@@ -138,7 +138,7 @@ const TableComponent: FC<any> = ({
         <TableContainer component={Box}>
           <Table
             size="small"
-            className="min-w-[650px] px-8"
+            className={`min-w-[650px] px-8 table ${collapsibleRows && 'collapsible'}`}
             {...getTableProps()}
           >
             <TableHead className="bg-tableHeader">

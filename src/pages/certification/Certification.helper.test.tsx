@@ -1,14 +1,14 @@
 import {
-    filterCertificationTaskKeys,
+    filterTaskKeysBy,
     isAnyTaskFailure,
     processTablesDataForChart,
     getPlannedCertificationTaskCount,
   } from "./Certification.helper";
   
-  describe("filterCertificationTaskKeys", () => {
+  describe("filterTaskKeysBy", () => {
     it("should filter certification task keys by type", () => {
       const type = "object";
-      const filteredKeys = filterCertificationTaskKeys(type);
+      const filteredKeys = filterTaskKeysBy(type);
       const expectedKeys = [
         "_certRes_standardPropertyResult",
         "_certRes_doubleSatisfactionResult",
@@ -21,10 +21,10 @@ import {
       expect(filteredKeys).toEqual(expectedKeys);
     });
 
-    describe("filterCertificationTaskKeys", () => {
+    describe("filterTaskKeysBy", () => {
       it("should return an empty array when an invalid type is passed", () => {
         const type = "invalid";
-        const filteredKeys = filterCertificationTaskKeys(type);
+        const filteredKeys = filterTaskKeysBy(type);
         expect(filteredKeys).toEqual([]);
       });
     });
