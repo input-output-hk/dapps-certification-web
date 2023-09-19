@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 
 import { fetchData } from "api/api";
 
-import ResultContainer from "../components/ResultContainer";
 import FileCoverageContainer from "../components/FileCoverageContainer";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import Toast from "components/Toast/Toast";
@@ -16,7 +15,7 @@ import {
   processFinishedJson,
   processTimeLineConfig,
 } from "components/TimelineItem/timeline.helper";
-import { isAnyTaskFailure } from "../Certification.helper";
+
 import { ellipsizeString } from "../../../utils/utils";
 import "../Certification.scss";
 import DownloadResult from "../components/DownloadResult/DownloadResult";
@@ -119,7 +118,7 @@ const CertificationResult = () => {
             oneTime={true}
           />
 
-          <FullReportTable data={resultData} unitTestSuccess={unitTestSuccess}/>
+          <FullReportTable data={resultData} />
         </div>
         
       </div>

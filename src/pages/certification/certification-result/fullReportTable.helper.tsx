@@ -1,13 +1,12 @@
 import PieChart from "components/charts/PieChart/PieChart";
-import { CertificationTasks, filterTaskKeysBy, getCertificationTaskName, processTablesDataForChart, taskKeys, VisualizableDataKeys } from "../Certification.helper";
+import { formatToTitleCase } from "utils/utils";
+import { filterTaskKeysBy, getCertificationTaskName, processTablesDataForChart, taskKeys, VisualizableDataKeys } from "../Certification.helper";
 
-
+const resultKeys = filterTaskKeysBy('object');
+const unitTestKeys = filterTaskKeysBy('array'); 
 
 export const processData = (resultData: any) => {
     // parse finished json into data readable by grid
-
-    const resultKeys = filterTaskKeysBy('object');
-    const unitTestKeys = filterTaskKeysBy('array'); 
 
     const tableData: {
         task: string;
@@ -48,7 +47,7 @@ export const processData = (resultData: any) => {
 
 export const renderCharts = (data?: any) => {
     const dataSet = data;// || resultObj;
-    if (!dataSet.hasOwnProperty('tables')) {
+    if (!dataSet || !dataSet.hasOwnProperty('tables')) {
       return null
     }
     return Object.keys(dataSet.tables).map((key, idx) => {
@@ -65,4 +64,73 @@ export const renderCharts = (data?: any) => {
             return null
         }
     })
-  }
+}
+
+
+const FailedTaskDetails = (dataObj: any) => {
+    return (<div className="task-details bg-red-background border-red-background">
+        <span className="font-neutral-900 text-red-title block mb-10"><i>{dataObj.reason}</i></span>
+        <div className="whitespace-pre">
+            <span>Failing TestCase(s):</span>
+            {dataObj.failingTestCase.length && dataObj.failingTestCase.map((val: string, index: number) => {
+                return <div key={index}>{index + 1}. {val}</div>
+            })}
+
+            <div className="mt-20 whitespace-pre"><p>{dataObj.output}</p></div>
+        </div>
+    </div>)
+}
+
+const SuccessTaskChart = (dataObj: any) => {
+    return (<div className="task-details">
+        <span className="font-neutral-900 block mb-10">
+            <i>OK, passed {dataObj.numTests} tests</i>
+            {dataObj.numDiscarded >= 0 ? <i>; {dataObj.numDiscarded} discarded</i> : null}
+        </span>
+        <div className="flex justify-start flex-wrap">
+            {renderCharts(dataObj)}
+        </div>
+    </div>)
+}
+
+export const generateCollapsibleContent = (row: any) => {
+    const {task: key, status, dataObj} = row
+
+    if (resultKeys.indexOf(key) !== -1) {
+        if (status === "failure") {
+            return FailedTaskDetails(dataObj)
+        } else if (status === "success") {
+            return SuccessTaskChart(dataObj)
+        }
+    } else if (unitTestKeys.indexOf(key) !== -1) {
+        if (key === "_certRes_unitTestResults") {
+            if (status === "success") {
+                return (<div className="task-details">
+                    <span className="font-neutral-900 block mb-10"><i>OK, passed {dataObj.length}/{dataObj.length} tests</i></span>
+                </div>)
+            } else if (status === "failure") {
+                return dataObj.map((entry: any, index: number) => {
+                    if (typeof entry !== 'string' && entry.resultOutcome.tag === 'Failure') {
+                        return (<div className="task-details bg-red-background border-red-background">
+                            <span className="font-neutral-900 text-red-title block mb-10"><i>{dataObj.resultShortDescription}</i></span>
+                            <div>{dataObj.resultDescription}</div>
+                        </div>)
+                    }
+                })
+            }
+        } 
+        else if (key === "_certRes_DLTests") {
+            return dataObj.map((entry: any, index: number) => {
+                return (<div className={`task-details ${status === "failure" ? "bg-red-background border-red-background" : ""}`}>
+                    {status === "success" && (<span className="font-neutral-900 block mb-10"><i>OK, passed {dataObj.length}/{dataObj.length} tests</i></span>)}
+                    <div key={index}>
+                        <label className={`font-neutral-900 ${status === "failure" ? "text-red-title block mb-10" : ""}`}>
+                            Test: {formatToTitleCase(entry[0])}
+                        </label>
+                        {status === "success" ? SuccessTaskChart(entry[1]) : FailedTaskDetails(entry[1])}
+                    </div>
+                </div>)
+            })
+        }
+    }
+}

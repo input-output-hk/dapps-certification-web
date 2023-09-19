@@ -17,21 +17,17 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 import ColViz from "./components/ColViz/ColViz";
-import { renderCharts } from "pages/certification/certification-result/fullReportTable.helper";
 
 import "./Table.css";
 
 const Row = (props: any) => {
-  const {row, index, collapsible} = props
+  const {row, rowProps, index, collapsible} = props
   const [open, setOpen] = useState(false);
-  const onRowClick = () => {if (collapsible) { setOpen(!open); console.log('clicked')}}
+  const onRowClick = () => {if (collapsible) { setOpen(!open); }}
   const rowClassNames = `${collapsible && 'clickable-row'} ${open && 'open'}`
+  
   return (<>
-    <TableRow {...row.getRowProps({
-      onClick: onRowClick,
-      className: rowClassNames,
-      key: index
-    })}>
+    <TableRow {...row.getRowProps()} onClick={onRowClick} className={rowClassNames} key={index}>
         {row.cells.map((cell: any) => (
           <TableCell className="border-none" {...cell.getCellProps()}>
             {cell.render("Cell")}
@@ -39,10 +35,10 @@ const Row = (props: any) => {
         ))}
     </TableRow>
     {collapsible && <TableRow className="pull-down-row">
-        <TableCell>
+        <TableCell colSpan={row.cells.length}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box className="flex justify-around flex-wrap">
-              {renderCharts(row.original.dataObj)}
+            <Box className="">
+              {rowProps(row).collapsibleContent}
             </Box>
           </Collapse>
         </TableCell>
@@ -58,7 +54,7 @@ const TableComponent: FC<any> = ({
   skipPageReset,
   showAllRows = false,
   collapsibleRows = false,
-  rowProps = null
+  rowProps = () => ({})
 }) => {
   const data = useMemo(() => dataSet, [dataSet]);
   const [pageNo, setPageNo] = useState(0);
@@ -122,7 +118,7 @@ const TableComponent: FC<any> = ({
         {showColViz && (
           <>
             <IconButton
-              className="absolute top-[-2.25em] right-0"
+              className="absolute top-[-35px] right-0"
               onClick={handleShowColVizMenu}
             >
               <GridViewIcon />
@@ -172,14 +168,7 @@ const TableComponent: FC<any> = ({
                 {page.map((row: any, i: number) => {
                   prepareRow(row);
                   return (
-                    <Row row={row} index={i} collapsible={collapsibleRows} />
-                    // <TableRow {...row.getRowProps()}>
-                    //   {row.cells.map((cell: any) => (
-                    //     <TableCell className="border-none" {...cell.getCellProps()}>
-                    //       {cell.render("Cell")}
-                    //     </TableCell>
-                    //   ))}
-                    // </TableRow>
+                    <Row row={row} rowProps={rowProps} index={i} collapsible={collapsibleRows} />
                   );
                 })}
               </>

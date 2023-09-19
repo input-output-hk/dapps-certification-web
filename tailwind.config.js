@@ -19,6 +19,8 @@ module.exports = {
         },
         red: {
           DEFAULT: "#d54848",
+          background: "#f2dede",
+          title: "#a94442"
         },
         gray: {
           input: "#cecfd0",
@@ -52,7 +54,13 @@ module.exports = {
         3: "3px",
       },
       padding: {
+        20: "20px",
         22: "22px"
+      },
+      margin: {
+        5: "5px",
+        10: "10px",
+        20: "20px"
       }
     },
   },

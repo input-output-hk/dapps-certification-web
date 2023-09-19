@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Box, Container, Typography } from "@mui/material";
+import React, { useMemo } from "react";
+import { Box, Container } from "@mui/material";
 import TableComponent from "components/Table/Table"
-import Toast from "components/Toast/Toast"
-import { processData, renderCharts } from "./fullReportTable.helper";
+import { generateCollapsibleContent, processData } from "./fullReportTable.helper";
+
+import './fullReportTable.css';
 
 const FullReportTable: React.FC<{
   data: { [x: string]: any },
-  unitTestSuccess?: boolean
 }> = ({
   data,
-  unitTestSuccess = true
 }) => {
 
     const tableData = processData(data)
 
-    const columns = React.useMemo(() => [
+    const columns = useMemo(() => [
       {
         Header: "Property Name",
         accessor: "label",
@@ -55,19 +54,16 @@ const FullReportTable: React.FC<{
               showColViz={true}
               showAllRows={true}
               collapsibleRows={true}
-              // rowProps={(row: any) => ({
-              //   collapsibleContent: (
-              //     renderCharts(row.values.dataObj)
-              //   )
-              // })}
+              rowProps={(row: any) => ({
+                collapsibleContent: (
+                  generateCollapsibleContent(row.original)
+                )
+              })}
             />
           </div>
-          {/* {(errorToast && errorToast.display) ? (
-        ((errorToast.message && errorToast.statusText) ? 
-        <Toast message={errorToast.message} title={errorToast.statusText}/> :
-        <Toast />))
-      : null} */}
-        </Box></Container></>)
-  }
+        </Box>
+      </Container>
+    </>)
+}
 
 export default FullReportTable;
