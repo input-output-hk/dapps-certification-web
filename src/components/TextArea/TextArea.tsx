@@ -70,7 +70,13 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             onBlur={() => trigger(name)} // trigger text area validation on blur
             minRows={minRows}
             maxRows={maxRows}
-            className={classNames("text-area bg-gray-inputBackground", className)}
+            className={classNames(
+              "text-area bg-gray-inputBackground",
+              className,
+              {
+                "!pr-10": tooltipText, // increase right padding if tooltip is present
+              }
+            )}
             ref={ref}
             onFocusCapture={() => setActive(true)}
             disabled={disabled}

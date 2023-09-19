@@ -72,6 +72,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         className={classNames("input bg-gray-inputBackground", {
           active: active,
           error: errors?.[name] || error,
+          "!pr-10": tooltipText // increase right padding if tooltip is present
         })}
         onClick={(_) => {
           setActive(true);
@@ -115,7 +116,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       )}
 
       {tooltipText ? (
-        <ArrowTooltip title={tooltipText}>
+        <ArrowTooltip
+          title={tooltipText}
+          tooltipWrapperStyle="!right-0 !top-0 bottom-0 !translate-y-0 inline-flex items-center px-2"
+        >
           <Icons type="question" color="grey" />
         </ArrowTooltip>
       ) : null}

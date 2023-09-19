@@ -61,6 +61,10 @@ module.exports = {
         5: "5px",
         10: "10px",
         20: "20px"
+      },
+      screens: {
+        tab: "1200px", // => @media (min-width: 1280px) { ... }
+        xs: "375px" // => @media (min-width: 375px) { ... }
       }
     },
   },

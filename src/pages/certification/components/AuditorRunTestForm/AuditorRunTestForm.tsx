@@ -148,15 +148,17 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
         />
 
-        <Input
-          label="GitHub Repository"
-          type="text"
-          id="repoURL"
-          required={true}
-          disabled={submitting}
-          tooltipText="Github Repository URL formats accepted here are - 'https://github.com/<username>/<repository>', 'https://github.com/<username>/<repository>/commit/<commit-hash>'."
-          {...form.register("repoURL")}
-        />
+        <div className="relative input-wrapper">
+          <Input
+            label="GitHub Repository"
+            type="text"
+            id="repoURL"
+            required={true}
+            disabled={submitting}
+            tooltipText="Github Repository URL formats accepted here are - 'https://github.com/<username>/<repository>', 'https://github.com/<username>/<repository>/commit/<commit-hash>'."
+            {...form.register("repoURL")}
+          />
+        </div>
 
         <Input
           label="Commit Hash"

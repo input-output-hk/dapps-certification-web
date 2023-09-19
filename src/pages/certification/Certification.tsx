@@ -77,9 +77,9 @@ const Certification = () => {
             </div>
             <div
                 id="certificationWrapper"
-                className="content-area-box shadow-lg bg-white px-5 py-4 flex flex-col sm:flex-row"
+                className="content-area-box shadow-lg bg-white px-5 xs:px-7 xs:py-4 flex flex-col tab:flex-row tab:px-5"
             >
-                <div className="w-full sm:w-1/2 px-22">
+                <div className="sm:w-full tab:w-1/2 px-0 mb-6 tab:px-22 tab:mb-0">
                     <CertificationForm
                         onSubmit={onCertificationFormSubmit}
                         isSubmitting={submitting}
@@ -88,8 +88,8 @@ const Certification = () => {
                         onError={certificationFormError}
                     />
                 </div>
-                {runId ? (
-                    <div className="w-full sm:w-1/2 px-22">
+                <div className="sm:w-full tab:w-1/2 px-22 min-h-[150px] tab:px-22 tab:mb-0">
+                    {runId ? (
                         <TimelineView
                             uuid={runId}
                             repo={repo}
@@ -98,14 +98,12 @@ const Certification = () => {
                             onAbort={onTestRunAbort}
                             triggerFormReset={onTestRunAbort}
                         />
-                    </div>
-                ) : (
-                    <div className="w-full sm:w-1/2 px-22">
-                        <div className="w-full text-center text-xl text-neutral-300 font-medium pt-48">
+                    ) : (
+                        <div className="w-full text-center text-xl text-neutral-300 font-medium pt-48 top-1/2 -translate-y-1/2">
                             Fill the testing form
-                        </div>                               
-                    </div>
-                )}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
