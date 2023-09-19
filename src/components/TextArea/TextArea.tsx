@@ -1,4 +1,4 @@
-import React, { ComponentProps, forwardRef, useState } from "react";
+import React, { ComponentProps, forwardRef, useState, useEffect } from "react";
 import TextAreaAutoSize from "@mui/material/TextareaAutosize";
 import classNames from "classnames";
 
@@ -35,10 +35,25 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ) {
     const {
       formState: { errors },
+      getValues,
       trigger
     } = useFormContext();
 
     const [active, setActive] = useState(false);
+
+    // Set floating label status if value is present/prefilled
+    useEffect(() => {
+      if (getValues(name)) {
+        // field has values
+        setActive(true);
+      } else {
+        // set field active if value empty and if not on focus
+        if (document.activeElement !== document.getElementById(name || "")) {
+          setActive(false);
+        }
+      }
+      // eslint-disable-next-line
+    }, [getValues(name)]);
 
     return (
       <div
