@@ -19,16 +19,7 @@ export const CERTIFICATION_METADATA_FIELDS = {
           id: "disclaimer",
         },
         componentType: "textarea",
-      },
-      {
-        config: {
-          placeholder: "Subject",
-          required: true,
-          maxRows: 2,
-          id: "subject",
-        },
-        componentType: "textarea",
-      },
+      }
     ],
     auditorInfo: [
       {

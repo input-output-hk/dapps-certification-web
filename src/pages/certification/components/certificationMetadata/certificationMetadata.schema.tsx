@@ -4,14 +4,6 @@ export const certificationMetadataSchema = yup.object().shape(
   {
     summary: yup.string().required("This field is required"),
     disclaimer: yup.string().required("This field is required"),
-    subject: yup
-      .string()
-      .required("This field is required")
-      .max(64, "Please enter a valid subject with upto 64 characters")
-      .matches(
-        /^[A-Za-z0-9_]+$/,
-        "Please enter a valid subject (that has a-z, A-Z, 0-9 or _ characters only)."
-      ),
     name: yup.string().required("This field is required")
       .max(64, "Please enter a valid name with upto 64 characters"),
     email: yup

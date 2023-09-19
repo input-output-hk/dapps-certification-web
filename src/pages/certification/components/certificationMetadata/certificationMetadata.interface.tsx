@@ -30,6 +30,6 @@ export interface IAuditReport {
     };
     disclaimer: string;
     scripts: IScriptObject[];
-    subject: string;
+    subject?: string;
     summary: string;
   }

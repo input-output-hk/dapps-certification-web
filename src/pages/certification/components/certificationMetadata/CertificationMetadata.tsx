@@ -83,7 +83,6 @@ const CertificationMetadata: React.FC<{
       },
       disclaimer: disclaimer,
       scripts: formattedDappScripts,
-      subject: subject,
       summary: summary,
     };
 
