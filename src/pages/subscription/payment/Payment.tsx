@@ -11,6 +11,7 @@ import { useAppSelector } from "store/store";
 import "./Payment.scss";
 import dayjs from "dayjs";
 import { Subscription } from "../Subscription.interface";
+import { getErrorMessage } from "utils/utils";
 
 function Payment() {
   const { state } = useLocation();
@@ -34,18 +35,7 @@ function Payment() {
   };
 
   const handleError = (errorObj: any) => {
-    let errorMsg = "";
-    if (typeof errorObj === "string") {
-      errorMsg = errorObj + " Please try again.";
-    } else if (errorObj?.info) {
-      errorMsg = errorObj.info + " Please try again.";
-    } else if (errorObj?.response?.message) {
-      errorMsg = errorObj?.response.message + " Please try again.";
-    } else if (errorObj?.response?.data) {
-      errorMsg = errorObj.response.statusText + " - " + errorObj.response.data;
-    } else {
-      errorMsg = "Something wrong occurred. Please try again later.";
-    }
+    const errorMsg = getErrorMessage(errorObj)
     setShowError(errorMsg);
     setProcessing(false);
     const timeout = setTimeout(() => {
