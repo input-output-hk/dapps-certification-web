@@ -46,8 +46,6 @@
 
   .subscription, .subscription-active {
     @apply
-      flex-1
-      mx-2
       px-4
       py-12
       outline
