@@ -6,18 +6,22 @@ import { useNavigate } from "react-router";
 
 import { fetchData } from "api/api";
 
+import { Container, Box, Typography, Button, IconButton } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import RefreshIcon from '@mui/icons-material/Refresh';
+
 import { useConfirm } from "material-ui-confirm";
 import { useAppDispatch } from "store/store";
 import { deleteTestHistoryData } from "./slices/deleteTestHistory.slice";
 
 import TableComponent from "components/Table/Table";
-import Button from "components/Button/Button";
 import Toast from "components/Toast/Toast";
 import { processFinishedJson } from "components/TimelineItem/timeline.helper";
 import { isAnyTaskFailure } from "pages/certification/Certification.helper";
-import "./TestHistory.scss";
 import { Run } from 'components/CreateCertificate/CreateCertificate';
 import { exportObjectToJsonFile } from "utils/utils";
+
+import "./index.css";
 
 interface ICampaignCertificate {
   runId: string;
@@ -150,37 +154,28 @@ const TestHistory = () => {
     };
     const runId = original.runId; // get the run id
     if (value === "certified") {
-      return <span 
-        style={{ color: "green" }}
-        className={highlightLabelFor === runId ? "cell-highlight" : ""}>Certified</span>;
+      return <span>CERTIFIED</span>;
     } else if (value === "succeeded") {
-      return <span 
-        className={highlightLabelFor === runId ? "cell-highlight" : ""}>OK</span>;
+      return <span>OK</span>;
     } else if (value === "failed") {
-      return <span 
-        style={{ color: "red" }}
-        className={highlightLabelFor === runId ? "cell-highlight" : ""}>FAILED</span>;
+      return <span>FAILED</span>;
     } else if (value === "queued") {
       return (
         <>
-          <span className={highlightLabelFor === runId ? "cell-highlight" : ""}>Running</span>
-          <button onClick={() => triggerApi(runId)} className="sync-btn">
-            <img
-              className={`icon ${runningSpinner === runId ? 'spin' : ''}`}
-              src="images/refresh.svg"
-              alt="refresh"
-              title="Sync latest Status"
-            />
-          </button>
-        </>
+          <span>RUNNING</span>
+          <IconButton 
+            size="small"
+            className="text-main ml-1 mt-[-4px]"
+            onClick={() => triggerApi(runId)}
+          >
+            <RefreshIcon fontSize="small" />
+          </IconButton>
+      </>
       );
     } else if (value === "aborted") {
-      return <span 
-        style={{ color: "red" }}
-        className={highlightLabelFor === runId ? "cell-highlight" : ""}>Aborted</span>;
+      return <span>ABORTED</span>;
     } else if (value === "ready-for-certification") {
-      return <span 
-        className={highlightLabelFor === runId ? "cell-highlight" : ""}>Ready for Certification</span>;
+      return <span>READY FOR CERTIFICATION</span>;
     }
   };
 
@@ -240,19 +235,21 @@ const TestHistory = () => {
 
   const columns = React.useMemo(() => [
     {
-      Header: "Repo URL",
+      Header: "Repo name",
       accessor: "repoUrl",
     },
     {
-      Header: "Commit Hash",
+      Header: "Checkout",
       accessor: "commitHash",
       disableSortBy: true,
       Cell: (props: any) => (
-        <span className="trim-cell-text" title={props.row.original.commitHash}>{props.row.original.commitHash}</span>
+        <span className="max-w-[85px] text-ellipsis overflow-hidden whitespace-nowrap block" title={props.row.original.commitHash}>
+          {props.row.original.commitHash}
+        </span>
       )
     },
     {
-      Header: "Commit Date",
+      Header: "Commit date",
       accessor: "commitDate",
       columnVisible: false,
       Cell: (props: any) => (
@@ -262,8 +259,9 @@ const TestHistory = () => {
       ),
     },
     {
-      Header: "Finished At",
+      Header: "Finished at",
       accessor: "finishedAt",
+      columnVisible: false,
       Cell: (props: any) => (
         <span>
           {dayjs.utc(props.row.original.finishedAt).tz(timeZone).format("YYYY-MM-DD HH:mm:ss")}
@@ -271,7 +269,7 @@ const TestHistory = () => {
       ),
     },
     {
-      Header: "Synced At",
+      Header: "Synced at",
       accessor: "syncedAt",
       columnVisible: false,
       Cell: (props: any) => (
@@ -281,7 +279,7 @@ const TestHistory = () => {
       ),
     },
     {
-      Header: "Run Status",
+      Header: "Status",
       accessor: "runStatus",
       cellStyle: {
         display: 'flex'
@@ -289,7 +287,7 @@ const TestHistory = () => {
       Cell: RunStatusCell
     },
     {
-      Header: "",
+      Header: "View results",
       disableSortBy: true,
       accessor: "viewReport",
       Cell: (props: any) => {
@@ -297,32 +295,36 @@ const TestHistory = () => {
         if (notCertified || props.row.original.runStatus === "certified") {
           return (
             <Button
+              variant="text"
               size="small"
-              type="submit"
-              buttonLabel="View Report"
+              className="text-main"
               onClick={() => {
                 navigate("/report/" + props.row.original.runId, {state: { repoUrl: props.row.original.repoUrl, certifiable: notCertified }});
               }}
-            />
+            >
+              Link
+            </Button>
           );
             }
       },
     },
     {
-      Header: "",
+      Header: "View certificate",
       disableSortBy: true,
       accessor: "viewCertificate",
       Cell: (props: any) => {
         if (props.row.original.runStatus === "certified") {
           return (
             <Button
+              variant="text"
               size="small"
-              type="submit"
-              buttonLabel={"View Certificate"}
+              className="text-main"
               onClick={() => {
                 viewCertificate(props.row.original.runId);
               }}
-            />
+            >
+              Transaction
+            </Button>
           );
         }
       },
@@ -333,16 +335,17 @@ const TestHistory = () => {
       accessor: "delete",
       Cell: (props: any) => {
         if (props.row.original.runStatus !== "certified" && props.row.original.runStatus !== "ready-for-certification") {
-          return (<>
-            <button
-              className="trash-icon-btn"
+          return (
+            <IconButton 
+              size="small"
+              className="text-main"
               onClick={() => {
                 onDelete(props.row.original.runId);
               }}
             >
-              <img className="icon-trash" src="images/trash.svg" alt="delete" title="Delete Campaign" />
-            </button>
-          </>);
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          );
         }
       },
     }
@@ -369,19 +372,27 @@ const TestHistory = () => {
   };
   
   return (
-    <>
-      <div id="testHistory">
-        <TableComponent dataSet={data} columns={columns} showColViz={true} 
+    <Container className="pt-4" maxWidth="xl">
+      <Typography variant="h5" className="font-medium text-main mb-6">
+        Testing history
+      </Typography>
+
+      <Box>
+        <TableComponent
+          dataSet={data}
+          columns={columns}
+          showColViz={true} 
           updateMyData={updateMyData}
           skipPageReset={skipPageReset}
         />
-      </div>
+      </Box>
+
       {(errorToast && errorToast.display) ? (
         ((errorToast.message && errorToast.statusText) ? 
         <Toast message={errorToast.message} title={errorToast.statusText}/> :
         <Toast />))
       : null}
-    </>
+    </Container>
   );
 }
 
