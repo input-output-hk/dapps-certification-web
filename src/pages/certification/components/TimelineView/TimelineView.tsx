@@ -22,6 +22,7 @@ import ProgressCard from "components/ProgressCard/ProgressCard";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import DownloadResult from "../DownloadResult/DownloadResult";
 import FileCoverageContainer from "../FileCoverageContainer";
+import { clearPersistentStates } from "../AuditorRunTestForm/utils";
 
 const TIMEOFFSET = 1000;
 
@@ -143,12 +144,12 @@ const TimelineView: React.FC<{
         const unitTestResult = processFinishedJson(resultJson);
         setUnitTestSuccess(unitTestResult);
         // navigate to result page
-        // clearPersistentStates();
+        clearPersistentStates();
         // navigate("/report/" + uuid, { state: { repoUrl: githubLink, certifiable: true } });
       }
       if (state === "failed" || status === "finished") {
         // setSubmitting(false);
-        // clearPersistentStates();
+        clearPersistentStates();
         setApiFetching(false);
       }
       setTimelineConfig(config);

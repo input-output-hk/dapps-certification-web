@@ -29,14 +29,16 @@ import { useSearchParams } from "react-router-dom";
 
 interface IAuditorRunTestForm {
   isSubmitting: boolean;
+  data?: IAuditorRunTestFormFields;
   clearForm?: boolean;
   testAgain?: boolean;
-  onSubmit: (data: { runId: string; commitHash: string, repo: string }) => any;
+  onSubmit: (data: { runId: string; commitHash: string; repo: string }) => any;
   onError: () => void;
 }
 
 const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   isSubmitting,
+  data = {},
   clearForm = false,
   testAgain = false,
   onSubmit,
@@ -115,6 +117,11 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   };
 
   const formHandler = (formData: IAuditorRunTestFormFields) => {
+    if (!formData || !formData.repoURL) {
+      // do nothing
+      return;
+    }
+
     const [, , , username, repoName, , commitHash] =
       formData.repoURL.split("/");
     dispatch(setRepoUrl(`https://github.com/${username}/${repoName}`));
@@ -141,9 +148,20 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           if (response.data) {
             // store data into LS
             localStorage.setItem(LocalStorageKeys.certificationUuid, response.data);
-            localStorage.setItem(LocalStorageKeys.commit, checkout);
+            localStorage.setItem(
+              LocalStorageKeys.certificationFormData,
+              JSON.stringify({
+                ...formData,
+                commit: checkout,
+                repoURL: `https://github.com/${username}/${repoName}`,
+              })
+            );
             // Emit uuid, checkout
-            onSubmit({ runId: response.data, commitHash: checkout, repo: username + "/" + repoName });
+            onSubmit({
+              runId: response.data,
+              commitHash: checkout,
+              repo: username + "/" + repoName
+            });
           }
         }
       } catch (e) {
@@ -178,6 +196,18 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fill initial form values
+  useEffect(() => {
+    if (data) {
+      form.reset(data);
+
+      // Submit form if prefilled-data is valid
+      auditorRunTestFormSchema
+        .isValid(data)
+        .then(() => formHandler(data as any));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   // New Test: Clear certification form
   useEffect(() => {
@@ -240,8 +270,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
         <Button
           type="submit"
           buttonLabel="Test"
-          // showLoader={submitting || isSubmitting}
-          disabled={!form.formState.isValid || submitting}
+          disabled={!form.formState.isValid || submitting || isSubmitting}
           className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
         />
 

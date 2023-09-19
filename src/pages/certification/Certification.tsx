@@ -1,14 +1,19 @@
 import Button from "components/Button/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ellipsizeString } from "utils/utils";
 
 // import { useAppSelector } from "store/store";
 import CertificationForm from "./components/AuditorRunTestForm/AuditorRunTestForm";
 import TimelineView from "./components/TimelineView/TimelineView";
+import { clearPersistentStates } from "./components/AuditorRunTestForm/utils";
+import { LocalStorageKeys } from "constants/constants";
+import useLocalStorage from "hooks/useLocalStorage";
+import { IAuditorRunTestFormFields } from "./components/AuditorRunTestForm/auditorRunTestForm.interface";
 
 const Certification = () => {
     // const { features: subscribedFeatures } = useAppSelector((state) => state.auth);
-
+    const [commit] = useLocalStorage(LocalStorageKeys.certificationFormData, "");
+    const [uuid] = useLocalStorage(LocalStorageKeys.certificationUuid, "");
     const [submitting, setSubmitting] = useState(false);
     const [runId, setRunId] = useState("");
     const [commitHash, setRunCommitHash] = useState("");
@@ -16,6 +21,13 @@ const Certification = () => {
     const [runEnded, setRunEnded] = useState(false);
     const [testAgain, setTestAgain] = useState(false);
     const [clearForm, setClearForm] = useState(false);
+    const [data, setData] = useState({
+        repoURL: "",
+        commit: "",
+        name: "",
+        subject: "",
+        version: "",
+    });
 
     const onCertificationFormSubmit = (data: {
         runId: string;
@@ -30,11 +42,12 @@ const Certification = () => {
 
     const onTestRunAbort = () => {
         // resetStates()
-        // clearPersistentStates();
+        clearPersistentStates();
+        setSubmitting(false);
     };
 
     const onRunEnd = () => {
-        // setSubmitting(false)
+        setSubmitting(false)
         setRunEnded(true)
     }
 
@@ -47,6 +60,26 @@ const Certification = () => {
     }
 
     const certificationFormError = () => setSubmitting(false);
+
+    // Prefill form values
+    useEffect(() => {
+        if (commit && uuid) {
+            const formData: IAuditorRunTestFormFields = JSON.parse(
+                JSON.stringify(commit)
+            );
+            const { repoURL, commit: commitHash, version, name, subject } = formData;
+            if (repoURL && commitHash && version && name && version && subject) {
+                const [, , , username, repoName] = formData.repoURL.split("/");
+                setData(formData);
+                onCertificationFormSubmit({
+                runId: uuid as string,
+                commitHash: formData.commit,
+                repo: username + "/" + repoName,
+                });
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [commit]);
 
     return (
         <div className="content-area">

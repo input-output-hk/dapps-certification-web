@@ -12,27 +12,31 @@ export const auditorRunTestFormSchema = yup.object().shape({
     .test({
       name: "github-commit-url",
       test: (value, context) => {
-        const [, , , username, repoName] = value!.split("/");
+        if (value) {
+          const [, , , username, repoName] = value!.split("/");
 
-        if (
-          !username ||
-          !repoName ||
-          !/^[a-zA-Z0-9-]+$/.test(username) ||
-          !/^[a-zA-Z0-9-]+$/.test(repoName)
-        ) {
-          return context.createError({
-            message: "Invalid GitHub repository URL",
-          });
+          if (
+            !username ||
+            !repoName ||
+            !/^[a-zA-Z0-9-]+$/.test(username) ||
+            !/^[a-zA-Z0-9-]+$/.test(repoName)
+          ) {
+            return context.createError({
+              message: "Invalid GitHub repository URL",
+            });
+          }
+
+          const matches = value!.match(REPO_URL_PATTERN);
+          if (!matches) {
+            return context.createError({
+              message: "Invalid GitHub commit URL",
+            });
+          }
+
+          return true;
+        } else {
+          return true;
         }
-
-        const matches = value!.match(REPO_URL_PATTERN);
-        if (!matches) {
-          return context.createError({
-            message: "Invalid GitHub commit URL",
-          });
-        }
-
-        return true;
       },
     }),
   commit: yup

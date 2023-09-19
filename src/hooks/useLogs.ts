@@ -6,8 +6,8 @@ import { useDelayedApi } from "hooks/useDelayedApi";
 import { fetchData } from "api/api";
 import { Log } from '../pages/certification/Certification.helper'
 import { setStates, setEnded, setBuildInfo } from "pages/certification/slices/logRunTime.slice";
-import { LocalStorageKeys } from "constants/constants";
-import useLocalStorage from "./useLocalStorage";
+// import { LocalStorageKeys } from "constants/constants";
+// import useLocalStorage from "./useLocalStorage";
 
 const TIME_OFFSET = 1000;
 
@@ -22,7 +22,7 @@ export const useLogs = (
     const [fetchingLogs, setFetchingLogs] = useState(false);
     const [refetchLogsOffset] = useState(1);
 
-    const [, setCertificationRunTime] = useLocalStorage(LocalStorageKeys.certificationRunTime, null)
+    // const [, setCertificationRunTime] = useLocalStorage(LocalStorageKeys.certificationRunTime, null)
     
     const { startTime, endTime, runState, ended } = useAppSelector((state) => state.runTime)
 
@@ -45,7 +45,7 @@ export const useLogs = (
         if (sTime && eTime && state) { 
             dispatch(setStates({startTime: sTime, endTime: eTime, runState: state}))
             // Update log data to LS
-            storeLogState && setCertificationRunTime({ startTime: sTime, endTime: eTime, runState: state })
+            // storeLogState && setCertificationRunTime({ startTime: sTime, endTime: eTime, runState: state })
             dispatch(setBuildInfo())
         }
     }
