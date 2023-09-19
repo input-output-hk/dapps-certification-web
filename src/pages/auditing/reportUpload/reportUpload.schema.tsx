@@ -16,7 +16,7 @@ export const reportUploadSchema = yup.object().shape({
     .string()
     .required("This field is required")
     .max(64, "Please enter a valid subject with upto 64 characters")
-    .matches(/^[0-9a-zA-Z_]+$/, "Please enter a valid subject (that has a-z, A-Z, 0-9 or _ characters only)."),
+    .matches(/^[A-Za-z0-9_]+$/, "Please enter a valid subject (that has a-z, A-Z, 0-9 or _ characters only)."),
   name: yup.string().required("This field is required")
     .max(64, "Please enter a valid name with upto 64 characters"),
   email: yup
@@ -57,8 +57,14 @@ export const reportUploadSchema = yup.object().shape({
       /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,255}\.[a-z]{2,6}(\b([-a-zA-Z0-9@:%_\+.~#()?&\/\/=]*))?$/,
       "Please enter a valid URL."
     ),
+  github: yup
+    .string()
+    .matches(/^(?=.{1,39}$)[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/, {
+      message: "Please enter a valid GitHub username",
+      excludeEmptyString: true,
+    }),
   reportURL: yup.string().required("This field is required")
-    .matches(/^((^(?!,)|(?!^),\s?)((ipfs:\/\/(Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,})([\/?#][-a-zA-Z0-9@:%_+.~#?&\/=]*)*)|((https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})\.(?:json|pdf))))+$/, "Please enter website links to JSON/PDF file and/or the ipfs:// link to the report"),
+    .matches(/^((^(?!,)|(?!^),\s?)((ipfs:\/\/(Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,})([\/?#][-a-zA-Z0-9@:%_+.~#?&\/=]*)*)|((https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})(\.(?:json|pdf))?)))+$/, "Please enter website links to JSON/PDF file and/or the ipfs:// link to the report"),
   dAppScripts: yup.array().of(
     yup.object({
       scriptHash: yup

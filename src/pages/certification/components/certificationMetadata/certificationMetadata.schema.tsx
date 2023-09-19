@@ -9,7 +9,7 @@ export const certificationMetadataSchema = yup.object().shape(
       .required("This field is required")
       .max(64, "Please enter a valid subject with upto 64 characters")
       .matches(
-        /^[0-9a-zA-Z_]+$/,
+        /^[A-Za-z0-9_]+$/,
         "Please enter a valid subject (that has a-z, A-Z, 0-9 or _ characters only)."
       ),
     name: yup.string().required("This field is required")
@@ -29,8 +29,8 @@ export const certificationMetadataSchema = yup.object().shape(
       ),
     github: yup
       .string()
-      .matches(/^(?:https?:\/\/)?(?:www\.)?github\.com\/[\w-]+\/[\w-]+$/, {
-        message: "Please enter a valid GitHub URL",
+      .matches(/^(?=.{1,39}$)[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/, {
+        message: "Please enter a valid GitHub username",
         excludeEmptyString: true,
       }),
     logo: yup

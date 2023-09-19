@@ -76,3 +76,12 @@ export const getObjectByPath = (object: { [x: string]: any }, path: string): any
   }
   return tempObj;
 };
+
+export const transformEmptyStringToNullInObj = (obj: any) => {
+  Object.keys(obj).forEach(key => {
+    if (!obj[key]) {
+      obj[key] = null
+    } 
+  })
+  return obj;
+}

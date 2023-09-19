@@ -76,7 +76,7 @@ export const CERTIFICATION_METADATA_FIELDS = {
       },
       {
         config: {
-          label: "Github Url",
+          label: "Github",
           type: "text",
           id: "github",
         },

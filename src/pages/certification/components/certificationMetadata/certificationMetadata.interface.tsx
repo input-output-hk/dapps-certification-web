@@ -18,13 +18,13 @@ export interface IAuditReport {
   
   export interface OffChainMetadataSchema {
     certificateIssuer: {
-      logo: string;
+      logo?: string;
       name: string;
       social: {
         contact: string;
-        discord: string;
-        github: string;
-        twitter: string;
+        discord?: string;
+        github?: string;
+        twitter?: string;
         website: string;
       };
     };

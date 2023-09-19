@@ -11,7 +11,7 @@ import {
 } from "./certificationMetadata.interface";
 import { fetchData } from "api/api";
 import Modal from "components/Modal/Modal";
-import { exportObjectToJsonFile } from "utils/utils";
+import { exportObjectToJsonFile, transformEmptyStringToNullInObj } from "utils/utils";
 import { CERTIFICATION_METADATA_FIELDS } from "./config";
 import CertificationForm from "components/CertificationForm/CertificationForm";
 
@@ -43,9 +43,9 @@ const CertificationMetadata: React.FC<{
       const { scriptHash, contractAddress, ...rest } = script;
       return({
         scriptHash: scriptHash,
-        contractAddress: contractAddress,
+        ...(contractAddress && { contractAddress: contractAddress }),
         smartContractInfo: {
-          ...rest,
+          ...transformEmptyStringToNullInObj(rest),
         },
       });
     });
@@ -72,13 +72,13 @@ const CertificationMetadata: React.FC<{
     const payload: OffChainMetadataSchema = {
       certificateIssuer: {
         name: name,
-        logo: logo || "",
+        ...(logo && { logo: logo }),
         social: {
           contact: email,
-          discord: discord || "",
-          twitter: twitter || "",
-          github: github || "",
           website: website,
+          ...(discord && { discord: discord }),
+          ...(twitter && { twitter: twitter }),
+          ...(github && { github: github })
         },
       },
       disclaimer: disclaimer,

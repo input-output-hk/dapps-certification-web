@@ -86,6 +86,14 @@ export const REPORT_UPLOAD_FIELDS = {
       },
       {
         config: {
+          label: "Github",
+          type: "text",
+          id: "github",
+        },
+        componentType: "text",
+      },
+      {
+        config: {
           label: "Discord",
           type: "text",
           id: "discord",

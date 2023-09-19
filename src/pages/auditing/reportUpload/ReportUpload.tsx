@@ -11,7 +11,7 @@ import {
 } from "./reportUpload.interface";
 import { fetchData } from "api/api";
 import Modal from "components/Modal/Modal";
-import { exportObjectToJsonFile } from "utils/utils";
+import { exportObjectToJsonFile, transformEmptyStringToNullInObj } from "utils/utils";
 import { REPORT_UPLOAD_FIELDS } from "./config";
 import CertificationForm from "components/CertificationForm/CertificationForm";
 
@@ -44,9 +44,9 @@ const ReportUpload = () => {
       const { scriptHash, contractAddress, ...rest } = script;
       formattedScripts.push({
         scriptHash: scriptHash,
-        contractAddress: contractAddress,
+        ...(contractAddress && { contractAddress: contractAddress }),
         smartContractInfo: {
-          ...rest,
+          ...transformEmptyStringToNullInObj(rest),
         },
       });
     });
@@ -60,6 +60,8 @@ const ReportUpload = () => {
       name,
       logo,
       email,
+      discord,
+      github,
       website,
       twitter,
       reportURL,
@@ -77,13 +79,13 @@ const ReportUpload = () => {
       certificationLevel: parseInt(certificationLevel),
       certificateIssuer: {
         name: name,
-        logo: logo,
+        ...(logo && { logo: logo }),
         social: {
           contact: email,
-          link: website,
-          twitter: twitter || "",
-          github: website,
           website: website,
+          ...(discord && { discord: discord }),
+          ...(twitter && { twitter: twitter }),
+          ...(github && { github: github })
         },
       },
       report: reportURL.replace(/\s+/g, "").split(","),
