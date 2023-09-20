@@ -43,10 +43,10 @@ const FullReportTable: React.FC<{
       [])
 
     return (<>
-      <Container className="pt-4 w-full block">
+      <Container className="pt-4" maxWidth="xl">
 
         <Box>
-          <div id="fullReportTable" className="w-full block">
+          <div id="fullReportTable">
             <span className="block my-5">Properties</span>
             <TableComponent
               dataSet={tableData}
