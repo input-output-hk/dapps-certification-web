@@ -20,7 +20,7 @@ import InformationTable from "components/InformationTable/InformationTable";
 import { useAppDispatch, useAppSelector } from "store/store";
 import { clearUuid, setUuid } from "./slices/certification.slice";
 import { clearStates, setBuildInfo, setStates, } from "./slices/logRunTime.slice";
-import { deleteTestHistoryData } from "pages/testHistory/slices/deleteTestHistory.slice";
+import { deleteTestHistoryData } from "pages/testingHistory/slices/deleteTestHistory.slice";
 import { useConfirm } from "material-ui-confirm";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "components/Loader/Loader";

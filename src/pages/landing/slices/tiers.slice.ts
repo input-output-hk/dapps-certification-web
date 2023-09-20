@@ -42,9 +42,6 @@ export const tiersSlide = createSlice({
       })
       .addCase(fetchTiers.fulfilled, (state, actions) => {
         state.tiers = actions.payload;
-
-        // HACK: DISABLING DEVELOPER TIER
-        state.tiers[0].enabled = false;
       })
       .addCase(fetchTiers.rejected, (state, actions) => {
         state.tiers = [];

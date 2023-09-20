@@ -46,8 +46,6 @@
 
   .subscription, .subscription-active {
     @apply
-      flex-1
-      mx-2
       px-4
       py-12
       outline
@@ -73,18 +71,6 @@
 
   .subscription-feature {
     @apply font-normal mb-12 text-main;
-  }
-
-  .subscription-button, .subscription-button-active {
-    @apply py-3 px-14 bg-main;
-  }
-
-  .subscription-button-active {
-    @apply py-3 px-14 bg-active;
-  }
-
-  .payment-button {
-    @apply mt-8 py-3 px-14 normal-case bg-main;
   }
   
 }

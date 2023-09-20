@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Grid, Typography, Button } from "@mui/material";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { fetchTiers } from "../slices/tiers.slice";
@@ -33,33 +33,37 @@ const SubscriptionSection = (props: Props) => {
         <Typography variant="subtitle1" className="subtitle-text mb-16">
           Please choose a subscription
         </Typography>
-        <Box className="flex flex-row px-2">
-          {tiers.map(tier => (
-            <div key={tier.id} className={tierId === tier.id ? 'subscription-active' : 'subscription'}>
-              <Typography variant="h5" className="subscription-title">
-                {tier.name}<br/>Premium Tier
-              </Typography>
-              <Typography variant="h2" className="subscription-price">
-                ${tier.usdPrice.toFixed(2)}
-              </Typography>
-              <Typography variant="body1" className="subscription-subtitle">
-                {tier.subtitle}
-              </Typography>
-              <Typography variant="body1" className="subscription-feature">
-                {tier.features.map(feature => (
-                  <span key={feature.name}>{feature.name}<br/></span>
-                ))}
-              </Typography>
-              <Button
-                variant="contained" size="large"
-                disabled={!tier.enabled}
-                className={tierId !== tier.id ? 'subscription-button-active' : 'subscription-button'}
-                onClick={() => onSelect(tier)}
-              >
-                {tierId === tier.id ? 'Selected' : 'Select'}
-              </Button>
-            </div>
-          ))}
+        <Box className="w-[50vw] px-4">
+          <Grid container spacing={2} justifyContent="center">
+            {tiers.map(tier => (
+              <Grid item xs={6} key={tier.id}>
+                <Box className={tierId === tier.id ? 'subscription-active' : 'subscription'}>
+                  <Typography variant="h5" className="subscription-title">
+                    {tier.name}<br/>Premium Tier
+                  </Typography>
+                  <Typography variant="h2" className="subscription-price">
+                    ${tier.usdPrice.toFixed(2)}
+                  </Typography>
+                  <Typography variant="body1" className="subscription-subtitle">
+                    {tier.subtitle}
+                  </Typography>
+                  <Typography variant="body1" className="subscription-feature">
+                    {tier.features.map(feature => (
+                      <span key={feature.name}>{feature.name}<br/></span>
+                    ))}
+                  </Typography>
+                  <Button
+                    variant="contained" size="large"
+                    disabled={!tier.enabled}
+                    className={`py-3 px-14 font-medium ${tierId !== tier.id ? 'button-contained-active' : 'button-contained-main'}`}
+                    onClick={() => onSelect(tier)}
+                  >
+                    {tierId === tier.id ? 'SELECTED' : 'SELECT'}
+                  </Button>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       </Box>
     </Box>

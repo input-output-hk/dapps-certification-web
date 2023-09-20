@@ -11,5 +11,5 @@ export const LocalStorageKeys = {
   certificationRunTime: "certificationRunTime",
   certificationDone: "certificationDone",
   commit: "commit",
-  networkId: "networkId"
+  networkId: "networkId",
 };
