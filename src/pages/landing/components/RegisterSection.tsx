@@ -40,7 +40,7 @@ const RegisterSection = (props: Props) => {
 
   useEffect(() => {
     if (props.tier !== null && price > 0) {
-      setTotal(props.tier.usdPrice * price);
+      setTotal(props.tier.usdPrice / price);
     } else {
       setTotal(0);
     }
@@ -97,7 +97,7 @@ const RegisterSection = (props: Props) => {
             <TextField
               className="mb-6"
               required fullWidth variant="standard"
-              label="Email" type="email"
+              label="Company Email" type="email"
               error={errors.email !== undefined}
               helperText={errors.email !== undefined ? 'The field value is invalid' : undefined}
               {...register("email", { required: true, pattern: /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-_]+\.[A-Za-z]{2,64}$/i })}
@@ -136,7 +136,7 @@ const RegisterSection = (props: Props) => {
             />
             <Button
               type="submit" variant="contained" size="large"
-              className="mt-8 py-3 px-14 normal-case bg-slate-main"
+              className="payment-button"
               disabled={total <= 0 || processing}
             >
               Pay (₳{total.toFixed(2)})

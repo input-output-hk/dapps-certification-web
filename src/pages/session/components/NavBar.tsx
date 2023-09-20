@@ -29,7 +29,6 @@ const NavBar = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-
       <MenuList>
         <MenuItem className={getItemClassName('/home')} onClick={() => navigate('/home')}>
           <ListItemIcon><HomeIcon className={getIconClassName('/home')} /></ListItemIcon>
@@ -55,12 +54,10 @@ const NavBar = () => {
           <ListItemIcon><SupportIcon className={getIconClassName('/support')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">Support</ListItemText>
         </MenuItem>
-        <MenuItem className={getItemClassName('/documentation')} onClick={() => navigate('/documentation')}>
-          <ListItemIcon><DocumentationIcon className={getIconClassName('/documentation')} /></ListItemIcon>
+        <MenuItem className="nav-bar-item" onClick={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}>
+          <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
           <ListItemText className="text-white font-medium">Documentation</ListItemText>
         </MenuItem>
-
-        <Divider />
       </MenuList>
     </Box>
   );

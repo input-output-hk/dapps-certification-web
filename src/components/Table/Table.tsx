@@ -15,7 +15,6 @@ import GridViewIcon from '@mui/icons-material/GridView';
 import Typography from "@mui/material/Typography";
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-
 import ColViz from "./components/ColViz/ColViz";
 
 import "./Table.css";

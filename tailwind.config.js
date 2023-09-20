@@ -1,5 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  important: '#root',
   theme: {
     extend: {
       colors: {
@@ -67,6 +68,9 @@ module.exports = {
         xs: "375px" // => @media (min-width: 375px) { ... }
       }
     },
+  },
+  corePlugins: {
+    preflight: false,
   },
   plugins: []
 };
