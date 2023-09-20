@@ -17,7 +17,7 @@ import Loader from "components/Loader/Loader";
 const Certification = () => {
     // const { features: subscribedFeatures } = useAppSelector((state) => state.auth);
     const [lsFormData] = useLocalStorage(LocalStorageKeys.certificationFormData, "");
-    const [uuid] = useLocalStorage(LocalStorageKeys.certificationUuid, "");
+    const [lsUuid] = useLocalStorage(LocalStorageKeys.certificationUuid, "");
     const [disableForm, setDisableForm] = useState(false);
     const [runId, setRunId] = useState("");
     const [commitHash, setRunCommitHash] = useState("");
@@ -26,13 +26,7 @@ const Certification = () => {
     const [testAgain, setTestAgain] = useState(false);
     const [clearForm, setClearForm] = useState(false);
     const [clickedFormSubmit, setClickedFormSubmit] = useState(false);
-    const [data, setData] = useState({
-        repoURL: "",
-        commit: "",
-        name: "",
-        subject: "",
-        version: "",
-    });
+    const [formData, setFormData] = useState<IAuditorRunTestFormFields | null>(null);
 
     const onCertificationFormSubmit = (data: {
         runId: string;
@@ -63,28 +57,33 @@ const Certification = () => {
 
     const triggerReset = () => {
         setTestAgain(true)
-        resetStates(true)
+        resetStates()
     }
 
     const triggerNewTest = () => {
         setClearForm(true)
-        resetStates(true)
+        resetStates()
     }
 
-    const certificationFormError = () => setDisableForm(false);
+    const certificationFormError = () => {
+        setDisableForm(false)
+        if (runId) {
+            onTestRunAbort();
+        }
+    };
 
     // Prefill form values
     useEffect(() => {
-        if (lsFormData && uuid) {
-            const formData: IAuditorRunTestFormFields = JSON.parse(
+        if (lsFormData && lsUuid && !runId) {
+            const data: IAuditorRunTestFormFields = JSON.parse(
                 JSON.stringify(lsFormData)
             );
-            const { repoURL, commit: commitHash, version, name, subject } = formData;
+            const { repoURL, commit: commitHash, version, name, subject } = data;
             if (repoURL && commitHash && version && name && version && subject) {
-                const [, , , username, repoName] = formData.repoURL.split("/");
-                setData(formData);
+                const [, , , username, repoName] = data.repoURL.split("/");
+                setFormData(data);
                 onCertificationFormSubmit({
-                    runId: uuid as string,
+                    runId: lsUuid as string,
                     commitHash: commitHash,
                     repo: username + "/" + repoName,
                 });
@@ -131,6 +130,7 @@ const Certification = () => {
                         disable={disableForm}
                         testAgain={testAgain}
                         clearForm={clearForm}
+                        initialData={formData}
                         onError={certificationFormError}
                     />
                 </div>

@@ -24,10 +24,11 @@ import {
 } from "store/slices/repositoryAccess.slice";
 import { useConfirm } from "material-ui-confirm";
 import { useSearchParams } from "react-router-dom";
+import useLocalStorage from "hooks/useLocalStorage";
 
 interface IAuditorRunTestForm {
   disable: boolean;
-  data?: IAuditorRunTestFormFields;
+  initialData?: IAuditorRunTestFormFields | null;
   clearForm?: boolean;
   testAgain?: boolean;
   onSubmit: (data: { runId: string; commitHash: string; repo: string }) => any;
@@ -37,7 +38,7 @@ interface IAuditorRunTestForm {
 
 const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   disable,
-  data = {},
+  initialData = null,
   clearForm = false,
   testAgain = false,
   onSubmit,
@@ -57,6 +58,10 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
+
+  const [, setLsFormData] = useLocalStorage(LocalStorageKeys.certificationFormData, "");
+  const [, setLsUuid] = useLocalStorage(LocalStorageKeys.certificationUuid, "");
+    
 
   const [searchParams, setSearchParams] = useSearchParams();
   const githubAccessCode = searchParams.get("code");
@@ -146,15 +151,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           const response = await postData.post("/run", checkout);
           if (response.data) {
             // store data into LS
-            localStorage.setItem(LocalStorageKeys.certificationUuid, response.data);
-            localStorage.setItem(
-              LocalStorageKeys.certificationFormData,
-              JSON.stringify({
-                ...formData,
-                commit: checkout,
-                repoURL: `https://github.com/${username}/${repoName}`,
-              })
-            );
+            setLsUuid(response.data)
+            setLsFormData({
+              ...formData,
+              commit: checkout,
+              repoURL: `https://github.com/${username}/${repoName}`,
+            })
             // Emit uuid, checkout
             onSubmit({
               runId: response.data,
@@ -197,16 +199,17 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 
   // Fill initial form values
   useEffect(() => {
-    if (data) {
-      form.reset(data);
+    if (initialData) {
+      form.reset(initialData);
 
-      // Submit form if prefilled-data is valid
       auditorRunTestFormSchema
-        .isValid(data)
-        .then(() => formHandler(data as any));
+        .isValid(initialData)
+        .then(() => {
+          // do nothing
+        }).catch((err) => onError());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [initialData]);
 
   // New Test: Clear certification form
   useEffect(() => {
@@ -252,7 +255,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     <div>
       <Form form={form} onSubmit={formHandler}>
         <Button
-          type="submit"
+          type="submit" 
           variant="contained" size="large"
           className="button block py-3 px-14 mt-10 mb-20 mx-auto w-[200px]"
           disabled={!form.formState.isValid || submitting || disable}
@@ -261,58 +264,58 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
         </Button>
 
         <div className={disable ? "disabled" : ""}>
-        <div className="relative input-wrapper">
+          <div className="relative input-wrapper">
+            <Input
+              label="GitHub Repository"
+              type="text"
+              id="repoURL"
+              required={true}
+              disabled={submitting}
+              tooltipText="Github Repository URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash)."
+              {...form.register("repoURL")}
+            />
+
+            {accessStatus ? (
+              <div className="absolute right-2 top-6">
+                <RepoAccessStatus status={accessStatus} />
+              </div>
+            ) : null}
+          </div>
+
           <Input
-            label="GitHub Repository"
+            label="Commit Hash"
             type="text"
-            id="repoURL"
+            id="commit"
             required={true}
             disabled={submitting}
-            tooltipText="Github Repository URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash)."
-            {...form.register("repoURL")}
+            {...form.register("commit")}
           />
 
-          {accessStatus ? (
-            <div className="absolute right-2 top-6">
-              <RepoAccessStatus status={accessStatus} />
-            </div>
-          ) : null}
-        </div>
+          <Input
+            label="DApp Name"
+            type="text"
+            id="name"
+            required={true}
+            disabled={submitting}
+            {...form.register("name")}
+          />
 
-        <Input
-          label="Commit Hash"
-          type="text"
-          id="commit"
-          required={true}
-          disabled={submitting}
-          {...form.register("commit")}
-        />
+          <Input
+            label="DApp Version"
+            type="text"
+            id="version"
+            required={true}
+            disabled={submitting}
+            {...form.register("version")}
+          />
 
-        <Input
-          label="DApp Name"
-          type="text"
-          id="name"
-          required={true}
-          disabled={submitting}
-          {...form.register("name")}
-        />
-
-        <Input
-          label="DApp Version"
-          type="text"
-          id="version"
-          required={true}
-          disabled={submitting}
-          {...form.register("version")}
-        />
-
-        <TextArea
-          placeholder="DApp Subject"
-          maxRows={2}
-          required={true}
-          disabled={submitting}
-          {...form.register("subject")}
-        />
+          <TextArea
+            placeholder="DApp Subject"
+            maxRows={2}
+            required={true}
+            disabled={submitting}
+            {...form.register("subject")}
+          />
         </div>
       </Form>
 
