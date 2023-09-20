@@ -80,11 +80,11 @@ const CertificationResult = () => {
     <>
       <div className="content-area">
         <div className="content-area-title-section pb-7">
-          <span className="text-2xl text-neutral-700 font-medium">
+          <h2>
             {(state?.repo && state?.commitHash) ?
               state.repo + ": " + ellipsizeString(state.commitHash, 7, 3)
               : (param?.uuid ? "Result: " + ellipsizeString(param?.uuid, 5, 3) : "Result")}
-          </span>
+          </h2>
         </div>
 
         <div className="header-section">

@@ -28,21 +28,23 @@ import { useConfirm } from "material-ui-confirm";
 import { useSearchParams } from "react-router-dom";
 
 interface IAuditorRunTestForm {
-  isSubmitting: boolean;
+  disable: boolean;
   data?: IAuditorRunTestFormFields;
   clearForm?: boolean;
   testAgain?: boolean;
   onSubmit: (data: { runId: string; commitHash: string; repo: string }) => any;
   onError: () => void;
+  loadingRunId?: (flag: boolean) => void
 }
 
 const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
-  isSubmitting,
+  disable,
   data = {},
   clearForm = false,
   testAgain = false,
   onSubmit,
   onError,
+  loadingRunId
 }) => {
   const form: any = useForm({
     schema: auditorRunTestFormSchema,
@@ -129,7 +131,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     const { commit, name, version, subject } = formData;
 
     setSubmitting(true);
-
+    loadingRunId && loadingRunId(true)
     const triggerAPI = async () => {
       try {
         const checkout = commitHash || commit;
@@ -265,12 +267,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   }, [showConfirmConnection]);
 
   return (
-    <div className={isSubmitting ? "disabled" : ""}>
+    <div className={disable ? "disabled" : ""}>
       <Form form={form} onSubmit={formHandler}>
         <Button
           type="submit"
           buttonLabel="Test"
-          disabled={!form.formState.isValid || submitting || isSubmitting}
+          disabled={!form.formState.isValid || submitting || disable}
           className="mt-10 mb-20 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
         />
 

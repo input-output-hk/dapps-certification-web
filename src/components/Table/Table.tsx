@@ -29,14 +29,14 @@ const Row = (props: any) => {
   
   return (<>
     <TableRow {...row.getRowProps()} onClick={onRowClick} className={rowClassNames}>
-        <TableCell className="border-none">
+        {collapsible && <TableCell className="border-none">
           <IconButton
             aria-label="expand row"
             size="small"
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
+        </TableCell>}
         {row.cells.map((cell: any) => (
           <TableCell className={`border-none ${cell.column.classes}`} {...cell.getCellProps()}>
             {cell.render("Cell")}
