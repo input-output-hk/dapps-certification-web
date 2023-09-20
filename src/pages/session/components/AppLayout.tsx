@@ -32,10 +32,10 @@ const AppLayout = () => {
   return (
     <Box className="flex flex-row h-screen bg-slate-app overflow-hidden">
       <NavBar />
-      <Box className="flex-1 flex flex-col relative pt-16">
+      <Box className="flex-1 flex flex-col relative overflow-y-auto">
         <AppBar />
         <Banner />
-        <Box className="flex-1 flex flex-col p-4 overflow-y-scroll">
+        <Box className="flex-1 flex flex-col p-4">
           <Outlet />
         </Box>
       </Box>
