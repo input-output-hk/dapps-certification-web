@@ -36,7 +36,7 @@ export const Form = <T extends FieldValues>({
         {...props}
       >
         {/* Disable form modification while submission */}
-        <fieldset className="border-0" disabled={form.formState.isSubmitting}>{children}</fieldset>
+        <fieldset className="border-0 p-0" disabled={form.formState.isSubmitting}>{children}</fieldset>
       </form>
     </FormProvider>
   );

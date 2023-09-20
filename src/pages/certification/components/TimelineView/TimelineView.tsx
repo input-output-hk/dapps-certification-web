@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useConfirm } from "material-ui-confirm";
+import Button from "@mui/material/Button";
 
 import { deleteTestHistoryData } from "pages/testingHistory/slices/deleteTestHistory.slice";
 
@@ -17,12 +18,13 @@ import {
   isAnyTaskFailure,
 } from "./../../Certification.helper";
 import LogsView from "components/LogsView/LogsView";
-import Button from "components/Button/Button";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import DownloadResult from "../DownloadResult/DownloadResult";
 import FileCoverageContainer from "../FileCoverageContainer";
 import { clearPersistentStates } from "../AuditorRunTestForm/utils";
+import Loader from "components/Loader/Loader";
+
 
 const TIMEOFFSET = 1000;
 
@@ -198,6 +200,10 @@ const TimelineView: React.FC<{
     };
   }, []);
 
+  if (!runStatus) {
+    return <Loader />
+  }
+
   return (
     <>
       <div className="timeline-view-container w-full">
@@ -206,19 +212,23 @@ const TimelineView: React.FC<{
             {apiFetching && (
               <Button
                 type="button"
-                buttonLabel="Abort"
+                variant="contained" size="large"
                 onClick={abortTestRun}
-                className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
-              />
+                className="button py-3 px-14 my-10 block mx-auto w-[200px]"
+              >
+                Abort
+              </Button>
             )}
 
             {runStatus === "finished" && (<>
               <Button
                 type="button"
-                buttonLabel="Full Report"
+                variant="contained" size="large"
                 onClick={viewFullReport}
-                className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
-              />
+                className="button py-3 px-14 my-10 block mx-auto"
+              >
+                Full Report
+              </Button>
               <div className="flex justify-around mb-20 flex-wrap gap-[8px]">
                 {unitTestSuccess && <CreateCertificate uuid={uuid} />}
                 <DownloadResult resultData={resultData} />

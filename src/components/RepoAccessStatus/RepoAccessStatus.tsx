@@ -6,6 +6,10 @@ const RepoAccessStatus: React.FC<{
   status: string;
   statusText?: string;
 }> = ({ status, statusText }) => {
+  if (!status) {
+    return null
+  }
+  
   const { color, className, ...imgProps } = ACCESS_STATUS[status];
   return (
     <label className="info flex">

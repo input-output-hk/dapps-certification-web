@@ -1,5 +1,8 @@
-import Button from "components/Button/Button";
 import { useEffect, useState } from "react";
+import { Button } from "@mui/material";
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+
 import { ellipsizeString } from "utils/utils";
 
 // import { useAppSelector } from "store/store";
@@ -92,8 +95,8 @@ const Certification = () => {
 
     return (
         <div className="content-area">
-            <div className="content-area-title-section pb-7 flex justify-between">
-                <h2>
+            <div className="content-area-title-section py-7 flex justify-between">
+                <h2 className="m-0">
                     {runId
                         ? "Run: " + ellipsizeString(runId)
                         : "Testing Tool"}
@@ -102,18 +105,18 @@ const Certification = () => {
                     <div className="flex gap-x-4">
                         <Button
                             type="button"
-                            size="small"
-                            buttonLabel="Test again"
+                            variant="contained" size="small"
                             onClick={triggerReset}
-                            className="text-sm"
-                        />
+                            className="button text-sm min-w-[150px]"
+                            startIcon={<RestartAltIcon />}
+                        >Test again</Button>
                         <Button
                             type="button"
-                            size="small"
-                            buttonLabel="New test"
+                            variant="contained" size="small"
                             onClick={triggerNewTest}
-                            className="text-sm"
-                        />
+                            className="button text-sm min-w-[150px]"
+                            startIcon={<LeaderboardIcon />}
+                        >New test</Button>
                     </div>
                 )}
             </div>
@@ -142,7 +145,7 @@ const Certification = () => {
                             triggerFormReset={onTestRunAbort}
                         />
                     ) : (
-                        <div className="w-full text-center text-xl text-neutral-300 font-medium pt-48 top-1/2 -translate-y-1/2">
+                        <div className="w-full text-center text-xl text-neutral-300 font-medium pt-48">
                             {clickedFormSubmit ? <Loader /> : <span>Fill the testing form</span>}
                         </div>
                     )}

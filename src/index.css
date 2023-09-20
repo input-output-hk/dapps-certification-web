@@ -19,4 +19,12 @@
     }
   }
 
+  .button {
+    @apply text-lg normal-case bg-slate-main
+  }
+
+  .button-outlined {
+    @apply text-lg bg-white normal-case
+  }
+
 }

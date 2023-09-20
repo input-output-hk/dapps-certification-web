@@ -1,7 +1,6 @@
-import Button from "components/Button/Button";
+import { Button } from "@mui/material";
 import { exportObjectToJsonFile } from "utils/utils";
-import DownloadIcon from "assets/images/download.svg";
-
+import DownloadIcon from '@mui/icons-material/Download';
 
 const DownloadResult = (resultData: any) => {
 
@@ -9,11 +8,13 @@ const DownloadResult = (resultData: any) => {
     exportObjectToJsonFile(resultData, "Testing Report.json");
   };
 
-    return <Button
-        className="report-download bg-secondary hover:bg-blue rounded-3"
-        onClick={(_) => handleDownloadResultData(resultData)}
-        buttonLabel="Download Report"
-        iconUrl={DownloadIcon}
-    />
+  return <Button
+      className="button"
+      onClick={(_) => handleDownloadResultData(resultData)}
+      variant="contained" size="medium"
+      startIcon={<DownloadIcon />}
+    >
+      Download Report
+    </Button>
 }
 export default DownloadResult;

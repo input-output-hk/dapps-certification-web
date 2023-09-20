@@ -92,7 +92,7 @@ const CertificationResult = () => {
             {Object.keys(resultData).length ? (<>
               <div className="w-full flex items-stretch justify-end gap-x-4">
                 <DownloadResult resultData={resultData} />
-                {state?.certifiable ? <CreateCertificate uuid={param.uuid as string} /> : null}
+                {(unitTestSuccess && state?.certifiable) ? <CreateCertificate uuid={param.uuid as string} /> : null}
               </div>
               <div className="flex items-center justify-evenly my-10">
                 {unitTestSuccess && <FileCoverageContainer 

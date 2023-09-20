@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "store/store";
 
-import Button from "components/Button/Button";
+import LoadingButton from '@mui/lab/LoadingButton';
+
 import Modal from "components/Modal/Modal";
 
 import { BigNum } from '@emurgo/cardano-serialization-lib-browser';
@@ -10,6 +11,7 @@ import { BigNum } from '@emurgo/cardano-serialization-lib-browser';
 import Toast from "components/Toast/Toast";
 import { fetchData } from "api/api";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
+import { Alert, Snackbar } from "@mui/material";
 
 export interface Run {
     "certificationPrice": number,
@@ -128,11 +130,15 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     }
 
     return (<>
-        {certified || disableCertify ? null : (<Button
+        {certified || disableCertify ? null : (
+        <LoadingButton
+            variant="contained" size="large"
+            className="button min-w-[200px]"
             onClick={() => triggerGetCertificate()}
-            buttonLabel={"Purchase a Certificate"+ (certificationPrice ? " (" + (certificationPrice/1000000).toString() + " ADA)" : "")}
-            showLoader={certifying}
-        />)}
+            loading={certifying}
+        >
+            <span>{"Purchase a Certificate"+ (certificationPrice ? " (₳" + (certificationPrice/1000000).toString() + ")" : "")}</span>
+        </LoadingButton>)}
         {transactionId ? (
             <Modal open={openModal} title="Certification Successful" onCloseModal={onCloseModal}>
                 <span>
@@ -141,7 +147,21 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
                 </span>
             </Modal>
         ): null}
-        {showError ? <Toast message={showError} /> : null}
+        {/* {showError ? <Toast message={showError} /> : null} */}
+        
+        <Snackbar
+            open={showError ? true : false}
+            autoHideDuration={5000}
+            onClose={() => setShowError("")}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+            <Alert
+            severity="error" variant="filled"
+            onClose={() => setShowError("")}
+            >
+                {showError}
+            </Alert>
+        </Snackbar>
     </>);
 }
 

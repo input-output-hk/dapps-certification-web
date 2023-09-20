@@ -11,6 +11,7 @@
     "@hookform/resolvers": "^2.9.7",
     "@mui/icons-material": "5.10.14",
     "@mui/material": "5.10.14",
+    "@mui/lab": "latest",
     "@reduxjs/toolkit": "^1.9.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/user-event": "^13.5.0",

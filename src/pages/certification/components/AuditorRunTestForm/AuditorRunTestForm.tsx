@@ -4,8 +4,9 @@ import { useAppDispatch, useAppSelector } from "store/store";
 import { useForm } from "hooks/useForm";
 import { fetchData, postData } from "api/api";
 
+import { Button } from "@mui/material";
+
 import { LocalStorageKeys } from "constants/constants";
-import Button from "components/Button/Button";
 import TextArea from "components/TextArea/TextArea";
 import Toast from "components/Toast/Toast";
 import { Form } from "compositions/Form/Form";
@@ -248,15 +249,18 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   }, [showConfirmConnection]);
 
   return (
-    <div className={disable ? "disabled" : ""}>
+    <div>
       <Form form={form} onSubmit={formHandler}>
         <Button
           type="submit"
-          buttonLabel="Test"
+          variant="contained" size="large"
+          className="button block py-3 px-14 mt-10 mb-20 mx-auto w-[200px]"
           disabled={!form.formState.isValid || submitting || disable}
-          className="mt-10 mb-20 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
-        />
+        >
+          Test
+        </Button>
 
+        <div className={disable ? "disabled" : ""}>
         <div className="relative input-wrapper">
           <Input
             label="GitHub Repository"
@@ -309,6 +313,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           disabled={submitting}
           {...form.register("subject")}
         />
+        </div>
       </Form>
 
       {showError ? <Toast message={showError} /> : null}
