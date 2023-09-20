@@ -11,27 +11,15 @@
     margin-right: 1rem;
 }
 .log-information {
-    position: absolute;
     overflow-y: scroll;
     margin: 0;
     word-break: break-all;
     background-color: #424242;
     color: #ccc;
     min-height: 200px;
+    max-height: 400px;
     z-index: 1;
     text-align: left;
-
-    @media (min-width: 1199px) { // to include 1200px
-        top: 147px;
-        left: 13px;
-        width: 50%;
-        max-height: calc(100vh - 200px);
-    }
-    @media (max-width: 1199px) {
-        top: -100px;
-        width: 100%;
-        max-height: 400px;
-    }
 
     .log-header {
         height: 30px;
