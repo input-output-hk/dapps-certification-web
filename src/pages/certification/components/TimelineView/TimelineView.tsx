@@ -56,6 +56,7 @@ const TimelineView: React.FC<{
   const [timelineConfig, setTimelineConfig] = useState(TIMELINE_CONFIG);
   const [resultData, setResultData] = useState<any>({});
   const [unitTestSuccess, setUnitTestSuccess] = useState(true); // assuming unit tests will pass
+  const [hasFailedTasks, setHasFailedTasks] = useState(false);
   const [plannedTestingTasks, setPlannedTestingTasks] = useState<PlanObj[]>([]);
 
   const abortTestRun = () => {
@@ -145,6 +146,7 @@ const TimelineView: React.FC<{
         runEnded(true)
         const unitTestResult = processFinishedJson(resultJson);
         setUnitTestSuccess(unitTestResult);
+        setHasFailedTasks(isAnyTaskFailure(resultData))
         // navigate to result page
         clearPersistentStates();
         // navigate("/report/" + uuid, { state: { repoUrl: githubLink, certifiable: true } });
@@ -230,7 +232,7 @@ const TimelineView: React.FC<{
                 Full Report
               </Button>
               <div className="flex justify-around mb-20 flex-wrap gap-[8px]">
-                {unitTestSuccess && <CreateCertificate uuid={uuid} />}
+                {(unitTestSuccess && !hasFailedTasks) && <CreateCertificate uuid={uuid} />}
                 <DownloadResult resultData={resultData} />
               </div>
             </>)}
@@ -238,7 +240,7 @@ const TimelineView: React.FC<{
             <Timeline
               statusConfig={timelineConfig}
               unitTestSuccess={unitTestSuccess}
-              hasFailedTasks={isAnyTaskFailure(resultData)}
+              hasFailedTasks={hasFailedTasks}
             />
 
             <LogsView

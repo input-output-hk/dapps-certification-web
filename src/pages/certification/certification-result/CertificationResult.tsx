@@ -21,6 +21,7 @@ import "../Certification.scss";
 import DownloadResult from "../components/DownloadResult/DownloadResult";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 import FullReportTable from "./FullReportTable";
+import { isAnyTaskFailure } from "../Certification.helper";
 
 const CertificationResult = () => {
   const param = useParams<{ uuid: string }>();
@@ -92,7 +93,7 @@ const CertificationResult = () => {
             {Object.keys(resultData).length ? (<>
               <div className="w-full flex items-stretch justify-end gap-x-4">
                 <DownloadResult resultData={resultData} />
-                {(unitTestSuccess && state?.certifiable) ? <CreateCertificate uuid={param.uuid as string} /> : null}
+                {(unitTestSuccess && state?.certifiable && !isAnyTaskFailure(resultData)) ? <CreateCertificate uuid={param.uuid as string} /> : null}
               </div>
               <div className="flex items-center justify-evenly my-10">
                 {unitTestSuccess && <FileCoverageContainer 
