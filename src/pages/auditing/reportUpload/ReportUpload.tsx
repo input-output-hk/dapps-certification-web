@@ -13,7 +13,7 @@ import { fetchData } from "api/api";
 import Modal from "components/Modal/Modal";
 import { exportObjectToJsonFile, transformEmptyStringToNullInObj } from "utils/utils";
 import { REPORT_UPLOAD_FIELDS } from "./config";
-import CertificationForm from "components/CertificationForm/CertificationForm";
+import CertificationMetadataForm from "components/CertificationMetadataForm/CertificationMetadataForm";
 
 import "./ReportUpload.scss";
 
@@ -129,7 +129,7 @@ const ReportUpload = () => {
     <>
       <h2>Upload an Audit Report</h2>
       <div id="auditReportUploadContainer" className="certificate-metadata-form">
-        <CertificationForm
+        <CertificationMetadataForm
           config={REPORT_UPLOAD_FIELDS as any}
           submitting={submitting}
           initData={{

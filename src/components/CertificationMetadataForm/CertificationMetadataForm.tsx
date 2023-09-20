@@ -28,7 +28,7 @@ interface FieldConfig {
   form: any;
 }
 
-export interface ICertificationForm {
+export interface ICertificationMetadataForm {
   commonField: FieldConfig[];
   auditorInfo: FieldConfig[];
   auditorReport: FieldConfig[];
@@ -66,8 +66,8 @@ const Component = (props: FieldConfig) => {
   }
 };
 
-const CertificationForm: React.FC<{
-  config: ICertificationForm;
+const CertificationMetadataForm: React.FC<{
+  config: ICertificationMetadataForm;
   submitting: boolean;
   initData: any;
   form: any;
@@ -200,4 +200,4 @@ const CertificationForm: React.FC<{
   );
 };
 
-export default CertificationForm;
+export default CertificationMetadataForm;

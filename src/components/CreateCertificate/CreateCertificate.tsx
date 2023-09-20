@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useAppSelector } from "store/store";
+import { BigNum } from "@emurgo/cardano-serialization-lib-browser";
+import { fetchData } from "api/api";
 
+import { Alert, Snackbar } from "@mui/material";
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import Modal from "components/Modal/Modal";
-
-import { BigNum } from "@emurgo/cardano-serialization-lib-browser";
-
-import Toast from "components/Toast/Toast";
-import { fetchData } from "api/api";
+import { useAppSelector } from "store/store";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
-import { Alert, Snackbar } from "@mui/material";
+
+import Modal from "components/Modal/Modal";
+import Toast from "components/Toast/Toast";
+import CertificationMetadata from "pages/certification/components/CertificationMetadata/CertificationMetadata";
 
 import "./CreateCertificate.scss";
-import CertificationMetadata from "pages/certification/components/certificationMetadata/CertificationMetadata";
 
 export interface Run {
     certificationPrice: number;

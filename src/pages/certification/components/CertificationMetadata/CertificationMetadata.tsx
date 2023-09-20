@@ -13,7 +13,7 @@ import { fetchData } from "api/api";
 import Modal from "components/Modal/Modal";
 import { exportObjectToJsonFile, transformEmptyStringToNullInObj } from "utils/utils";
 import { CERTIFICATION_METADATA_FIELDS } from "./config";
-import CertificationForm from "components/CertificationForm/CertificationForm";
+import CertificationMetadataForm from "components/CertificationMetadataForm/CertificationMetadataForm";
 
 export const fieldArrayName: string = "dAppScripts";
 
@@ -120,7 +120,7 @@ const CertificationMetadata: React.FC<{
   return (
     <>
       <div id="certificationMetadataFormContainer" className="certificate-metadata-form">
-        <CertificationForm
+        <CertificationMetadataForm
           config={CERTIFICATION_METADATA_FIELDS as any}
           submitting={submitting}
           initData={{
