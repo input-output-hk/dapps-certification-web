@@ -15,6 +15,8 @@ import GridViewIcon from '@mui/icons-material/GridView';
 import Typography from "@mui/material/Typography";
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ColViz from "./components/ColViz/ColViz";
 
 import "./Table.css";
@@ -27,14 +29,22 @@ const Row = (props: any) => {
   
   return (<>
     <TableRow {...row.getRowProps()} onClick={onRowClick} className={rowClassNames}>
+        <TableCell className="border-none">
+          <IconButton
+            aria-label="expand row"
+            size="small"
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
         {row.cells.map((cell: any) => (
-          <TableCell className="border-none" {...cell.getCellProps()}>
+          <TableCell className={`border-none ${cell.column.classes}`} {...cell.getCellProps()}>
             {cell.render("Cell")}
           </TableCell>
         ))}
     </TableRow>
     {collapsible && <TableRow className="pull-down-row">
-        <TableCell colSpan={row.cells.length}>
+        <TableCell className="border-none" colSpan={row.cells.length + 1}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box className="">
               {rowProps(row).collapsibleContent}
@@ -133,16 +143,17 @@ const TableComponent: FC<any> = ({
         <TableContainer component={Box}>
           <Table
             size="small"
-            className={`min-w-[650px] px-8 table ${collapsibleRows && 'collapsible'}`}
+            className={`px-8 table ${collapsibleRows && 'collapsible'}`}
             {...getTableProps()}
           >
             <TableHead className="bg-tableHeader">
               {headerGroups.map((headerGroup: any, index) => (
                 <TableRow {...headerGroup.getHeaderGroupProps()} key={index}>
+                  {collapsibleRows && <TableCell className="border-none w-[50px]"></TableCell>}
                   {headerGroup.headers.map((column: any, index: number) => (
                     <TableCell
                       key={index}
-                      className="text-tableHeaderText font-bold py-4 border-none"
+                      className={`text-tableHeaderText font-bold py-4 border-none ${column.classes}`}
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                     >
                       {column.render("Header").toUpperCase()}

@@ -106,19 +106,13 @@ const FileCoverageContainer: React.FC<{
         }) : null;
     };
 
-    return (
-        <div id="coverageIndicator">
-            {/* {coverageIndexFiles?.length ? (
-                <div>
-                    <span>Code Coverage</span>
-                    <Tooltip title={<span style={{fontSize: '14px', lineHeight: '18px'}}>Code coverage is a measure of how much of your on-chain code has been executed during testing</span>} placement="top" arrow>
-                        <IconButton><InfoIcon fontSize="small"/></IconButton>
-                    </Tooltip>
-                </div>
-            ): null} */}
-            <ul>{renderRows()}</ul>
-        </div>
-    );
+    return (<>
+        {coverageIndexFiles ? (
+            <div id="coverageIndicator">
+                <ul>{renderRows()}</ul>
+            </div>
+        ) : null}
+    </>);
 };
 
 export default FileCoverageContainer;

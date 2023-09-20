@@ -48,7 +48,7 @@ const LogsView: FC<{ runId: string, endPolling?: boolean, oneTime?: boolean, ope
                 </span>
                 <section className={`log-information ${showLogs ? "" : "hidden"}`} data-testid="log-information">
                     <div className="log-header">
-                        <h6>Logs</h6>
+                        <h5>Logs</h5>
                         <span
                             className="minimize-btn text-right"
                             onClick={hideLogView}>

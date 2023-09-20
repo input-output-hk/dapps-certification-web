@@ -41,9 +41,10 @@ const Certification = () => {
     };
 
     const onTestRunAbort = () => {
-        // resetStates()
+        setRunId("")
         clearPersistentStates();
         setSubmitting(false);
+        setRunEnded(true)
     };
 
     const onRunEnd = () => {
@@ -52,11 +53,15 @@ const Certification = () => {
     }
 
     const triggerReset = () => {
+        setRunEnded(true)
         setTestAgain(true)
+        setRunId("")
     }
 
     const triggerNewTest = () => {
+        setRunEnded(true)
         setClearForm(true)
+        setRunId("")
     }
 
     const certificationFormError = () => setSubmitting(false);
@@ -96,14 +101,14 @@ const Certification = () => {
                             size="small"
                             buttonLabel="Test again"
                             onClick={triggerReset}
-                            className="hover:bg-blue rounded-3 font-mono text-lg font-normal"
+                            className="text-sm"
                         />
                         <Button
                             type="button"
                             size="small"
                             buttonLabel="New test"
                             onClick={triggerNewTest}
-                            className="hover:bg-blue rounded-3 font-mono text-lg font-normal"
+                            className="text-sm"
                         />
                     </div>
                 )}

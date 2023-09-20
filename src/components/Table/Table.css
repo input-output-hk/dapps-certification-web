@@ -11,6 +11,7 @@
 
 tr.clickable-row {
     cursor: pointer;
+    border-right: 4px solid transparent;
 }
 
 tr.clickable-row.open,
@@ -18,13 +19,12 @@ tr.clickable-row:hover {
     background-color: #e5e5e5;
 }
 
-tr.clickable-row.open td:first-child,
-tr.clickable-row:hover td:first-child{
-    border-left: 4px solid #a3a0fc;
+tr.clickable-row.open td:last-child,
+tr.clickable-row:hover td:last-child{
+    border-right-color: #a3a0fc;
 }
 
 tr.pull-down-row,
 tr.pull-down-row td {
     padding: 0;
-    border: 0;
 }

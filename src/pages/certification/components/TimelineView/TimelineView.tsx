@@ -225,19 +225,17 @@ const TimelineView: React.FC<{
               </div>
             </>)}
 
-            {runStatus !== "finished" && ( <>
-              <Timeline
-                statusConfig={timelineConfig}
-                unitTestSuccess={unitTestSuccess}
-                hasFailedTasks={isAnyTaskFailure(resultData)}
-              />
+            <Timeline
+              statusConfig={timelineConfig}
+              unitTestSuccess={unitTestSuccess}
+              hasFailedTasks={isAnyTaskFailure(resultData)}
+            />
 
-              <LogsView
-                runId={uuid}
-                endPolling={runStatus === "finished" || runState === "failed"}
-                open={runState === "failed"}
-              />
-            </>)}
+            <LogsView
+              runId={uuid}
+              endPolling={runStatus === "finished" || runState === "failed"}
+              open={runState === "failed"}
+            />
 
             {runStatus === "certifying" || runStatus === "finished" ? (
               <>
@@ -250,7 +248,7 @@ const TimelineView: React.FC<{
                   }
                   {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000}/> */}
                 </div>
-                {unitTestSuccess && 
+
                 <div id="testingProgressContainer" className="mt-20">
                   <table className="min-w-full text-left text-sm font-light">
                     <thead className="font-medium dark:border-neutral-500 bg-slate-table-head text-slate-table-headText font-medium">
@@ -295,7 +293,7 @@ const TimelineView: React.FC<{
                       })}
                     </tbody>
                   </table>
-                </div>}
+                </div>
               </>
             ) : null}
           </>

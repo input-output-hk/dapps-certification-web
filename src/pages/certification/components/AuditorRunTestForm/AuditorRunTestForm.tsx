@@ -271,7 +271,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           type="submit"
           buttonLabel="Test"
           disabled={!form.formState.isValid || submitting || isSubmitting}
-          className="my-10 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
+          className="mt-10 mb-20 block mx-auto bg-secondary hover:bg-blue max-w-[200px] w-[200px] rounded-3 font-mono text-lg font-normal"
         />
 
         <div className="relative input-wrapper">

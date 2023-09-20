@@ -21,7 +21,7 @@ const FullReportTable: React.FC<{
       {
         Header: "Status",
         accessor: "status",
-        align: "center",
+        classes: "text-center w-[100px]",
         disableSortBy: true,
         Cell: (props: any) => {
           if (props.row.original.status === 'success') {

@@ -1,26 +1,38 @@
 @import "styles/colors.scss";
 
 #logContainer {
-    margin: 10px 0 40px;
+    margin: 10px;
     text-align: end;
+    @media (max-width: 1199px) {
+        position: relative;
+    }
 }
 #viewLogsBtn {
     margin-right: 1rem;
 }
 .log-information {
     position: absolute;
-    min-height: 200px;
-    max-height: calc(100vh - 270px);
     overflow-y: scroll;
     margin: 0;
     word-break: break-all;
     background-color: #424242;
     color: #ccc;
-    top: 190px;
-    left: 50px;
-    width: calc(100% - 100px);
+    min-height: 200px;
     z-index: 1;
     text-align: left;
+
+    @media (min-width: 1199px) { // to include 1200px
+        top: 147px;
+        left: 13px;
+        width: 50%;
+        max-height: calc(100vh - 200px);
+    }
+    @media (max-width: 1199px) {
+        top: -100px;
+        width: 100%;
+        max-height: 400px;
+    }
+
     .log-header {
         height: 30px;
         position: sticky;
@@ -30,8 +42,9 @@
         color: #e8e8e8;
         font-weight: bold;
         line-height: 30px;
-        h6 {
+        h5 {
             float: left;
+            margin: 0;
         }
         .minimize-btn {
             cursor: pointer;
