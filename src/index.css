@@ -20,11 +20,54 @@
   }
 
   .button {
-    @apply text-lg normal-case bg-slate-main
+    @apply text-lg normal-case bg-slate-main text-white
   }
 
   .button-outlined {
     @apply text-lg bg-white normal-case
   }
 
+  .button-contained-main {
+    @apply normal-case bg-slate-main text-white;
+    &:hover { @apply bg-slate-mainDark; }
+  }
+
+  .button-contained-active {
+    @apply normal-case bg-blue-active text-white;
+    &:hover { @apply bg-blue-activeDark; }
+  }
+
+  .button-contained-highlighted {
+    @apply normal-case bg-slate-highlighted text-white;
+    &:hover { @apply bg-slate-highlightedDark; }
+  }
+
+  .button-outlined-main {
+    @apply normal-case text-slate-main border-slate-main;
+    &:hover { @apply text-slate-mainDark border-slate-mainDark; }
+  }
+
+  .button-outlined-active {
+    @apply normal-case text-blue-active border-blue-active;
+    &:hover { @apply text-blue-activeDark border-blue-activeDark; }
+  }
+
+  .button-outlined-highlighted {
+    @apply normal-case text-slate-highlighted border-slate-highlighted;
+    &:hover { @apply text-slate-highlightedDark border-slate-highlightedDark; }
+  }
+
 }
+
+
+.text-center {
+  text-align: center;
+  text-align: -moz-center;
+  text-align: -webkit-center;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+} 

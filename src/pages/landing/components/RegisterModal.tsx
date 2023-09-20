@@ -31,7 +31,7 @@ const RegisterModal = (props: Props) => {
       </DialogContent>
       {props.success && (
         <DialogActions>
-          <Button variant="contained" className="normal-case bg-slate-main" onClick={props.onClose}>
+          <Button variant="contained" className="button-contained-main" onClick={props.onClose}>
             Continue
           </Button>
         </DialogActions>

@@ -32,15 +32,15 @@ module.exports = {
           inactive: '#EAEAEA'
         },
         slate: {
-          contentBackground: "#f0f0f7",
           table: {
             head: "#f5f6fa",
             headText: "#b0b3bf",
           },
           main: "#43425D",
           mainDark: '#3C3B53',
-          mainLight: '#A5A4BF',
-          mainActive: '#A3A0FB',
+          textLight: '#A5A4BF',
+          highlighted: '#A3A0FB',
+          highlightedDark: '#7e7dc4',
           app: '#F0F0F7',
           text: '#4E4F5C'
         },

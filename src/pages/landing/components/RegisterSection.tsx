@@ -136,7 +136,7 @@ const RegisterSection = (props: Props) => {
             />
             <Button
               type="submit" variant="contained" size="large"
-              className="payment-button"
+              className="mt-8 py-3 px-14 font-medium button-contained-main"
               disabled={total <= 0 || processing}
             >
               Pay (₳{total.toFixed(2)})

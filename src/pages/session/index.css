@@ -9,27 +9,15 @@
   }
 
   .nav-bar-item-active {
-    @apply bg-slate-mainDark border-slate-mainActive;
+    @apply bg-slate-mainDark border-slate-highlighted;
   }
 
   .nav-bar-icon {
-    @apply text-slate-mainLight;
+    @apply text-slate-textLight;
   }
 
   .nav-bar-icon-active {
-    @apply text-slate-mainActive;
+    @apply text-slate-highlighted;
   }
 
 }
-
-.text-center {
-  text-align: center;
-  text-align: -moz-center;
-  text-align: -webkit-center;
-}
-
-.disabled {
-  opacity: 0.5;
-  cursor: default;
-  pointer-events: none;
-} 
