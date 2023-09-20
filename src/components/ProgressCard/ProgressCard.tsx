@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import Tooltip from '@mui/material/Tooltip';
+import { useMemo } from 'react';
 import CircularProgressBar from "./CircularProgressBar";
 import "./ProgressCard.scss";
 
@@ -11,13 +11,9 @@ const ProgressCard: React.FC<{
   color?: string;
   tooltipText?: string
 }> = ({ color = "stroke-green", currentValue, totalValue, displayText, title, tooltipText }) => {
-  const [progress, setProgress] = useState(0)
+  const progress = totalValue !== 0 ? Math.trunc((currentValue/totalValue) * 100) : 0;
 
-  useEffect(() => {
-    setProgress(Math.trunc((currentValue/totalValue) * 100))
-  }, [currentValue, totalValue])
-
-  const card = () => {
+  const Card = useMemo(() => {
     return (
       <div className="flex max-w-full  content-between shadow shadow-lg bg-white rounded-sm flex-col p-3 sm:flex-row w-fit">
         <div className="inline-flex flex-col justify-around">
@@ -37,11 +33,11 @@ const ProgressCard: React.FC<{
         </div>
       </div>
     );
-  }
+  }, [title, displayText, currentValue, totalValue, progress, color])
 
   return (tooltipText ? 
-    (<Tooltip title={tooltipText} arrow placement="top" style={{cursor: "help"}}>{card()}</Tooltip>)
-  : card() )
+    (<Tooltip title={tooltipText} arrow placement="top" style={{cursor: "help"}}>{Card}</Tooltip>)
+  : Card )
   
 };
 

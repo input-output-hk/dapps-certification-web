@@ -51,45 +51,6 @@ function useLocalStorage<T>(
       return initialValue;
     }
 
-    // // Prevent build error "window is undefined" but keep keep working
-    // if (typeof window === "undefined") {
-    //   return initialValue;
-    // }
-
-    // try {
-    //   const item = window.localStorage.getItem(key);
-    //   // eslint-disable-next-line no-nested-ternary
-
-    //   if (item) {
-    //     if (isValidJSON(item)) {
-    //       return JSON.parse(item)
-    //     } else if (typeof item === "string") {
-    //       if (item === "true" || item === "false") {
-    //         // to convert item string to equivalent boolean
-    //         return JSON.parse(item)
-    //       } else if (initialValue === "") {
-    //         return item;
-    //       } else if (initialValue === null) {
-    //         // if the initialValue of key is supposed to be null, and the stored value is a string, 
-    //         // then it is wrongly set and need to be cleared
-    //         return initialValue;
-    //       }
-    //     } else {
-    //       return initialValue;
-    //     }
-    //   } else {
-    //     return initialValue;
-    //   }
-
-      // return item
-      //   ? isValidJSON(item)
-      //     ? JSON.parse(item)
-      //     : item
-      //   : initialValue;
-    
-      // } catch (error) {
-    //   return initialValue;
-    // }
   };
 
   // State to store our value
@@ -114,7 +75,7 @@ function useLocalStorage<T>(
 
       // Save to local storage
       try {
-        if (newValue !== "" || newValue !== null) {
+        if (newValue !== "" && newValue !== null) {
           const serializedValue = typeof newValue === "string" ? newValue : JSON.stringify(newValue);
           window.localStorage.setItem(key, serializedValue);
 

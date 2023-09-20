@@ -5,42 +5,41 @@ import { generateCollapsibleContent, processData } from "./fullReportTable.helpe
 
 import './fullReportTable.css';
 
+const columns = [
+  {
+    Header: "Property Name",
+    accessor: "label",
+  },
+  {
+    Header: "Status",
+    accessor: "status",
+    classes: "text-center w-[100px]",
+    disableSortBy: true,
+    Cell: (props: any) => {
+      if (props.row.original.status === 'success') {
+        return <img
+          className="image"
+          src="/images/passed.svg"
+          alt="success"
+        />
+      } else if (props.row.original.status === 'failure') {
+        return <img
+          className="image"
+          src="/images/failed.svg"
+          alt="failure"
+        />
+      } else { return null; }
+    }
+  }
+]
+
 const FullReportTable: React.FC<{
   data: { [x: string]: any },
 }> = ({
   data,
 }) => {
 
-    const tableData = processData(data)
-
-    const columns = useMemo(() => [
-      {
-        Header: "Property Name",
-        accessor: "label",
-      },
-      {
-        Header: "Status",
-        accessor: "status",
-        classes: "text-center w-[100px]",
-        disableSortBy: true,
-        Cell: (props: any) => {
-          if (props.row.original.status === 'success') {
-            return <img
-              className="image"
-              src="/images/passed.svg"
-              alt="success"
-            />
-          } else if (props.row.original.status === 'failure') {
-            return <img
-              className="image"
-              src="/images/failed.svg"
-              alt="failure"
-            />
-          } else { return null; }
-        }
-      }
-    ],
-      [])
+    const tableData = useMemo(() => processData(data), [data]);
 
     return (<>
       <Container className="pt-4" maxWidth="xl">

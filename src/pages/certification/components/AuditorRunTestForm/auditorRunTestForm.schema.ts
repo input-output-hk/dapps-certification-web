@@ -2,8 +2,7 @@ import * as yup from "yup";
 
 export const REPO_URL_PATTERN =
   /^https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+(?:\/)?$/;
-export const COMMIT_HASH_PATTERN = /[a-f0-9]{7,40}$/;
-export const COMMIT_EXIST_PATTERN = /\/commit\/[a-f0-9]{7,40}/;
+export const COMMIT_HASH_PATTERN = /^[a-f0-9]{7,40}$/;
 
 export const auditorRunTestFormSchema = yup.object().shape({
   repoURL: yup
@@ -13,18 +12,6 @@ export const auditorRunTestFormSchema = yup.object().shape({
       name: "github-commit-url",
       test: (value, context) => {
         if (value) {
-          const [, , , username, repoName] = value!.split("/");
-          if (
-            !username ||
-            !repoName ||
-            !/^[a-zA-Z0-9-]+$/.test(username) ||
-            !/^[a-zA-Z0-9-]+$/.test(repoName)
-          ) {
-            return context.createError({
-              message: "Invalid GitHub repository URL",
-            });
-          }
-
           const matches = value!.match(REPO_URL_PATTERN);
           if (!matches) {
             return context.createError({

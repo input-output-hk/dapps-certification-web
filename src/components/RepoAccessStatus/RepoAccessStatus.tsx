@@ -5,7 +5,7 @@ import { ACCESS_STATUS } from "./repoAccessStatus.config";
 const RepoAccessStatus: React.FC<{
   status: string;
   statusText?: string;
-}> = ({ status, statusText }) => {
+}> = ({ status, statusText = "" }) => {
   if (!status) {
     return null
   }

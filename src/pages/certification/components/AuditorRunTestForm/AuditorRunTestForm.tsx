@@ -69,9 +69,9 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   const connectToGithub = async () => {
     try {
       // fetch CLIENT_ID from api
-      const clientId = (await fetchData.get("/github/client-id"))
+      const clientId = (await fetchData.get("/github/client-id").catch(error => { throw new Error(error) }))
         .data as string;
-      window.location.assign(
+      clientId && window.location.assign(
         `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`
       );
     } catch (errorObj: any) {

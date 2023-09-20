@@ -30,7 +30,7 @@ const ColViz: FC<Props> = ({ columns, updateColumnOptions, anchorEl, onClose }) 
   const handleChange = (id: any) => {
     const updatedColumns = columnDetails.map((column: any) => {
       if (column.accessor === id) {
-        column.columnVisible = !column.columnVisible;
+        return {...column, columnVisible: !column.columnVisible};
       }
       return column;
     });
@@ -97,7 +97,10 @@ const ColViz: FC<Props> = ({ columns, updateColumnOptions, anchorEl, onClose }) 
       }}
     >
       {columnDetails.filter((column: any) => column.Header.length).map((column: any, index: any) => (
-        <MenuItem key={index} onClick={() => !column.checkBoxDisabled ? handleChange(column.accessor) : null}>
+        <MenuItem 
+          key={index} 
+          disabled={column.checkBoxDisabled}
+          onClick={() => !column.checkBoxDisabled ? handleChange(column.accessor) : null}>
           <ListItemIcon>
             <Checkbox checked={column.columnVisible} disabled={column.checkBoxDisabled} />
           </ListItemIcon>

@@ -26,7 +26,7 @@ const CircularProgressBar = ({
           cy="16"
           r="15.9155"
           className={classNames("progress-bar-track fill-none stroke-2", color)}
-          style={{ strokeDashoffset: 100 - progress }}
+          style={{ strokeDashoffset: 2 * Math.PI * 15.9155 * (1 - progress / 100) }}
         ></circle>
       </svg>
 
