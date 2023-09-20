@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 
 import HomeIcon from '@mui/icons-material/HomeOutlined';
 import TestingIcon from '@mui/icons-material/BarChartOutlined';
@@ -24,7 +24,7 @@ const NavBar = () => {
     <Box className="flex-0 flex flex-col w-80 bg-main shadow">
       <AppBar position="relative" elevation={0} className="bg-mainDark shadow">
         <Toolbar>
-          <Typography className="font-semibold tracking-[.1em]">
+          <Typography className="font-semibold tracking-[.1em] text-white">
             Testing Tool
           </Typography>
         </Toolbar>

@@ -19,6 +19,11 @@ export const theme = createTheme({
   typography: {
     fontFamily: "'Montserrat', sans-serif",
   },
+  palette: {
+    primary: {
+      main: '#A3A0FB',
+    },
+  },
   components: {
     MuiPopover: {
       defaultProps: {

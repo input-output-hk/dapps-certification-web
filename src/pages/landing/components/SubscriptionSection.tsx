@@ -55,10 +55,10 @@ const SubscriptionSection = (props: Props) => {
                   <Button
                     variant="contained" size="large"
                     disabled={!tier.enabled}
-                    className={tierId !== tier.id ? 'subscription-button-active' : 'subscription-button'}
+                    className={`py-3 px-14 font-medium ${tierId !== tier.id ? 'button-contained-active' : 'button-contained-main'}`}
                     onClick={() => onSelect(tier)}
                   >
-                    {tierId === tier.id ? 'Selected' : 'Select'}
+                    {tierId === tier.id ? 'SELECTED' : 'SELECT'}
                   </Button>
                 </Box>
               </Grid>

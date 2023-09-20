@@ -58,7 +58,7 @@ const ConnectSection = () => {
             </Typography>
             <Button
               variant="contained" size="large"
-              className="py-3 px-4 normal-case font-medium bg-main"
+              className="py-3 px-4 font-medium button-contained-main"
               onClick={() => setShowModal(true)}
             >
               Connect your wallet
