@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 export const REPO_URL_PATTERN =
-  /^https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+(?:\/)?(?:commit\/[a-f0-9]{7,40})?$/;
+  /^https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+(?:\/)?$/;
 export const COMMIT_HASH_PATTERN = /[a-f0-9]{7,40}$/;
 export const COMMIT_EXIST_PATTERN = /\/commit\/[a-f0-9]{7,40}/;
 
@@ -14,7 +14,6 @@ export const auditorRunTestFormSchema = yup.object().shape({
       test: (value, context) => {
         if (value) {
           const [, , , username, repoName] = value!.split("/");
-
           if (
             !username ||
             !repoName ||
@@ -29,7 +28,7 @@ export const auditorRunTestFormSchema = yup.object().shape({
           const matches = value!.match(REPO_URL_PATTERN);
           if (!matches) {
             return context.createError({
-              message: "Invalid GitHub commit URL",
+              message: "Invalid GitHub repository URL",
             });
           }
 
@@ -44,20 +43,19 @@ export const auditorRunTestFormSchema = yup.object().shape({
     .test({
       name: "commit-hash",
       test: (value, context) => {
-        const { repoURL } = context.parent;
-        if (!COMMIT_EXIST_PATTERN.test(repoURL) && !value) {
+        if (!value) {
           return context.createError({
             message: "This field is required.",
           });
         }
         if (value && value.length < 7) {
           return context.createError({
-            message: "Please enter a commit hash with length atleast 7",
+            message: "Please enter atleast 7 characters of the commit hash",
           });
         }
         if (value && value.length > 40) {
           return context.createError({
-            message: "Please enter a commit hash with length upto 40",
+            message: "Entered value has more than 40 characters. Please enter a valid commit hash",
           });
         }
         if (value && !COMMIT_HASH_PATTERN.test(value)) {
@@ -67,14 +65,6 @@ export const auditorRunTestFormSchema = yup.object().shape({
         }
         return true;
       },
-    })
-    .when("repoUrl", (repoUrl, schema) => {
-      if (repoUrl && !COMMIT_EXIST_PATTERN.test(repoUrl))
-        return schema.required("This field is required.");
-      return schema.matches(
-        /[0-9a-f]*/,
-        "Please enter a combination of numbers and lowercase letters through a to f"
-      );
     }),
   version: yup.string().required("This field is required"),
   name: yup.string().required("This field is required"),

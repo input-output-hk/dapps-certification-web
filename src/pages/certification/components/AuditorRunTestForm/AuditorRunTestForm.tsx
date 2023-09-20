@@ -14,10 +14,7 @@ import RepoAccessStatus from "components/RepoAccessStatus/RepoAccessStatus";
 import { getErrorMessage } from "utils/utils";
 
 import { clearRepoUrl, setRepoUrl } from "../../slices/certification.slice";
-import {
-  REPO_URL_PATTERN,
-  auditorRunTestFormSchema,
-} from "./auditorRunTestForm.schema";
+import { auditorRunTestFormSchema } from "./auditorRunTestForm.schema";
 import { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
 import {
   clearAccessStatus,
@@ -59,7 +56,6 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
-  const [mandatory, setMandatory] = useState(true);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const githubAccessCode = searchParams.get("code");
@@ -236,27 +232,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   // Validate commit field based on URL entered
   useEffect(() => {
     if (repoUrlChanges) {
-      const matches = repoUrlChanges.match(REPO_URL_PATTERN);
-
       const [, , , username, repoName] = repoUrlChanges.split("/");
       if (username && repoName) {
         dispatch(verifyRepoAccess({ owner: username, repo: repoName }));
       } else {
         dispatch(clearAccessStatus())
       }
-
-      if (matches && repoUrlChanges.match(/commit/gi)) {
-        const commitHash = repoUrlChanges.split("/").pop();
-        // commit hash is available in url and is valid
-        if (/^[a-f0-9]{7,40}$/.test(commitHash)) {
-          // form.setValue("commitHash", commitHash, { shouldValidate: true }) - Not Working
-          setMandatory(false);
-        }
-      } else {
-        // url invalid
-        setMandatory(true);
-      }
-      form.trigger("commit");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repoUrlChanges]);
@@ -283,7 +264,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             id="repoURL"
             required={true}
             disabled={submitting}
-            tooltipText="Github Repository URL formats accepted here are - 'https://github.com/<username>/<repository>', 'https://github.com/<username>/<repository>/commit/<commit-hash>'."
+            tooltipText="Github Repository URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash)."
             {...form.register("repoURL")}
           />
 
@@ -298,7 +279,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           label="Commit Hash"
           type="text"
           id="commit"
-          required={mandatory}
+          required={true}
           disabled={submitting}
           {...form.register("commit")}
         />
