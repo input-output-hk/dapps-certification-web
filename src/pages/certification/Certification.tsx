@@ -27,6 +27,7 @@ const Certification = () => {
     const [clearForm, setClearForm] = useState(false);
     const [clickedFormSubmit, setClickedFormSubmit] = useState(false);
     const [formData, setFormData] = useState<IAuditorRunTestFormFields | null>(null);
+    const [forceFormValidation, setForceFormValidation] = useState(false);
 
     const onTestingFormSubmit = (data: {
         runId: string;
@@ -49,15 +50,17 @@ const Certification = () => {
     const onTestRunAbort = () => {
         clearPersistentStates()
         resetStates()
+        setForceFormValidation(true)
     }
 
     const onRunEnd = () => {
         setRunEnded(true)
     }
 
-    const triggerReset = () => {
+    const triggerRetest = () => {
         setTestAgain(true)
         resetStates()
+        setForceFormValidation(true)
     }
 
     const triggerNewTest = () => {
@@ -105,7 +108,7 @@ const Certification = () => {
                         <Button
                             type="button"
                             variant="contained" size="small"
-                            onClick={triggerReset}
+                            onClick={triggerRetest}
                             className="button text-sm min-w-[150px]"
                             startIcon={<RestartAltIcon />}
                         >Test again</Button>
@@ -132,6 +135,7 @@ const Certification = () => {
                         clearForm={clearForm}
                         initialData={formData}
                         onError={testingFormError}
+                        forceValidate={forceFormValidation}
                     />
                 </div>
                 <div className="sm:w-full tab:w-1/2 px-22 min-h-[150px] tab:px-22 tab:mb-0">

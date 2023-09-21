@@ -31,6 +31,7 @@ interface IAuditorRunTestForm {
   initialData?: IAuditorRunTestFormFields | null;
   clearForm?: boolean;
   testAgain?: boolean;
+  forceValidate?: boolean;
   onSubmit: (data: { runId: string; commitHash: string; repo: string }) => any;
   onError: () => void;
   loadingRunId?: (flag: boolean) => void
@@ -41,17 +42,37 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   initialData = null,
   clearForm = false,
   testAgain = false,
+  forceValidate = false,
   onSubmit,
   onError,
   loadingRunId
 }) => {
+
+  const dispatch = useAppDispatch();
   const form: any = useForm({
     schema: auditorRunTestFormSchema,
     mode: "all",
   });
-  const repoUrlChanges = form.watch("repoURL");
 
-  const dispatch = useAppDispatch();
+  const checkRepoAccess = (urlValue: string) => {
+    if (urlValue) {
+      const [, , , username, repoName] = urlValue.split("/");
+      if (username && repoName) {
+        dispatch(verifyRepoAccess({ owner: username, repo: repoName }));
+      } else {
+        dispatch(clearAccessStatus())
+      }
+    }
+  }
+
+  useEffect(() => { 
+    if (forceValidate) {
+      const formData = form.getValues()
+      checkRepoAccess(formData.repoURL)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceValidate])
+
   const { repoUrl } = useAppSelector((state) => state.certification);
   const { profile } = useAppSelector((state) => state.auth);
   const { showConfirmConnection, accessStatus } = useAppSelector((state) => state.repoAccess);
@@ -97,7 +118,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           "Unable to find the entered repository. Please go back and correct the Owner/Repository. Or, is this a Private one? If so, please hit Connect to authorize us to access it!",
         confirmationText: "Connect",
         cancellationText: "Go back",
-      }).then(privateRepoDisclaimer);
+      }).then(privateRepoDisclaimer).catch(err => {});
     }, 0);
   };
 
@@ -107,7 +128,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       description:
         "Auditors need to obtain consent from their customers and acquire the necessary permissions to fork their private Github repositories in order to test the decentralized application (dApp) using the Plutus Testing Tool, created by Input Output Global, Inc (IOG). The Plutus Testing Tool is available on an “AS IS” and “AS AVAILABLE” basis, without any representation or warranties of any kind. IOG is not responsible for the actions, omissions, or accuracy of any third party for any loss or damage of any sort resulting from the forking of repositories and testing of dApps using the Plutus Testing Tool.",
       confirmationText: "Agree",
-    }).then(connectToGithub);
+    }).then(connectToGithub).catch(err => {});
   };
 
   const handleError = (errorObj: any) => {
@@ -194,6 +215,11 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       })();
     }
     // the enclosed snippet is to be triggered only once right when the component is rendered to check if the url contains code (to validate if it is a redirect from github)
+    
+    // Run on unmount
+    return () => {
+      dispatch(clearAccessStatus())
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -233,19 +259,6 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testAgain]);
 
-  // Validate commit field based on URL entered
-  useEffect(() => {
-    if (repoUrlChanges) {
-      const [, , , username, repoName] = repoUrlChanges.split("/");
-      if (username && repoName) {
-        dispatch(verifyRepoAccess({ owner: username, repo: repoName }));
-      } else {
-        dispatch(clearAccessStatus())
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [repoUrlChanges]);
-
   useEffect(() => {
     showConfirmConnection && confirmConnectModal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -258,7 +271,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           type="submit" 
           variant="contained" size="large"
           className="button block py-3 px-14 mt-10 mb-20 mx-auto w-[200px]"
-          disabled={!form.formState.isValid || submitting || disable}
+          disabled={!form.formState.isValid || submitting || disable || accessStatus !== "accessible"}
         >
           Test
         </Button>
@@ -272,11 +285,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
               required={true}
               disabled={submitting}
               tooltipText="Github Repository URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash)."
+              triggerOnBlur={checkRepoAccess}
               {...form.register("repoURL")}
             />
 
-            {accessStatus ? (
-              <div className="absolute right-2 top-6">
+            {(accessStatus && !disable) ? (
+              <div className="absolute right-[-25px] top-6">
                 <RepoAccessStatus status={accessStatus} />
               </div>
             ) : null}
