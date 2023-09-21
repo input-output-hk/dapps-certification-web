@@ -31,7 +31,7 @@ interface IAuditorRunTestForm {
   initialData?: IAuditorRunTestFormFields | null;
   clearForm?: boolean;
   testAgain?: boolean;
-  onSubmit: (data: { runId: string; commitHash: string; repo: string }) => any;
+  forceValidate?: boolean;
   onError: () => void;
   loadingRunId?: (flag: boolean) => void
 }
@@ -41,16 +41,37 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   initialData = null,
   clearForm = false,
   testAgain = false,
+  forceValidate = false,
   onSubmit,
   onError,
   loadingRunId
 }) => {
+
+  const dispatch = useAppDispatch();
   const form: any = useForm({
     schema: auditorRunTestFormSchema,
     mode: "all",
   });
 
-  const dispatch = useAppDispatch();
+  const checkRepoAccess = (urlValue: string) => {
+    if (urlValue) {
+      const [, , , username, repoName] = urlValue.split("/");
+      if (username && repoName) {
+        dispatch(verifyRepoAccess({ owner: username, repo: repoName }));
+      } else {
+        dispatch(clearAccessStatus())
+      }
+    }
+  }
+
+  useEffect(() => { 
+  if (forceValidate) {
+      const formData = form.getValues()
+    checkRepoAccess(formData.repoURL)
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceValidate])
+
   const { repoUrl } = useAppSelector((state) => state.certification);
   const { profile } = useAppSelector((state) => state.auth);
   const { showConfirmConnection, accessStatus } = useAppSelector((state) => state.repoAccess);
@@ -118,17 +139,6 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     }, 5000); // hide after 5 seconds
     onError(); // Error callback
   };
-
-  const checkRepoAccess = (urlValue: string) => {
-    if (urlValue) {
-      const [, , , username, repoName] = urlValue.split("/");
-      if (username && repoName) {
-        dispatch(verifyRepoAccess({ owner: username, repo: repoName }));
-      } else {
-        dispatch(clearAccessStatus())
-      }
-    }
-  }
 
   const formHandler = (formData: IAuditorRunTestFormFields) => {
     if (!formData || !formData.repoURL) {
