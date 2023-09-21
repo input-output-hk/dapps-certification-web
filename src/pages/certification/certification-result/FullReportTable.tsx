@@ -42,7 +42,7 @@ const FullReportTable: React.FC<{
     const tableData = useMemo(() => processData(data), [data]);
 
     return (<>
-      <Container className="pt-4" maxWidth="xl">
+      <Container className="pt-4" maxWidth={false}>
 
         <Box>
           <div id="fullReportTable">
