@@ -57,9 +57,10 @@ const Certification = () => {
         setRunEnded(true)
     }
 
-    const triggerReset = () => {
+    const triggerRetest = () => {
         setTestAgain(true)
         resetStates()
+        setForceFormValidation(true)
     }
 
     const triggerNewTest = () => {
@@ -107,7 +108,7 @@ const Certification = () => {
                         <Button
                             type="button"
                             variant="contained" size="small"
-                            onClick={triggerReset}
+                            onClick={triggerRetest}
                             className="button text-sm min-w-[150px]"
                             startIcon={<RestartAltIcon />}
                         >Test again</Button>
