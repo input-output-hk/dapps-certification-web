@@ -7,20 +7,22 @@ import { fetchData } from "api/api";
 import type { RootState } from "../rootReducer";
 
 export interface UserProfile {
-  address?: string;
-  authors?: string;
-  contacts?: string;
+  address?: string,
+  companyName?: string,
+  contactEmail?: string,
   dapp: {
-    name: string;
-    owner: string;
-    repo: string;
-    version: string;
-    githubToken?: string | null;
-  } | null;
-  linkedin?: string;
-  twitter?: string;
-  vendor?: string;
-  website?: string;
+    githubToken?: string | null,
+    name: string,
+    owner: string,
+    repo: string,
+    subject?: string,
+    version: string
+  } | null,
+  email?: string,
+  fullName?: string,
+  linkedin?: string,
+  twitter?: string,
+  website?: string
 }
 
 interface AuthState {
@@ -172,7 +174,7 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
         await new Promise(resolve => setTimeout(resolve, 1000));
         isListening = (getState() as RootState).auth.listeningWalletChanges;
       }
-    } catch (error: any) {}
+    } catch (error: any) {throw new Error()}
   }
   return false;
 });
@@ -186,6 +188,16 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: any
     return rejectWithValue(error.response.data);
   }
 });
+
+export const updateProfile = createAsyncThunk('updateProfile', async(payload: UserProfile, {rejectWithValue}) => {
+  try {
+    const response = await fetchData.put('/profile/current', payload);
+    if (response.status !== 200) throw new Error();
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  }
+})
 
 export const authSlice = createSlice({
   name: "auth",
@@ -274,6 +286,17 @@ export const authSlice = createSlice({
       })
       .addCase(fetchProfile.rejected, (state) => {
         state.profile = null;
+      })
+
+      // UPDATE PROFILE
+      .addCase(updateProfile.pending, (state) => {
+        // do nothing; state.profile intact
+      })
+      .addCase(updateProfile.fulfilled, (state, actions) => {
+        state.profile = actions.payload;
+      })
+      .addCase(updateProfile.rejected, (state) => {
+        // do nothing; state.profile intact
       })
   },
 });

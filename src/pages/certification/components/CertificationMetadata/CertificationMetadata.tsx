@@ -21,7 +21,7 @@ const CertificationMetadata: React.FC<{
     uuid: string,
     onCloseForm: () => void
 }> = ({uuid = "", onCloseForm}) => {
-  const { userDetails } = useAppSelector((state: any) => state.auth);
+  const { profile } = useAppSelector((state: any) => state.auth);
   const [openModal, setOpenModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -123,10 +123,12 @@ const CertificationMetadata: React.FC<{
         <CertificationMetadataForm
           config={CERTIFICATION_METADATA_FIELDS as any}
           submitting={submitting}
-          initData={{
-            twitter: userDetails?.twitter,
-            website: userDetails?.website,
-          }}
+          initData={profile ? {
+            name: profile.fullName || profile.companyName || "",
+            email: profile.contactEmail || profile.email || "",
+            twitter: profile.twitter || "",
+            website: profile.website || ""
+          } : null}
           form={form}
           onSubmit={formHandler}
           onFormReset={() => {

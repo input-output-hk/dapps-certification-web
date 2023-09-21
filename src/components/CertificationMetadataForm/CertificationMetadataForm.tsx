@@ -104,7 +104,7 @@ const CertificationMetadataForm: React.FC<{
     initializeFormState();
     // initializeFormState() is to not to be triggered on every re-render of the dep-array below but whenever the form or userDetails is updated alone
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form]);
+  }, [form, initData]);
 
   const shouldDisableAddScriptButton = useCallback(() => {
     return (
