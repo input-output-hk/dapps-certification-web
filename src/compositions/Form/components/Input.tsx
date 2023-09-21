@@ -16,6 +16,7 @@ interface InputProps extends ComponentProps<"input"> {
   error?: string;
   tooltipText?: string;
   showInfoIcon?: boolean;
+  triggerOnBlur?: (e: any) => any
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
@@ -32,6 +33,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     error,
     showInfoIcon = false,
     tooltipText = "",
+    triggerOnBlur = () => {},
     ...props
   },
   ref
@@ -42,6 +44,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   } = useFormContext();
 
   const [active, setActive] = useState(false);
+  const [timer, setTimer] = useState<any>(null);
 
   useEffect(() => {
     if (getValues(name)) {
@@ -93,6 +96,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           value={value}
           onFocusCapture={() => setActive(true)}
           disabled={disabled}
+          onInput={(e: any) => {
+            if (timer) {
+              clearTimeout(timer)
+              setTimer(null);
+            }
+            const newTimer = setTimeout(() => {
+              triggerOnBlur(e.target.value) 
+            }, 400)
+            setTimer(newTimer)
+          }}
         />
       </div>
 

@@ -202,7 +202,7 @@ const TimelineView: React.FC<{
     };
   }, []);
 
-  if (!runStatus) {
+  if (uuid && !runStatus) {
     return <Loader />
   }
 
