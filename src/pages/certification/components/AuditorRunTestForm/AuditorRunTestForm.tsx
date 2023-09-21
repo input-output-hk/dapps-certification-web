@@ -32,6 +32,7 @@ interface IAuditorRunTestForm {
   clearForm?: boolean;
   testAgain?: boolean;
   forceValidate?: boolean;
+  onSubmit: (data: { runId: string; commitHash: string; repo: string }) => any;
   onError: () => void;
   loadingRunId?: (flag: boolean) => void
 }
@@ -65,10 +66,10 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   }
 
   useEffect(() => { 
-  if (forceValidate) {
+    if (forceValidate) {
       const formData = form.getValues()
-    checkRepoAccess(formData.repoURL)
-  }
+      checkRepoAccess(formData.repoURL)
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forceValidate])
 
