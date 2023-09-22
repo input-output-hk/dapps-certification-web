@@ -1,6 +1,13 @@
 import { formatToTitleCase } from "utils/utils";
 
-export const CertificationTasks = [{
+export interface ICertificationTask {
+  label: string;
+  key: string;
+  type: string;
+  name: string;
+  runTimeTaken?: any;
+}
+export const CertificationTasks: ICertificationTask[] = [{
   label: 'UnitTests',
   key: '_certRes_unitTestResults',
   type: 'array',
@@ -51,6 +58,18 @@ export const isAnyTaskFailure = (result: any) => {
     flag = resultKeys.filter((key) => result[key] && result[key].tag === "Failure").length
   }
   return flag ? true : false;
+}
+
+export const isTaskSuccess = (result: any, taskName: string) => {
+  let failed = false;
+  if (taskName === '_certRes_unitTestResults') {
+    failed = result[taskName].filter((item: any) => (typeof item !== 'string' && item.resultOutcome.tag === 'Failure'))?.length ? true : false
+  } else if (taskName === '_certRes_DLTests') {
+    failed = result[taskName].filter((item: any) =>  item[1].tag === 'Failure')?.length ? true : false
+  } else {
+    failed = result[taskName].tag === "Failure"
+  }
+  return !failed
 }
 
 export const processTablesDataForChart = (resultObj: any, tableAttr: string) => {

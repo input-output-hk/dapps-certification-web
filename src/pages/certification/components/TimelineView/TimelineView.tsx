@@ -15,7 +15,9 @@ import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
 import { processFinishedJson, processTimeLineConfig } from "components/TimelineItem/timeline.helper";
 import {
   CertificationTasks,
+  ICertificationTask,
   isAnyTaskFailure,
+  isTaskSuccess,
 } from "./../../Certification.helper";
 import LogsView from "components/LogsView/LogsView";
 import ProgressCard from "components/ProgressCard/ProgressCard";
@@ -24,11 +26,13 @@ import DownloadResult from "../DownloadResult/DownloadResult";
 import FileCoverageContainer from "../FileCoverageContainer";
 import { clearPersistentStates } from "../AuditorRunTestForm/utils";
 import Loader from "components/Loader/Loader";
+import StatusIcon from "components/StatusIcon/StatusIcon";
 
 
 const TIMEOFFSET = 1000;
 
 interface PlanObj {
+  key: string;
   name: string;
   label: string;
   discarded: number;
@@ -85,10 +89,14 @@ const TimelineView: React.FC<{
       if (!plannedTestingTasks.length && resPlan.length) {
         setPlannedTestingTasks(
           resPlan.map((item: { index: number; name: string }) => {
+            const TaskConfig: ICertificationTask | undefined = CertificationTasks.find((task) => task.name === item.name)
+            if (!TaskConfig) {
+              return null;
+            }
             return {
+              key: TaskConfig.key,
               name: item.name,
-              label: CertificationTasks.find((task) => task.name === item.name)
-                ?.label,
+              label: TaskConfig.label,
               discarded: 0,
               progress: 0,
             };
@@ -251,7 +259,7 @@ const TimelineView: React.FC<{
 
             {runStatus === "certifying" || runStatus === "finished" ? (
               <>
-                <div className="flex justify-around">
+                <div className="flex justify-around flex-wrap gap-[8px]">
                   {runStatus === "finished" && <FileCoverageContainer
                       githubLink={repo || ""}
                       result={resultData}
@@ -277,7 +285,7 @@ const TimelineView: React.FC<{
                       </tr>
                     </thead>
                     <tbody>
-                      {plannedTestingTasks.map((task: PlanObj) => {
+                      {plannedTestingTasks.map((task: PlanObj, index: number) => {
                         return (
                           <tr
                             key={task.name}
@@ -290,15 +298,19 @@ const TimelineView: React.FC<{
                               {task.discarded}
                             </td>
                             <td className="text-center whitespace-nowrap p-2">
-                              {task.progress === 100 ? (
-                                <img
-                                  className="image"
-                                  src="/images/status-check.svg"
-                                  alt="complete"
-                                />
-                              ) : (
-                                <span>{task.progress}%</span>
-                              )}
+                              {
+                              (runStatus === "finished" && (plannedTestingTasks.length - 1 === index))
+                              ? (isTaskSuccess(resultData, task.key) ?
+                                  <StatusIcon iconName={"status-check"} altText={"passed"} />
+                                  : <StatusIcon iconName={"failed"} />
+                                ) 
+                              : (task.progress === 100 ?
+                                  <StatusIcon iconName={"status-check"} altText={"passed"} />
+                                  : <span>{task.progress}%</span>
+                                )
+
+                              }
+                              
                             </td>
                           </tr>
                         );
