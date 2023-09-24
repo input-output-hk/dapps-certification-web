@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
@@ -21,7 +21,7 @@ import "../Certification.scss";
 import DownloadResult from "../components/DownloadResult/DownloadResult";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 import FullReportTable from "./FullReportTable";
-import { isAnyTaskFailure } from "../Certification.helper";
+import { isAnyTaskFailure, isTaskSuccess, taskKeys } from "../Certification.helper";
 
 const CertificationResult = () => {
   const param = useParams<{ uuid: string }>();
@@ -31,6 +31,9 @@ const CertificationResult = () => {
   const [unitTestSuccess, setUnitTestSuccess] = useState(true); // assuming unit tests will pass
   const [errorToast, setErrorToast] = useState(false);
   const [timelineConfig, setTimelineConfig] = useState(TIMELINE_CONFIG);
+
+  const propertyBasedTestProgressTotal = useRef<number>(0)
+  const currentPropertyBasedTestProgress = useRef<number>(0)
 
   useEffect(() => {
     (async () => {
@@ -52,6 +55,16 @@ const CertificationResult = () => {
           const unitTestResult = processFinishedJson(resultJson);
           setUnitTestSuccess(unitTestResult);
           setResultData(resultJson);
+          const resultTaskKeys = Object.keys(resultJson)
+          const certificationTaskKeys = taskKeys();
+          let resultTaskKeysLength = 0;
+          resultTaskKeys.forEach((key: any) => {
+            if (certificationTaskKeys.indexOf(key) !== -1 && resultJson[key]) {
+              currentPropertyBasedTestProgress.current += isTaskSuccess(resultJson[key], key) ? 100 : 0
+              resultTaskKeysLength++;
+            }
+          })
+          propertyBasedTestProgressTotal.current = resultTaskKeysLength * 100
         }
       } catch (error) {
         handleErrorScenario();
@@ -101,7 +114,7 @@ const CertificationResult = () => {
                   result={resultData}
                   coverageFile={coverageFile}
                 />}
-                {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000} /> */}
+                <ProgressCard title={"Property Based Testing"} currentValue={currentPropertyBasedTestProgress.current} totalValue={propertyBasedTestProgressTotal.current} />
 
               </div>
             </>) : null}

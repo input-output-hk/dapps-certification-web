@@ -63,11 +63,11 @@ export const isAnyTaskFailure = (result: any) => {
 export const isTaskSuccess = (result: any, taskName: string) => {
   let failed = false;
   if (taskName === '_certRes_unitTestResults') {
-    failed = result[taskName].filter((item: any) => (typeof item !== 'string' && item.resultOutcome.tag === 'Failure'))?.length ? true : false
+    failed = result.filter((item: any) => (typeof item !== 'string' && item.resultOutcome.tag === 'Failure'))?.length ? true : false
   } else if (taskName === '_certRes_DLTests') {
-    failed = result[taskName].filter((item: any) =>  item[1].tag === 'Failure')?.length ? true : false
+    failed = result.filter((item: any) =>  item[1].tag === 'Failure')?.length ? true : false
   } else {
-    failed = result[taskName].tag === "Failure"
+    failed = result.tag === "Failure"
   }
   return !failed
 }

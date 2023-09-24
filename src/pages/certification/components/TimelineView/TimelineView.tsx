@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useConfirm } from "material-ui-confirm";
@@ -63,6 +63,8 @@ const TimelineView: React.FC<{
   const [hasFailedTasks, setHasFailedTasks] = useState(false);
   const [plannedTestingTasks, setPlannedTestingTasks] = useState<PlanObj[]>([]);
 
+  const currentPropertyBasedTestProgress = useRef<string[]>([]);
+
   const abortTestRun = () => {
     confirm({ title: "", description: "Are sure you want to abort this run!" })
       .then(async () => {
@@ -121,6 +123,7 @@ const TimelineView: React.FC<{
               resProgress["finished-tasks"].forEach((entry: any) => {
                 if (item.name === entry["task"]["name"] && entry.succeeded) {
                   item.progress = 100;
+                  recalculateTestTaskProgress(entry['task'])
                 }
               });
             }
@@ -130,6 +133,12 @@ const TimelineView: React.FC<{
       }
     }
   };
+
+  const recalculateTestTaskProgress = (task: any) => {
+    if (currentPropertyBasedTestProgress.current.indexOf(task['name']) === -1) {
+      currentPropertyBasedTestProgress.current.push(task['name'])
+    }
+  }
 
   const triggerFetchRunStatus = async () => {
     let config = timelineConfig;
@@ -266,7 +275,7 @@ const TimelineView: React.FC<{
                       coverageFile={coverageFile}
                     />
                   }
-                  {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000}/> */}
+                  <ProgressCard title={"Property Based Testing"} currentValue={currentPropertyBasedTestProgress.current.length * 100} totalValue={plannedTestingTasks.length * 100}/>
                 </div>
 
                 <div id="testingProgressContainer" className="mt-20">
@@ -300,8 +309,11 @@ const TimelineView: React.FC<{
                             <td className="text-center whitespace-nowrap p-2">
                               {
                               (runStatus === "finished" && (plannedTestingTasks.length - 1 === index))
-                              ? (isTaskSuccess(resultData, task.key) ?
-                                  <StatusIcon iconName={"status-check"} altText={"passed"} />
+                              ? (isTaskSuccess(resultData[task.key], task.key) ?
+                                  (<>
+                                    <StatusIcon iconName={"status-check"} altText={"passed"} /> 
+                                    {recalculateTestTaskProgress(task)}
+                                  </>)
                                   : <StatusIcon iconName={"failed"} />
                                 ) 
                               : (task.progress === 100 ?
