@@ -10,7 +10,6 @@ import { useAppSelector } from "store/store";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
 
 import Modal from "components/Modal/Modal";
-import Toast from "components/Toast/Toast";
 import CertificationMetadata from "pages/certification/components/CertificationMetadata/CertificationMetadata";
 
 import "./CreateCertificate.scss";
@@ -42,7 +41,7 @@ interface Certificate {
 
 const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { walletAddress: address, wallet, profile, features: subscribedFeatures} = useAppSelector((state) => state.auth);
+    const { walletAddress: address, wallet, profile, features} = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
@@ -198,7 +197,7 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     
     return (
         <>
-            {subscribedFeatures?.indexOf("l2-upload-report") === -1 ? 
+            {features?.indexOf("l2-upload-report") === -1 ? 
                 <>
                     <CertificateButton />
                     <TransactionModal />
@@ -215,7 +214,6 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
                     <MetadataModal />
                 </>
             }
-            {/* {showError ? <Toast message={showError} /> : null} */}
         
             <Snackbar
                 open={showError ? true : false}

@@ -5,7 +5,6 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 import { ellipsizeString } from "utils/utils";
 
-// import { useAppSelector } from "store/store";
 import AuditorRunTestForm from "./components/AuditorRunTestForm/AuditorRunTestForm";
 import TimelineView from "./components/TimelineView/TimelineView";
 import { clearPersistentStates } from "./components/AuditorRunTestForm/utils";
@@ -15,7 +14,6 @@ import { IAuditorRunTestFormFields } from "./components/AuditorRunTestForm/audit
 import Loader from "components/Loader/Loader";
 
 const Certification = () => {
-    // const { features: subscribedFeatures } = useAppSelector((state) => state.auth);
     const [lsFormData] = useLocalStorage(LocalStorageKeys.certificationFormData, "");
     const [lsUuid] = useLocalStorage(LocalStorageKeys.certificationUuid, "");
     const [disableForm, setDisableForm] = useState(false);
