@@ -3,26 +3,25 @@ import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import { fetchData } from "api/api";
-import { useLogs } from "hooks/useLogs";
 
-import ResultContainer from "../components/ResultContainer";
 import FileCoverageContainer from "../components/FileCoverageContainer";
-import Button from "components/Button/Button";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import Toast from "components/Toast/Toast";
-import InformationTable from "components/InformationTable/InformationTable";
+import LogsView from "components/LogsView/LogsView";
 import Loader from "components/Loader/Loader";
-import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
 
 import {
   processFinishedJson,
   processTimeLineConfig,
 } from "components/TimelineItem/timeline.helper";
-import { isAnyTaskFailure } from "../Certification.helper";
-import { exportObjectToJsonFile } from "../../../utils/utils";
-import DownloadIcon from "assets/images/download.svg";
+
+import { ellipsizeString } from "../../../utils/utils";
 import "../Certification.scss";
+import DownloadResult from "../components/DownloadResult/DownloadResult";
+import ProgressCard from "components/ProgressCard/ProgressCard";
+import FullReportTable from "./FullReportTable";
+import { isAnyTaskFailure } from "../Certification.helper";
 
 const CertificationResult = () => {
   const param = useParams<{ uuid: string }>();
@@ -62,10 +61,6 @@ const CertificationResult = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [param.uuid]);
 
-  const handleDownloadResultData = (resultData: any) => {
-    exportObjectToJsonFile(resultData, "Testing Report.json");
-  };
-
   const handleErrorScenario = useCallback(() => {
     // show an api error toast
     setErrorToast(true);
@@ -76,13 +71,7 @@ const CertificationResult = () => {
     setTimelineConfig(TIMELINE_CONFIG);
   }, []);
 
-  const { logInfo } = useLogs(
-    param.uuid as string,
-    true,
-    false,
-    handleErrorScenario
-  );
-  
+
   // Show loader until data is fetched
   if (!resultData || !Object.keys(resultData).length) {
     return <Loader />
@@ -90,53 +79,50 @@ const CertificationResult = () => {
 
   return (
     <>
-      <div className="flex col common-bottom">
-        <header>
-          <h3>Test Result</h3>
-          <div style={{ float: "right", marginLeft: "5px" }}>
-            {Object.keys(resultData).length ? (
-              <>
-                <Button
-                  className="report-download"
-                  onClick={(_) => handleDownloadResultData(resultData)}
-                  buttonLabel="Download Report"
-                  iconUrl={DownloadIcon}
-                />
-                {state?.certifiable ? <CreateCertificate uuid={param.uuid as string} /> : null}
-              </>
-            ) : null}
-          </div>
-        </header>
-        <div style={{ marginTop: "-20px" }}>
-          <Timeline
-            statusConfig={timelineConfig}
-            unitTestSuccess={unitTestSuccess}
-            hasFailedTasks={isAnyTaskFailure(resultData)}
-          />
+      <div className="content-area">
+        <div className="content-area-title-section pb-7">
+          <h2>
+            {(state?.repo && state?.commitHash) ?
+              state.repo + ": " + ellipsizeString(state.commitHash, 7, 3)
+              : (param?.uuid ? "Result: " + ellipsizeString(param?.uuid, 5, 3) : "Result")}
+          </h2>
         </div>
-        {/* To show 'View Logs' always  */}
-        <InformationTable logs={logInfo} />
+
+        <div className="header-section">
+          <>
+            {Object.keys(resultData).length ? (<>
+              <div className="w-full flex items-stretch justify-end gap-x-4">
+                <DownloadResult resultData={resultData} />
+                {(unitTestSuccess && state?.certifiable && !isAnyTaskFailure(resultData)) ? <CreateCertificate uuid={param.uuid as string} /> : null}
+              </div>
+              <div className="flex items-center justify-evenly my-10">
+                {unitTestSuccess && <FileCoverageContainer 
+                  githubLink={state?.repoUrl || ""}
+                  result={resultData}
+                  coverageFile={coverageFile}
+                />}
+                {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000} /> */}
+
+              </div>
+            </>) : null}
+          </>
+        </div>
+
+        <div
+          id="certificationWrapper"
+          className="content-area-box shadow-lg bg-white px-5 py-4"
+        >
+          <LogsView
+            runId={param.uuid as string}
+            endPolling={true}
+            open={false}
+            oneTime={true}
+          />
+
+          <FullReportTable data={resultData} />
+        </div>
+        
       </div>
-      {unitTestSuccess === false && Object.keys(resultData).length ? (
-        <>
-          <ResultContainer
-            unitTestSuccess={unitTestSuccess}
-            result={resultData}
-          />
-        </>
-      ) : null}
-
-      {unitTestSuccess && Object.keys(resultData).length ? (
-        <>
-          <FileCoverageContainer
-            githubLink={state?.repoUrl || ""}
-            result={resultData}
-            coverageFile={coverageFile}
-          />
-          <ResultContainer result={resultData} />
-        </>
-      ) : null}
-
       {errorToast ? <Toast /> : null}
     </>
   );

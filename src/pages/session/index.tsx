@@ -29,7 +29,7 @@ export default () => {
 
   if (!isSessionFetched) {
     return (
-      <Box className="w-screen h-screen flex items-center justify-center bg-app">
+      <Box className="w-screen h-screen flex items-center justify-center bg-slate-app">
         <CircularProgress color="secondary" size={100} />
       </Box>
     );

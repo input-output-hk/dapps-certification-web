@@ -33,7 +33,7 @@ const AppBar = () => {
 
   return (
     <>
-      <MuiAppBar position="absolute" elevation={0} className="bg-white shadow">
+      <MuiAppBar position="sticky" elevation={0} className="top-0 bg-white shadow">
         <Toolbar className="justify-end">
           <Button className="normal-case mr-2 text-text" endIcon={<MenuIcon />} onClick={handleMenu}>
             {getProfileAddress()}

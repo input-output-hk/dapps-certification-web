@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useAppSelector } from "store/store";
-
-import Button from "components/Button/Button";
-import Modal from "components/Modal/Modal";
-
 import { BigNum } from "@emurgo/cardano-serialization-lib-browser";
-
-import Toast from "components/Toast/Toast";
 import { fetchData } from "api/api";
+
+import { Alert, Snackbar } from "@mui/material";
+import LoadingButton from '@mui/lab/LoadingButton';
+
+import { useAppSelector } from "store/store";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
 
+import Modal from "components/Modal/Modal";
+import CertificationMetadata from "pages/certification/components/CertificationMetadata/CertificationMetadata";
+
 import "./CreateCertificate.scss";
-import CertificationMetadata from "pages/certification/components/certificationMetadata/CertificationMetadata";
 
 export interface Run {
     certificationPrice: number;
@@ -41,7 +41,7 @@ interface Certificate {
 
 const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { walletAddress: address, features, wallet, profile } = useAppSelector((state) => state.auth);
+    const { walletAddress: address, wallet, profile, features} = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
@@ -143,7 +143,7 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
         setShowError("")
         if (performTransaction) {
             const response = await dispatch(
-                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet, address, payer: profile?.address , })
+                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet, address, payer: profile?.address })
             );
             if (response.payload) {
                 triggerSubmitCertificate(response.payload)
@@ -158,12 +158,14 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const CertificateButton = () => {
         if (certified || disableCertify) return null;
         return (
-            <Button
-                displayStyle="gradient"
+            <LoadingButton
+                variant="contained" size="large"
+                className="button min-w-[200px]"
                 onClick={() => triggerGetCertificate()}
-                buttonLabel={"Purchase a Certificate" + (certificationPrice ? " (" + (certificationPrice / 1000000).toString() + " ADA)" : "")}
-                showLoader={certifying}
-            />
+                loading={certifying}
+            >
+                <span>{"Purchase a Certificate"+ (certificationPrice ? " (₳" + (certificationPrice/1000000).toString() + ")" : "")}</span>
+            </LoadingButton>
         );
     }
     
@@ -195,22 +197,37 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     
     return (
         <>
-            {features.includes('l2-upload-report') ? 
+            {features?.indexOf("l2-upload-report") === -1 ? 
                 <>
                     <CertificateButton />
                     <TransactionModal />
                 </> : 
                 <>
-                    <Button
-                        displayStyle="gradient"
+                    <LoadingButton
+                        variant="contained" size="large"
+                        className="button min-w-[200px]"
                         onClick={() => setMetadataModalStatus(true)}
-                        buttonLabel={"Review Certification Metadata"}
-                        showLoader={certifying}
-                    />
+                        loading={certifying}
+                    >
+                        <span>Review Certification Metadata</span>
+                    </LoadingButton>
                     <MetadataModal />
                 </>
             }
-            {showError ? <Toast message={showError} /> : null}
+        
+            <Snackbar
+                open={showError ? true : false}
+                autoHideDuration={5000}
+                onClose={() => setShowError("")}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                severity="error" variant="filled"
+                onClose={() => setShowError("")}
+                >
+                    {showError}
+                </Alert>
+            </Snackbar>
         </>
     );
 }

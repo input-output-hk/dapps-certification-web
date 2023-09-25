@@ -44,12 +44,8 @@ export const CertificationTasks = [{
 
 export const VisualizableDataKeys = ['Actions', 'Actions rejected by precondition', 'Bad refund attempts', 'ChainEvent type']
 
-export const filterCertificationTaskKeys = (type: string) => {
-  return CertificationTasks.filter(item => item.type === type).map(item => item.key);
-}
-
 export const isAnyTaskFailure = (result: any) => {
-  const resultKeys = filterCertificationTaskKeys('object')
+  const resultKeys = filterTaskKeysBy('object')
   let flag = 0;
   if (Object.keys(result).length) {
     flag = resultKeys.filter((key) => result[key] && result[key].tag === "Failure").length
@@ -84,4 +80,17 @@ export interface Log {
   Time: string,
   Text: string,
   Source: string
+}
+
+export const filterTaskKeysBy = (type: string) => {
+  return CertificationTasks.filter(item => item.type === type).map(item => item.key);
+}
+
+export const getCertificationTaskName = (key: string) => {
+  const obj: {key: string, label: string} | any = CertificationTasks.find(item => item.key === key)
+  return obj.label;
+};
+
+export const taskKeys = () => {
+  return CertificationTasks.map(item => item.key)
 }

@@ -5,11 +5,11 @@
 @layer components {
 
   .title-text {
-    @apply font-bold tracking-[.2em] text-main;
+    @apply font-bold tracking-[.2em] text-slate-main;
   }
 
   .subtitle-text {
-    @apply font-normal text-secondary;
+    @apply font-normal text-gray-secondary;
   }
 
   .price-text {
@@ -50,27 +50,27 @@
       py-12
       outline
       outline-1
-      outline-inactive;
+      outline-gray-inactive;
   }
 
   .subscription-active {
-    @apply outline-2 outline-active;
+    @apply outline-2 outline-blue-active;
   }
 
   .subscription-title {
-    @apply font-bold my-8 text-main;
+    @apply font-bold my-8 text-slate-main;
   }
 
   .subscription-price {
-    @apply font-normal mb-24 text-main;
+    @apply font-normal mb-24 text-slate-main;
   }
 
   .subscription-subtitle {
-    @apply font-bold text-main;
+    @apply font-bold text-slate-main;
   }
 
   .subscription-feature {
-    @apply font-normal mb-12 text-main;
+    @apply font-normal mb-12 text-slate-main;
   }
   
 }

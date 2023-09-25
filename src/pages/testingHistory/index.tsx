@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 
 import { fetchData } from "api/api";
 
-import { Container, Box, Typography, Button, IconButton } from "@mui/material";
+import { Container, Box, Button, IconButton } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
@@ -233,10 +233,18 @@ const TestHistory = () => {
     window.open(url, "_blank");
   };
 
+  const formatRepoUrl = (repoUrl: string) => {
+    let pieces = repoUrl.split('github:')[1].split('/')
+    return (pieces[0] + "/" + pieces[1]);
+  }
+
   const columns = React.useMemo(() => [
     {
       Header: "Repo name",
       accessor: "repoUrl",
+      Cell: (props: any) => (
+        <span>{formatRepoUrl(props.row.original.repoUrl)}</span>
+      )
     },
     {
       Header: "Checkout",
@@ -299,7 +307,7 @@ const TestHistory = () => {
               size="small"
               className="text-main"
               onClick={() => {
-                navigate("/report/" + props.row.original.runId, {state: { repoUrl: props.row.original.repoUrl, certifiable: notCertified }});
+                navigate("/report/" + props.row.original.runId, {state: { repo: formatRepoUrl(props.row.original.repoUrl), commitHash: props.row.original.commitHash, certifiable: notCertified }});
               }}
             >
               Link
@@ -373,9 +381,7 @@ const TestHistory = () => {
   
   return (
     <Container className="pt-4" maxWidth="xl">
-      <Typography variant="h5" className="font-medium text-main mb-6">
-        Testing history
-      </Typography>
+      <h2>Testing history</h2>
 
       <Box>
         <TableComponent

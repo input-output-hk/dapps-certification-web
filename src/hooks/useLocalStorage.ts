@@ -50,6 +50,7 @@ function useLocalStorage<T>(
     } catch (error) {
       return initialValue;
     }
+
   };
 
   // State to store our value
@@ -74,7 +75,7 @@ function useLocalStorage<T>(
 
       // Save to local storage
       try {
-        if (newValue !== "" || newValue !== null) {
+        if (newValue !== "" && newValue !== null) {
           const serializedValue = typeof newValue === "string" ? newValue : JSON.stringify(newValue);
           window.localStorage.setItem(key, serializedValue);
 

@@ -21,8 +21,8 @@ const NavBar = () => {
   const getIconClassName = (pathname: string) => location.pathname !== pathname ? 'nav-bar-icon' : 'nav-bar-icon-active';
 
   return (
-    <Box className="flex-0 flex flex-col w-80 bg-main shadow">
-      <AppBar position="relative" elevation={0} className="bg-mainDark shadow">
+    <Box className="flex-0 flex flex-col w-80 bg-slate-main shadow">
+      <AppBar position="relative" elevation={0} className="bg-slate-mainDark shadow">
         <Toolbar>
           <Typography className="font-semibold tracking-[.1em] text-white">
             Testing Tool

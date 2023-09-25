@@ -3,11 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 // Define a type for the slice state
 interface CertificationState {
   uuid: string;
+  repoUrl: string;
 }
 
 // Define the initial state using that type
 const initialState: CertificationState = {
   uuid: "",
+  repoUrl: ""
 };
 
 export const certificationSlice = createSlice({
@@ -18,10 +20,20 @@ export const certificationSlice = createSlice({
     setUuid: (state, action) => {
       state.uuid = action.payload;
     },
-    clearUuid: () => initialState,
+    clearUuid: (state) => {
+      state.uuid = "";
+      return state;
+    },
+    setRepoUrl: (state, action) => {
+      state.repoUrl = action.payload;
+    },
+    clearRepoUrl: (state) => {
+      state.repoUrl = "";
+      return state;
+    },
   },
 });
 
-export const { setUuid, clearUuid } = certificationSlice.actions;
+export const { setUuid, clearUuid, setRepoUrl, clearRepoUrl } = certificationSlice.actions;
 
 export default certificationSlice.reducer;

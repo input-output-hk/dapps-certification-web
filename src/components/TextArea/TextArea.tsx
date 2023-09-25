@@ -1,4 +1,4 @@
-import React, { ComponentProps, forwardRef, useState } from "react";
+import React, { ComponentProps, forwardRef, useState, useEffect } from "react";
 import TextAreaAutoSize from "@mui/material/TextareaAutosize";
 import classNames from "classnames";
 
@@ -29,20 +29,38 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       tooltipText = "",
       required = false,
       showInfoIcon = false,
+      disabled = false,
     },
     ref
   ) {
     const {
       formState: { errors },
+      getValues,
+      trigger
     } = useFormContext();
 
     const [active, setActive] = useState(false);
+
+    // Set floating label status if value is present/prefilled
+    useEffect(() => {
+      if (getValues(name)) {
+        // field has values
+        setActive(true);
+      } else {
+        // set field active if value empty and if not on focus
+        if (document.activeElement !== document.getElementById(name || "")) {
+          setActive(false);
+        }
+      }
+      // eslint-disable-next-line
+    }, [getValues(name)]);
 
     return (
       <div
         className={classNames("text-area-wrapper relative", {
           error: errors?.[name],
           active: active,
+          disabled: disabled
         })}
         onClick={(_) => {
           setActive(true);
@@ -53,7 +71,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         <div className="relative">
           <span className="label absolute">
             {placeholder}
-            {required ? <span style={{ color: "red" }}>*</span> : null}
+            {required ? <span className="ml-2 text-red">*</span> : null}
           </span>
 
           <TextAreaAutoSize
@@ -64,11 +82,19 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
               setActive(true);
               onChange && onChange(e);
             }}
+            onBlur={() => trigger(name)} // trigger text area validation on blur
             minRows={minRows}
             maxRows={maxRows}
-            className={classNames("text-area", className)}
+            className={classNames(
+              "text-area bg-gray-inputBackground",
+              className,
+              {
+                "!pr-10": tooltipText, // increase right padding if tooltip is present
+              }
+            )}
             ref={ref}
             onFocusCapture={() => setActive(true)}
+            disabled={disabled}
           />
 
           {errors?.[name] && (

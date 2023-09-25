@@ -6,12 +6,12 @@
   }
 
   .input {
-    padding: 20px 24px;
-    border-radius: 16px;
+    padding: 20px 14px;
+    // border-radius: 16px;
     display: flex;
     flex-flow: column;
     cursor: text;
-    border: 1.5px solid $border-gray;
+    border-bottom: 1.5px solid $border-gray;
 
     &:hover {
       background: $muted-gray;
@@ -37,11 +37,6 @@
     
     &.error {
       border-color: $danger;
-    }
-
-    &.disabled {
-      background: $muted-gray;
-      border-color: transparent;
     }
 
     label {

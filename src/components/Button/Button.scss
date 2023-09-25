@@ -27,6 +27,9 @@
   &-primary {
     background-color: $primary;
     color: $white;
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
   }
 
   &-primary-outline {

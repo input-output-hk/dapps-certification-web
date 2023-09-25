@@ -9,15 +9,15 @@
   }
 
   .nav-bar-item-active {
-    @apply bg-mainDark border-highlighted;
+    @apply bg-slate-mainDark border-slate-highlighted;
   }
 
   .nav-bar-icon {
-    @apply text-textLight;
+    @apply text-slate-textLight;
   }
 
   .nav-bar-icon-active {
-    @apply text-highlighted;
+    @apply text-slate-highlighted;
   }
 
 }

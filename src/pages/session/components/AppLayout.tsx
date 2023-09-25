@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet } from "react-router-dom";
+
+import { useAppDispatch } from "store/store";
+import { fetchProfile } from 'store/slices/auth.slice';
 
 import { LocalStorageKeys } from "constants/constants";
 
@@ -29,13 +32,21 @@ const Banner = () => {
 }
 
 const AppLayout = () => {
+
+  const dispatch = useAppDispatch();
+  
+  useEffect(() => {
+    dispatch(fetchProfile({}))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
-    <Box className="flex flex-row h-screen bg-app overflow-hidden">
+    <Box className="flex flex-row h-screen bg-slate-app overflow-hidden">
       <NavBar />
-      <Box className="flex-1 flex flex-col relative pt-16">
+      <Box className="flex-1 flex flex-col relative overflow-y-auto">
         <AppBar />
         <Banner />
-        <Box className="flex-1 flex flex-col p-4 overflow-y-scroll">
+        <Box className="flex-1 flex flex-col p-4">
           <Outlet />
         </Box>
       </Box>

@@ -11,6 +11,7 @@ export interface IButtonProps {
   showLoader?: boolean;
   size?: 'small' | 'medium' | 'thin';
   type?: "button" | "reset" | "submit" | undefined;
+  icon?: any,
   displayStyle?: "primary" | "primary-outline" | "secondary" | "gradient";
   onClick?: (e: any) => any;
 }
@@ -25,12 +26,13 @@ const Button: FC<IButtonProps> = ({
   size = "medium",
   showLoader = false,
   displayStyle = "primary",
+  icon = null,
   onClick,
   ...props
 }) => {
   return (
     <button
-      className={`btn ${className} ${isLoading ? "is-loading" : ""} ${"btn-" + displayStyle} ${"btn-" + size}`}
+      className={`px-3 py-2 btn bg-secondary hover:bg-blue rounded-3 ${className} ${isLoading ? "is-loading" : ""} ${"btn-" + displayStyle} ${"btn-" + size}`}
       type={type}
       onClick={onClick}
       disabled={showLoader || disabled}

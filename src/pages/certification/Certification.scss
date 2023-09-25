@@ -47,45 +47,45 @@
     font-size: 18px;
   }
 }
-#coverageIndicator {
-  margin: 70px 0 60px;
-  & > div {
-    & > span {
-      font-size: 16px;
-      font-weight: 600;
-      color: #5a5a5a;
-    }
-  }
-  @media (max-width: 768px) {
-    & {
-      margin-top: 50px;
-    }
-  }
+// #coverageIndicator {
+//   margin: 70px 0 60px;
+//   & > div {
+//     & > span {
+//       font-size: 16px;
+//       font-weight: 600;
+//       color: #5a5a5a;
+//     }
+//   }
+//   @media (max-width: 768px) {
+//     & {
+//       margin-top: 50px;
+//     }
+//   }
 
-  .coverage-file {
-    display: flex;
-    justify-content: space-between;
-    column-gap: 50px;
+//   .coverage-file {
+//     display: flex;
+//     justify-content: space-between;
+//     column-gap: 50px;
 
-    & > div {
-      display: flex;
-      width: 100%;
-      justify-content: space-evenly;
-      column-gap: 20px;
+//     & > div {
+//       display: flex;
+//       width: 100%;
+//       justify-content: space-evenly;
+//       column-gap: 20px;
 
-      .meter-bar {
-        width: 100%;
-        background-color: $red;
-        height: 14px;
+//       .meter-bar {
+//         width: 100%;
+//         background-color: $red;
+//         height: 14px;
 
-        .progress {
-          background-color: $green;
-          height: inherit;
-        }
-      }
-    }
-  }
-}
+//         .progress {
+//           background-color: $green;
+//           height: inherit;
+//         }
+//       }
+//     }
+//   }
+// }
 
 .btn-abort {
   background-color: $red;
@@ -182,4 +182,8 @@
       width: 33%;
     }
   }
+}
+
+#certificationWrapper.flex > * {
+  flex: 1;
 }

@@ -1,0 +1,17 @@
+$progress-bar-size: 120px;
+
+.progress-bar {
+  height: $progress-bar-size;
+  width: $progress-bar-size;
+  transform: rotate(-90deg);
+}
+
+.progress-bar-track {
+  stroke-dasharray: 100 100;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-in-out;
+}
+
+.progress-text {
+  transform: translateY(-50%);
+}

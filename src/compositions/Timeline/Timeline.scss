@@ -6,15 +6,14 @@
     display: flex;
     list-style-type: none;
     justify-content: space-between;
-    margin: 30px 7rem;
     padding: 0;
     position: relative;
 
     &:before {
       position: absolute;
       content: " ";
-      background-color: $lighter-gray;
-      height: 3px;
+      background-color: #c7d9f6;
+      height: 2px;
       top: 6px;
       bottom: 26px;
       left: 30px;
@@ -31,24 +30,23 @@
       row-gap: 10px;
 
       .image {
-        width: 16px;
-        height: 16px;
+        width: 25px;
         background: $white;
-        padding: 3px;
+        padding: 5px;
         border-radius: 16px;
-        margin-top: -3px;
+        margin-top: -10px;
         
-        &.anim-rotate.certifying {
-          height: auto;
-          width: 50px;
-          margin-top: -19px;
-          border-radius: 50px;
-        }
+        // &.anim-rotate.certifying {
+        //   height: auto;
+        //   width: 50px;
+        //   margin-top: -19px;
+        //   border-radius: 50px;
+        // }
       }
 
       span.text {
         margin-left: 10px;
-        font-size: 18px;
+        font-size: 14px;
       }
       span.small-text {
         font-size: small;
