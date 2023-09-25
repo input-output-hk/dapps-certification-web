@@ -31,3 +31,19 @@
   padding-bottom: 20px;
   padding-top: 50px;
 }
+
+.inner-separator-label {
+  margin: 20px 0 15px;
+  width: 100%;
+  color: #757575;
+}
+
+.smartcontract-info-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .input-wrapper {
+    width: 48%;
+  }
+}
