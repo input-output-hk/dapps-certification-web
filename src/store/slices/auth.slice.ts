@@ -187,6 +187,19 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: any
   }
 });
 
+// export const getProfileDetails: any = createAsyncThunk("getProfileDetails", async (data: any, { rejectWithValue }) => {
+//   localStorage.setItem(LocalStorageKeys.address, data.address)
+//   const response = await fetchData.get("/profile/current")
+//   // FOR MOCK - const response = await fetchData.get(data.url || 'static/data/current-profile.json', data)
+//   // return response.data
+//   return {...response.data, dapp: {
+//     "name": "Test",
+//     "owner": "Ali-Hill",
+//     "repo": "minimal-ptt-examples",
+//     "version": "1",
+//   }}
+// })
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,

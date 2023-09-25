@@ -7,12 +7,18 @@
     background-color: rgba(128, 128, 128, 0.7);
     z-index: 999;
     .toast-wrapper {
-        width: 500px;
-        margin: 20% auto 0;
-        background-color: rgba(128, 0 , 0, 0.7);
+        position: fixed;
+        width: 45rem;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(128, 0 , 0, 0.8);
         color: white;
         font-size: 14px;
         padding: 16px 20px;
         border-radius: 10px;
+        span {
+            word-break: break-word;
+        }
     }
 }
