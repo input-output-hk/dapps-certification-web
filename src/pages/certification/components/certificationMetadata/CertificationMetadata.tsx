@@ -1,26 +1,26 @@
 import { useState } from "react";
 import { useForm } from "hooks/useForm";
-import { useNavigate } from "react-router-dom";
 
 import Toast from "components/Toast/Toast";
-import { reportUploadSchema } from "./reportUpload.schema";
+import { certificationMetadataSchema } from "./certificationMetadata.schema";
+import "./CertificationMetadata.scss";
 import { useAppSelector } from "store/store";
 import {
   IScriptObject,
   OffChainMetadataSchema,
-} from "./reportUpload.interface";
+} from "./certificationMetadata.interface";
 import { fetchData } from "api/api";
 import Modal from "components/Modal/Modal";
 import { exportObjectToJsonFile, transformEmptyStringToNullInObj } from "utils/utils";
-import { REPORT_UPLOAD_FIELDS } from "./config";
+import { CERTIFICATION_METADATA_FIELDS } from "./config";
 import CertificationForm from "components/CertificationForm/CertificationForm";
-
-import "./ReportUpload.scss";
 
 export const fieldArrayName: string = "dAppScripts";
 
-const ReportUpload = () => {
-  const navigate = useNavigate();
+const CertificationMetadata: React.FC<{
+    uuid: string,
+    onCloseForm: () => void
+}> = ({uuid = "", onCloseForm}) => {
   const { userDetails } = useAppSelector((state: any) => state.auth);
   const [openModal, setOpenModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -29,20 +29,19 @@ const ReportUpload = () => {
   const [showError, setShowError] = useState("");
 
   const form = useForm({
-    schema: reportUploadSchema,
+    schema: certificationMetadataSchema,
     mode: "all", // trigger validation for onBlur and onChange events
   });
 
   const onCloseModal = () => {
     setOpenModal(false);
-    navigate(-1);
+    onCloseForm()
   };
 
-  const transformDappScripts = (scripts: []) => {
-    const formattedScripts: IScriptObject[] = [];
-    scripts.forEach((script: any) => {
+  const transformDappScripts = (scripts: IScriptObject[]) => {
+    return scripts.map((script: any) => {
       const { scriptHash, contractAddress, ...rest } = script;
-      formattedScripts.push({
+      return({
         scriptHash: scriptHash,
         ...(contractAddress && { contractAddress: contractAddress }),
         smartContractInfo: {
@@ -50,33 +49,27 @@ const ReportUpload = () => {
         },
       });
     });
-    return formattedScripts;
   };
 
   const formHandler = async (formData: any) => {
     const {
       subject,
-      certificationLevel,
       name,
       logo,
       email,
-      discord,
-      github,
       website,
       twitter,
-      reportURL,
       summary,
       disclaimer,
       dAppScripts,
+      discord,
+      github,
     } = formData;
 
     const formattedDappScripts: IScriptObject[] =
       transformDappScripts(dAppScripts);
 
     const payload: OffChainMetadataSchema = {
-      subject: subject,
-      schemaVersion: 1,
-      certificationLevel: parseInt(certificationLevel),
       certificateIssuer: {
         name: name,
         ...(logo && { logo: logo }),
@@ -88,16 +81,15 @@ const ReportUpload = () => {
           ...(github && { github: github })
         },
       },
-      report: reportURL.replace(/\s+/g, "").split(","),
-      summary: summary,
       disclaimer: disclaimer,
       scripts: formattedDappScripts,
+      summary: summary,
     };
 
     setSubmitting(true);
 
     await fetchData
-      .post("/auditor/reports", payload)
+      .post("/run/" + uuid + "/certificate", payload)
       .then(response => {
         if (response.status === 204) {
           throw Error()
@@ -105,8 +97,8 @@ const ReportUpload = () => {
         if (response?.data) {
           setShowError("");
           setOpenModal(true);
-          exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + subject + ".json");
-          exportObjectToJsonFile(response.data.onchain, "On-Chain_" + subject + ".json");
+          exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + uuid + ".json");
+          exportObjectToJsonFile(response.data.onchain, "On-Chain_" + uuid + ".json");
         }
         setSubmitting(false);
       })
@@ -114,7 +106,7 @@ const ReportUpload = () => {
         let errorMsg = "Something went wrong. Please try again.";
         if (errorObj?.response?.data) {
           errorMsg =
-            (errorObj.response.statusText || 'Error') + " - " + errorObj.response.data;
+            errorObj.response.statusText + " - " + errorObj.response.data;
         }
         setShowError(errorMsg);
         const timeout = setTimeout(() => {
@@ -127,10 +119,9 @@ const ReportUpload = () => {
 
   return (
     <>
-      <h2>Upload an Audit Report</h2>
-      <div id="auditReportUploadContainer" className="certificate-metadata-form">
+      <div id="certificationMetadataFormContainer" className="certificate-metadata-form">
         <CertificationForm
-          config={REPORT_UPLOAD_FIELDS as any}
+          config={CERTIFICATION_METADATA_FIELDS as any}
           submitting={submitting}
           initData={{
             twitter: userDetails?.twitter,
@@ -140,6 +131,7 @@ const ReportUpload = () => {
           onSubmit={formHandler}
           onFormReset={() => {
             form.reset();
+            onCloseModal();
           }}
         />
       </div>
@@ -148,12 +140,12 @@ const ReportUpload = () => {
 
       <Modal
         open={openModal}
-        title="Auditor Report Uploaded"
+        title="Certification Metadata Uploaded"
         onCloseModal={onCloseModal}
-        modalId="subscriptionSuccessModal"
+        modalId="verificationSuccessModal"
       >
         <p style={{ marginBottom: "2rem" }}>
-          Successfully submitted Auditor Report. <br />
+          Successfully submitted Certification Metadata. <br />
           <br />
           Both off-chain and on-chain certificates will be downloaded at once
           now.
@@ -163,4 +155,4 @@ const ReportUpload = () => {
   );
 };
 
-export default ReportUpload;
+export default CertificationMetadata;

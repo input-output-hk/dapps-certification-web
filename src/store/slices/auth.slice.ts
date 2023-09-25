@@ -33,7 +33,13 @@ export const getProfileDetails: any = createAsyncThunk("getProfileDetails", asyn
   localStorage.setItem(LocalStorageKeys.address, data.address)
   const response = await fetchData.get("/profile/current")
   // FOR MOCK - const response = await fetchData.get(data.url || 'static/data/current-profile.json', data)
-  return response.data
+  // return response.data
+  return {...response.data, dapp: {
+    "name": "Test",
+    "owner": "Ali-Hill",
+    "repo": "minimal-ptt-examples",
+    "version": "1",
+  }}
 })
 
 export const authSlice = createSlice({

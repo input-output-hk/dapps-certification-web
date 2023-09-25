@@ -13,7 +13,7 @@ const PrivateRoutes = () => {
 
   useEffect(() => {
     const userDetailsLS: any = userDetails;
-    if (isLoggedIn !== "true") {
+    if (!isLoggedIn && isLoggedIn !== "true") {
       navigate("/"); // navigate to root link if unauthorized
     } else {
       // user profile details are empty --> prompt user to enter details
