@@ -14,7 +14,7 @@ import { RootState } from "store/rootReducer";
 import { fetchProfile } from "store/slices/auth.slice";
 
 import "./ReportUpload.scss";
-import CertificationForm from "components/CertificationForm/CertificationForm";
+import CertificationMetadataForm from "components/CertificationMetadataForm/CertificationMetadataForm";
 import { REPORT_UPLOAD_FIELDS } from "./config";
 
 export const fieldArrayName: string = "dAppScripts";
@@ -149,13 +149,13 @@ const ReportUpload = () => {
     <>
       <h2>Upload an Audit Report</h2>
       <div id="auditReportUploadContainer" className="certificate-metadata-form">
-        <CertificationForm
+        <CertificationMetadataForm
           config={REPORT_UPLOAD_FIELDS as any}
           submitting={submitting}
-          initData={{
-            twitter: profile?.twitter,
-            website: profile?.website,
-          }}
+          // initData={{
+          //   twitter: profile?.twitter,
+          //   website: profile?.website,
+          // }}
           form={form}
           onSubmit={formHandler}
           onFormReset={() => {

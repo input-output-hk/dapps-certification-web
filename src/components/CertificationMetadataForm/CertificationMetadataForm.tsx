@@ -1,5 +1,8 @@
 import { useCallback, useEffect } from "react";
-import Button from "components/Button/Button";
+
+import { Button } from "@mui/material";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+
 import { Form } from "compositions/Form/Form";
 import { Input } from "compositions/Form/components/Input";
 import DAPPScript, { IInfo } from "components/DAPPScript/DAPPScript";
@@ -28,7 +31,7 @@ interface FieldConfig {
   form: any;
 }
 
-export interface ICertificationForm {
+export interface ICertificationMetadataForm {
   commonField: FieldConfig[];
   auditorInfo: FieldConfig[];
   auditorReport: FieldConfig[];
@@ -66,14 +69,14 @@ const Component = (props: FieldConfig) => {
   }
 };
 
-const CertificationForm: React.FC<{
-  config: ICertificationForm;
+const CertificationMetadataForm: React.FC<{
+  config: ICertificationMetadataForm;
   submitting: boolean;
-  initData: any;
+  initData?: any;
   form: any;
   onSubmit: (data: any) => any;
   onFormReset: () => void;
-}> = ({ config, submitting, initData, form, onSubmit, onFormReset }) => {
+}> = ({ config, submitting, initData = null, form, onSubmit, onFormReset }) => {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: fieldArrayName,
@@ -97,14 +100,14 @@ const CertificationForm: React.FC<{
 
   const initializeFormState = () => {
     form.clearErrors(); // clear form errors
-    form.reset(initData);
+    initData ? form.reset(initData) : form.reset();
   };
 
   useEffect(() => {
     initializeFormState();
     // initializeFormState() is to not to be triggered on every re-render of the dep-array below but whenever the form or userDetails is updated alone
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form]);
+  }, [form, initData]);
 
   const shouldDisableAddScriptButton = useCallback(() => {
     return (
@@ -157,15 +160,13 @@ const CertificationForm: React.FC<{
       <div className="relative">
         <div className="absolute action-button addScript-btn">
           <Button
-            displayStyle="primary-outline"
-            size="small"
-            buttonLabel="+ Add Script"
-            type="button"
-            disabled={shouldDisableAddScriptButton()}
-            onClick={() => {
-              addNewDappScript();
-            }}
-          />
+                type="button"
+                variant="contained" size="small"
+                onClick={addNewDappScript}
+                className="button text-sm"
+                startIcon={<AddCircleOutlineIcon />}
+                disabled={shouldDisableAddScriptButton()}
+            >Add Script</Button>
         </div>
 
         {fields.map((field, index) => (
@@ -180,24 +181,23 @@ const CertificationForm: React.FC<{
         ))}
       </div>
 
-      <div className="button-wrapper">
+      <div className="button-wrapper flex justify-center mt-[100px] mb-[20px] gap-[20px]">
         <Button
-          type="button"
+          type="button" 
+          variant="outlined" size="large"
+          className="button-outlined w-[200px]"
           disabled={submitting}
-          displayStyle="secondary"
-          buttonLabel={"Cancel"}
           onClick={onFormReset}
-        />
-
+        >Cancel</Button> 
         <Button
+          type="submit" 
+          variant="contained" size="large"
+          className="button w-[200px]"
           disabled={!form.formState.isValid}
-          type="submit"
-          buttonLabel={"Submit"}
-          showLoader={submitting}
-        />
+        >Submit</Button> 
       </div>
     </Form>
   );
 };
 
-export default CertificationForm;
+export default CertificationMetadataForm;

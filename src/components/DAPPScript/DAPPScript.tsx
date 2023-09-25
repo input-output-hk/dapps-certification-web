@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { Button } from "@mui/material";
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
-import Button from "components/Button/Button";
+// import Button from "components/Button/Button";
 import { Input } from "compositions/Form/components/Input";
 
 import "./DAPPScript.scss";
@@ -47,11 +49,12 @@ const DAPPScript = ({
         <div className="absolute action-button" style={{ right: 0 }}>
           {length > 1 && (
             <Button
-              displayStyle="primary-outline"
-              size="small"
-              buttonLabel="- Remove Script"
-              onClick={() => remove(index, { shouldFocus: true })}
-            />
+                type="button"
+                variant="outlined" size="small"
+                onClick={() => remove(index, { shouldFocus: true })}
+                className="button-outlined text-sm"
+                startIcon={<RemoveCircleOutlineIcon />}
+            >Remove Script</Button>
           )}
         </div>
 

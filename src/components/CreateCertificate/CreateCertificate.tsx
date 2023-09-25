@@ -10,8 +10,7 @@ import { useAppSelector } from "store/store";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
 
 import Modal from "components/Modal/Modal";
-import Toast from "components/Toast/Toast";
-import CertificationMetadata from "pages/certification/components/certificationMetadata/CertificationMetadata";
+import CertificationMetadata from "pages/certification/components/CertificationMetadata/CertificationMetadata";
 
 import "./CreateCertificate.scss";
 
