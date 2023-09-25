@@ -1,89 +1,35 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route, Outlet } from "react-router-dom";
-import { BASE_URL } from "constants/route";
-import Alert from '@mui/material/Alert';
+import { Routes, Route } from "react-router-dom";
+import { CircularProgress, Typography } from "@mui/material";
 
-import "./App.scss";
-import Header from "components/Header/Header";
-import PrivateRoutes from "components/PrivateRoutes/PrivateRoutes";
-import NotFound from "components/NotFound/NotFound";
-import Loader from "components/Loader/Loader";
-import { useAppSelector } from "store/store";
-
-const Home = lazy(() => import("../pages/home/Home"));
-const MaintenancePage = lazy(() => import("../pages/maintenance/Maintenance"));
-const Community = lazy(() => import("../pages/community/Community"));
-const TestHistory = lazy(() => import("../pages/testHistory/TestHistory"));
-const UserProfile = lazy(() => import("../pages/userProfile/UserProfile"));
-const Subscription = lazy(() => import("../pages/subscription/Subscription"));
-const Support = lazy(() => import("../pages/support/Support"));
-const Pricing = lazy(() => import("../pages/pricing/Pricing"));
-const SubscriptionContent = lazy(() => import("../pages/subscription/SubscriptionContent"));
-const Payment = lazy(() => import("../pages/subscription/payment/Payment"));
+const Session = lazy(() => import("../pages/session"));
+const Landing = lazy(() => import("../pages/landing"));
+const Home = lazy(() => import("../pages/home"));
+const Certification = lazy(() => import("../pages/certification/Certification"));
+const TestingHistory = lazy(() => import("../pages/testingHistory"));
 const ReportUpload = lazy(() => import("../pages/auditing/reportUpload/ReportUpload"))
-const SubscriptionHistory = lazy(() => import("../pages/subscription/history/SubscriptionHistory"));
 const CertificationResult = lazy(() => import("../pages/certification/certification-result/CertificationResult"));
 
-const Banner = () => {
-  const { network } = useAppSelector((state) => state.auth);
-  const networkEnvVar: any = process.env.REACT_APP_WALLET_NETWORK
-
-  return (<>
-    {network !== null && network !== 1 ? 
-      // always show Info if not in Mainnet
-      <Alert severity="info" style={{marginBottom: '10px'}}>Your connected wallet is not in Mainnet.</Alert> : null}
-      {/* if not in Mainnet and app-wallet not Mainnet (i.e. in Testnet), show Warning to connect to Preprod. */}
-    {network !== null && network !== 1 && networkEnvVar !== '1' ? 
-      <Alert severity="warning">Your wallet is connected to a Testnet which is expected while the tool is in Beta. Please ensure that you are connected to the <strong>Preprod</strong> network.</Alert> : null}
-  </>)
-}
-
-const PageLayout = () => {
-
-  // const networkNames:{[x:string]:string} = {
-  //   '0': 'Testnet',
-  //   '1': 'Mainnet'
-  // }
-
-  return (
-    <>
-      <Header />
-      <section id="globalBanners">
-        <Banner />
-      </section>
-      {/* Load page content here */}
-      <section data-testid="contentWrapper" id="contentWrapper">
-        <Suspense fallback={<Loader />}>
-          <Outlet />
-        </Suspense>
-      </section>
-    </>
-  );
-};
+const ComingSoon = () => (
+  <Typography>Coming soon...</Typography>
+);
 
 const App = () => {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
       <Routes>
-        <Route path={BASE_URL} element={<PageLayout />}>
-          <Route element={<PrivateRoutes />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/subscription" element={<Subscription />}>
-              <Route index element={<SubscriptionContent />} />  
-              <Route path="payment" element={<Payment />} />
-              <Route path="history" element={<SubscriptionHistory />} />
-            </Route>
-            <Route path="/audit-report-upload" element={<ReportUpload />} />
-            <Route path="/history" element={<TestHistory />} />
-            <Route path="/profile/*" element={<UserProfile />} />
-            <Route path="/report/:uuid" element={<CertificationResult />} />
-          </Route>
-          <Route path="/" element={<MaintenancePage />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/pricing" element={<Pricing />} />
+        <Route path="/" element={<Session />}>
+          <Route index element={<Landing />} />
+          <Route path="home" element={<Home />} />
+          <Route path="testing" element={<ComingSoon />} />
+          <Route path="history" element={<TestingHistory />} />
+          <Route path="certification" element={<Certification />} />
+          <Route path="profile" element={<ComingSoon />} />
+          <Route path="support" element={<ComingSoon />} />
+          <Route path="documentation" element={<ComingSoon />} />
+          <Route path="audit-report-upload" element={<ReportUpload />} />
+          <Route path="/report/:uuid" element={<CertificationResult />} />
         </Route>
-        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   );

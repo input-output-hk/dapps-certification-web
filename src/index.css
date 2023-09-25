@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+  .anim-rotate {
+    @apply animate-spin;
+  }
+
+  .disabled {
+    @apply opacity-50 cursor-default pointer-events-none;
+  }
+
+  a, .link {
+    @apply cursor-pointer text-active no-underline;
+    &:hover, &:focus {
+      @apply text-activeDark underline;
+    }
+  }
+
+  .button-contained-main {
+    @apply normal-case bg-main text-white;
+    &:hover { @apply bg-mainDark; }
+  }
+
+  .button-contained-active {
+    @apply normal-case bg-active text-white;
+    &:hover { @apply bg-activeDark; }
+  }
+
+  .button-contained-highlighted {
+    @apply normal-case bg-highlighted text-white;
+    &:hover { @apply bg-highlightedDark; }
+  }
+
+  .button-outlined-main {
+    @apply normal-case text-main border-main;
+    &:hover { @apply text-mainDark border-mainDark; }
+  }
+
+  .button-outlined-active {
+    @apply normal-case text-active border-active;
+    &:hover { @apply text-activeDark border-activeDark; }
+  }
+
+  .button-outlined-highlighted {
+    @apply normal-case text-highlighted border-highlighted;
+    &:hover { @apply text-highlightedDark border-highlightedDark; }
+  }
+
+}

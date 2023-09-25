@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+  .title-text {
+    @apply font-bold tracking-[.2em] text-main;
+  }
+
+  .subtitle-text {
+    @apply font-normal text-secondary;
+  }
+
+  .price-text {
+    @apply font-normal text-sm mt-6 text-red-500;
+  }
+
+  .white-box {
+    @apply flex flex-col m-0 min-w-[50vw] bg-white;
+  }
+
+  .wallet-card {
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    border-radius: 5px;
+    width: 155px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+  }
+
+  .wallet-card-image {
+    width: 30px;
+    margin-right: 5px;
+  }
+
+  .wallet-card-name {
+    padding: 2px 16px;
+  }
+
+  .subscription, .subscription-active {
+    @apply
+      px-4
+      py-12
+      outline
+      outline-1
+      outline-inactive;
+  }
+
+  .subscription-active {
+    @apply outline-2 outline-active;
+  }
+
+  .subscription-title {
+    @apply font-bold my-8 text-main;
+  }
+
+  .subscription-price {
+    @apply font-normal mb-24 text-main;
+  }
+
+  .subscription-subtitle {
+    @apply font-bold text-main;
+  }
+
+  .subscription-feature {
+    @apply font-normal mb-12 text-main;
+  }
+  
+}

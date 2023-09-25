@@ -41,7 +41,7 @@ interface Certificate {
 
 const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { address, wallet, subscribedFeatures, userDetails:{address: payer} } = useAppSelector((state) => state.auth);
+    const { walletAddress: address, features, wallet, profile } = useAppSelector((state) => state.auth);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
@@ -143,7 +143,7 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
         setShowError("")
         if (performTransaction) {
             const response = await dispatch(
-                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet, address, payer, })
+                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet, address, payer: profile?.address , })
             );
             if (response.payload) {
                 triggerSubmitCertificate(response.payload)
@@ -195,7 +195,7 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     
     return (
         <>
-            {subscribedFeatures?.indexOf("l2-upload-report") === -1 ? 
+            {features.includes('l2-upload-report') ? 
                 <>
                     <CertificateButton />
                     <TransactionModal />
