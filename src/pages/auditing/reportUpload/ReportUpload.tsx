@@ -4,20 +4,18 @@ import { useNavigate } from "react-router-dom";
 
 import Toast from "components/Toast/Toast";
 import { reportUploadSchema } from "./reportUpload.schema";
+
 import { useAppDispatch, useAppSelector } from "store/store";
-import {
-  IScriptObject,
-  OffChainMetadataSchema,
-} from "./reportUpload.interface";
+import { IScriptObject, OffChainMetadataSchema } from "./reportUpload.interface";
 import { fetchData } from "api/api";
 import Modal from "components/Modal/Modal";
 import { exportObjectToJsonFile, transformEmptyStringToNullInObj } from "utils/utils";
-import { REPORT_UPLOAD_FIELDS } from "./config";
-import CertificationForm from "components/CertificationForm/CertificationForm";
 import { RootState } from "store/rootReducer";
 import { fetchProfile } from "store/slices/auth.slice";
 
 import "./ReportUpload.scss";
+import CertificationForm from "components/CertificationForm/CertificationForm";
+import { REPORT_UPLOAD_FIELDS } from "./config";
 
 export const fieldArrayName: string = "dAppScripts";
 
