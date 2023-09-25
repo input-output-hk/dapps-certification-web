@@ -76,3 +76,26 @@ export const getObjectByPath = (object: { [x: string]: any }, path: string): any
   }
   return tempObj;
 };
+
+export const transformEmptyStringToNullInObj = (obj: any) => {
+  Object.keys(obj).forEach(key => {
+    if (!obj[key]) {
+      obj[key] = null
+    } 
+  })
+  return obj;
+}
+
+export const getErrorMessage = (errorObj: any) => {
+  let errorMsg = "Something wrong occurred. Please try again later.";
+    if (typeof errorObj === "string") {
+      errorMsg = errorObj + " Please try again.";
+    } else if (errorObj?.info) {
+      errorMsg = errorObj.info + " Please try again.";
+    } else if (errorObj?.response?.message) {
+      errorMsg = errorObj?.response.message + " Please try again.";
+    } else if (errorObj?.response?.data) {
+      errorMsg = errorObj.response.statusText + " - " + errorObj.response.data;
+    }
+    return errorMsg;
+}

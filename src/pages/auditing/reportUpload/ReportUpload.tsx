@@ -1,14 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "hooks/useForm";
 import { useNavigate } from "react-router-dom";
 
 import Toast from "components/Toast/Toast";
-import Button from "components/Button/Button";
-
-import { Form } from "compositions/Form/Form";
-import { Input } from "compositions/Form/components/Input";
-
 import { reportUploadSchema } from "./reportUpload.schema";
+<<<<<<< HEAD
 import DAPPScript from "components/DAPPScript/DAPPScript";
 import "./ReportUpload.scss";
 import Dropdown from "components/Dropdown/Dropdown";
@@ -21,11 +17,26 @@ import Modal from "components/Modal/Modal";
 import { exportObjectToJsonFile } from "utils/utils";
 import { RootState } from "store/rootReducer";
 import { fetchProfile } from "store/slices/auth.slice";
+=======
+import { useAppSelector } from "store/store";
+import {
+  IScriptObject,
+  OffChainMetadataSchema,
+} from "./reportUpload.interface";
+import { fetchData } from "api/api";
+import Modal from "components/Modal/Modal";
+import { exportObjectToJsonFile, transformEmptyStringToNullInObj } from "utils/utils";
+import { REPORT_UPLOAD_FIELDS } from "./config";
+import CertificationForm from "components/CertificationForm/CertificationForm";
+
+import "./ReportUpload.scss";
+>>>>>>> c13098070e96804318d4c61b49076899c340c87f
 
 export const fieldArrayName: string = "dAppScripts";
 
 const ReportUpload = () => {
   const navigate = useNavigate();
+<<<<<<< HEAD
   const dispatch = useAppDispatch();
   const { profile }  = useAppSelector((state: RootState) => state.auth);
   const [openModal, setOpenModal] = useState(false);
@@ -43,6 +54,12 @@ const ReportUpload = () => {
     navigate(-1);
   };
 
+=======
+  const { userDetails } = useAppSelector((state: any) => state.auth);
+  const [openModal, setOpenModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+>>>>>>> c13098070e96804318d4c61b49076899c340c87f
   // eslint-disable-next-line
   const [showError, setShowError] = useState("");
 
@@ -51,76 +68,93 @@ const ReportUpload = () => {
     mode: "all", // trigger validation for onBlur and onChange events
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: fieldArrayName,
-  });
-
-  const addNewDappScript = () => {
-    append(
-      {
-        scriptHash: "",
-        contractAddress: "",
-      },
-      { shouldFocus: true }
-    );
-  }
+  const onCloseModal = () => {
+    setOpenModal(false);
+    navigate(-1);
+  };
 
   const transformDappScripts = (scripts: []) => {
-    const formattedScripts: IScriptObject[] = []
+    const formattedScripts: IScriptObject[] = [];
     scripts.forEach((script: any) => {
-      const {scriptHash, contractAddress, ...rest} = script
+      const { scriptHash, contractAddress, ...rest } = script;
       formattedScripts.push({
         scriptHash: scriptHash,
-        contractAddress: contractAddress,
+        ...(contractAddress && { contractAddress: contractAddress }),
         smartContractInfo: {
-          ...rest
-        }
-      })
+          ...transformEmptyStringToNullInObj(rest),
+        },
+      });
     });
     return formattedScripts;
-  }
+  };
 
   const formHandler = async (formData: any) => {
-    const {subject, certificationLevel, name, logo, email, website, twitter, reportURL, summary, disclaimer, dAppScripts} = formData;
-    const formattedDappScripts: IScriptObject[] = transformDappScripts(dAppScripts);;
-    
+    const {
+      subject,
+      certificationLevel,
+      name,
+      logo,
+      email,
+      discord,
+      github,
+      website,
+      twitter,
+      reportURL,
+      summary,
+      disclaimer,
+      dAppScripts,
+    } = formData;
+
+    const formattedDappScripts: IScriptObject[] =
+      transformDappScripts(dAppScripts);
+
     const payload: OffChainMetadataSchema = {
       subject: subject,
       schemaVersion: 1,
       certificationLevel: parseInt(certificationLevel),
       certificateIssuer: {
         name: name,
-        logo: logo,
+        ...(logo && { logo: logo }),
         social: {
           contact: email,
-          link: website,
-          twitter: twitter || "",
-          github: website,
-          website: website
-        }
+          website: website,
+          ...(discord && { discord: discord }),
+          ...(twitter && { twitter: twitter }),
+          ...(github && { github: github })
+        },
       },
-      report: reportURL.replace(/\s+/g,"").split(','),
+      report: reportURL.replace(/\s+/g, "").split(","),
       summary: summary,
       disclaimer: disclaimer,
-      scripts: formattedDappScripts
-    }
+      scripts: formattedDappScripts,
+    };
 
-    setSubmitting(true)
-    const response: any = await fetchData.post("/auditor/reports", payload).catch((errorObj) => {
-      let errorMsg = 'Something went wrong. Please try again.'
+    setSubmitting(true);
+
+    await fetchData
+      .post("/auditor/reports", payload)
+      .then(response => {
+        if (response.status === 204) {
+          throw Error()
+        }
+        if (response?.data) {
+          setShowError("");
+          setOpenModal(true);
+          exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + subject + ".json");
+          exportObjectToJsonFile(response.data.onchain, "On-Chain_" + subject + ".json");
+        }
+        setSubmitting(false);
+      })
+      .catch((errorObj) => {
+        let errorMsg = "Something went wrong. Please try again.";
         if (errorObj?.response?.data) {
-          errorMsg = errorObj.response.statusText + ' - ' + errorObj.response.data 
+          errorMsg =
+            (errorObj.response.statusText || 'Error') + " - " + errorObj.response.data;
         }
         setShowError(errorMsg);
         const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000)
         setSubmitting(false)
     })
-    setShowError("")
-    setOpenModal(true)
-    exportObjectToJsonFile(response.data.offchain, "Off-Chain_" + subject + ".json")
-    exportObjectToJsonFile(response.data.onchain, "On-Chain_" + subject + ".json")
-    setSubmitting(false)
   };
 
   const initializeFormState = () => {
@@ -165,161 +199,24 @@ const ReportUpload = () => {
   return (
     <>
       <h2>Upload an Audit Report</h2>
-      <div id="auditReportUploadContainer">
-        <Form form={form} onSubmit={formHandler}>
-          <Dropdown
-            options={certificationLevelOptions}
-            placeholder="Certification Level"
-            required={true}
-            onOptionSelect={(option) =>
-              form.setValue("certificationLevel", option.value, {
-                shouldValidate: true, // trigger on change validation manually
-              })
-            }
-            {...form.register("certificationLevel")}
-          />
-
-          <TextArea
-            placeholder="Summary"
-            required={true}
-            minRows={4}
-            maxRows={4}
-            {...form.register("summary")}
-          />
-
-          <TextArea
-            placeholder="Disclaimer"
-            required={true}
-            minRows={4}
-            maxRows={4}
-            {...form.register("disclaimer")}
-          />
-
-          <TextArea
-            placeholder="Subject"
-            required={true}
-            maxRows={2}
-            {...form.register("subject")}
-          />
-
-          <div className="separator-label">Auditor Information</div>
-          <Input
-            label="Name"
-            type="text"
-            id="name"
-            required={true}
-            {...form.register("name")}
-          />
-
-          <Input
-            label="Website"
-            type="text"
-            id="website"
-            required={true}
-            {...form.register("website")}
-          />
-
-          <Input
-            label="Email"
-            type="text"
-            id="email"
-            required={true}
-            {...form.register("email")}
-          />
-
-          <Input
-            label="Logo"
-            type="text"
-            id="logo"
-            {...form.register("logo")}
-          />
-
-          <Input
-            label="Discord"
-            type="text"
-            id="discord"
-            {...form.register("discord")}
-          />
-
-          <Input
-            label="Twitter"
-            type="text"
-            id="twitter"
-            {...form.register("twitter")}
-          />
-
-          <div className="separator-label">Audit Report</div>
-          {/* <Upload
-            isMultiple={false}
-            highlightText="Upload a PDF"
-            uploadFiles={(file) => {
-              console.log("file", file);
-              setFiles(file);
-            }}
-            showPreview
-            tooltipText={`Please upload a ${SUPPORTED_FORMATS.join(",")} file within 5MB size`}
-            maxFileSize={FILE_SIZE}
-            acceptedTypes={SUPPORTED_FORMATS.join(",")}
-            uploadedFiles={files}
-            required={true}
-            className="bordered"
-            onClick={(files) => console.log(files)}
-            name="auditReport"
-            showDefaultError
-          /> */}
-          <TextArea
-            placeholder="Report URLs"
-            required={true}
-            maxRows={2}
-            tooltipText="Enter comma(,) separatated JSON/PDF URLs or IPFS link corresponding to the report"
-            {...form.register("reportURL")}
-          />
-
-          <div className="separator-label">DAPP Script</div>
-          <div className="relative">
-            <div className="absolute action-button addScript-btn">
-              <Button
-                displayStyle="primary-outline"
-                size="small"
-                buttonLabel="+ Add Script"
-                type="button"
-                disabled={shouldDisableAddScriptButton()}
-                onClick={() => { addNewDappScript() }}
-              />
-            </div>
-
-            {fields.map((field, index) => (
-              <DAPPScript
-                key={field.id}
-                remove={remove}
-                value={field}
-                index={index}
-              />
-            ))}
-          </div>
-
-          <div className="button-wrapper">
-            <Button
-              type="button"
-              disabled={submitting}
-              displayStyle="secondary"
-              buttonLabel={"Cancel"}
-              onClick={() => {
-                form.reset();
-                navigate(-1);
-              }}
-            />
-
-            <Button
-              disabled={!form.formState.isValid}
-              type="submit"
-              buttonLabel={"Submit"}
-              showLoader={submitting}
-            />
-          </div>
-        </Form>
+      <div id="auditReportUploadContainer" className="certificate-metadata-form">
+        <CertificationForm
+          config={REPORT_UPLOAD_FIELDS as any}
+          submitting={submitting}
+          initData={{
+            twitter: userDetails?.twitter,
+            website: userDetails?.website,
+          }}
+          form={form}
+          onSubmit={formHandler}
+          onFormReset={() => {
+            form.reset();
+          }}
+        />
       </div>
+
       {showError ? <Toast message={showError} /> : null}
+
       <Modal
         open={openModal}
         title="Auditor Report Uploaded"
@@ -327,7 +224,10 @@ const ReportUpload = () => {
         modalId="subscriptionSuccessModal"
       >
         <p style={{ marginBottom: "2rem" }}>
-          Successfully submitted Auditor Report. <br/><br/>Both off-chain and on-chain certificates will be downloaded at once now.
+          Successfully submitted Auditor Report. <br />
+          <br />
+          Both off-chain and on-chain certificates will be downloaded at once
+          now.
         </p>
       </Modal>
     </>

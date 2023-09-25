@@ -1,102 +1,86 @@
+import { useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form";
+
 import Button from "components/Button/Button";
 import { Input } from "compositions/Form/components/Input";
+
 import "./DAPPScript.scss";
-import { useFormContext } from "react-hook-form";
-import { fieldArrayName } from "pages/auditing/reportUpload/ReportUpload";
+
+export interface IInfo {
+  label: string;
+  type: string;
+  required: boolean;
+  id: string;
+}
 
 interface DAPPScriptProps {
   remove: (index: number, options?: { shouldFocus: boolean }) => void;
   value: { id: string };
   index: number;
+  fieldArrayName: string;
+  config: { scriptFields: IInfo[]; smartContractInfo: IInfo[] };
 }
 
-const DAPPScript = ({ remove, value, index }: DAPPScriptProps) => {
-  const { register, watch } = useFormContext();
+const DAPPScript = ({
+  remove,
+  value,
+  index,
+  fieldArrayName,
+  config,
+}: DAPPScriptProps) => {
+  const { register, watch, formState: { errors } } = useFormContext();
   const allScripts = watch(fieldArrayName);
   const length = !allScripts ? 1 : allScripts.length;
+  const [error, setError] = useState<any>([]);
+
+  // Deeply nested errors to be captured on every component change
+  useEffect(() => {
+    if (errors?.[fieldArrayName]) {
+      setError(errors?.[fieldArrayName]);
+    } 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errors?.[fieldArrayName]]);
 
   return (
-    <div
-      className="bordered card-layout card-padding"
-      key={value.id}
-    >
+    <div className="bordered card-layout card-padding" key={value.id}>
       <div className="bordered script-item relative">
-        <div className="absolute action-button" style={{right: 0}}>
-          {length > 1 && (<Button
-            displayStyle="primary-outline"
-            size="small"
-            buttonLabel="- Remove Script"
-            onClick={() => remove(index, { shouldFocus: true })}
-          />)}
+        <div className="absolute action-button" style={{ right: 0 }}>
+          {length > 1 && (
+            <Button
+              displayStyle="primary-outline"
+              size="small"
+              buttonLabel="- Remove Script"
+              onClick={() => remove(index, { shouldFocus: true })}
+            />
+          )}
         </div>
 
-        <Input
-          label="Script Hash"
-          type="text"
-          required={true}
-          id={`scriptHash-${value.id}`}
-          {...register(`${fieldArrayName}.${index}.scriptHash`)}
-        />
-
-        <Input
-          label="Contract Address"
-          type="text"
-          required={true}
-          id={`contractAddress-${value.id}`}
-          {...register(`${fieldArrayName}.${index}.contractAddress`)}
-        />
+        {config.scriptFields.map((field, idx) => (
+          <Input
+            label={field.label}
+            type={field.type}
+            required={field.required}
+            id={`${field.id}-${value.id}`}
+            {...register(`${fieldArrayName}.${index}.${field.id}`)}
+            key={`scriptFields-${value.id}-${idx}`}
+            error={error?.[index]?.[field.id]?.message}
+          />
+        ))}
 
         <div className="inner-separator-label">SmartContract Information</div>
 
         <div className="smartcontract-info-section input-wrapper">
-          <Input
-            label="Era"
-            type="text"
-            id={`era-${value.id}`}
-            {...register(`${fieldArrayName}.${index}.era`)}
-          />
-
-          <Input
-            label="Complier"
-            type="text"
-            id={`compiler-${value.id}`}
-            {...register(`${fieldArrayName}.${index}.compiler`)}
-          />
-
-          <Input
-            label="Compiler Version"
-            type="text"
-            id={`compilerVersion-${value.id}`}
-            {...register(`${fieldArrayName}.${index}.compilerVersion`)}
-          />
-
-          <Input
-            label="Optimizer"
-            type="text"
-            id={`optimizer-${value.id}`}
-            {...register(`${fieldArrayName}.${index}.optimizer`)}
-          />
-
-          <Input
-            label="Optimizer Version"
-            type="text"
-            id={`optimizerVersion-${value.id}`}
-            {...register(`${fieldArrayName}.${index}.optimizerVersion`)}
-          />
-
-          <Input
-            label="Programming Language"
-            type="text"
-            id={`progLang-${value.id}`}
-            {...register(`${fieldArrayName}.${index}.progLang`)}
-          />
-
-          <Input
-            label="Repository URL"
-            type="text"
-            id={`repoUrl-${value.id}`}
-            {...register(`${fieldArrayName}.${index}.repoUrl`)}
-          />
+          {config.smartContractInfo.map((field, idx) => (
+            <Input
+              label={field.label}
+              type={field.type}
+              required={field.required}
+              id={`${field.id}-${value.id}`}
+              {...register(`${fieldArrayName}.${index}.${field.id}`)}
+              key={`smartContractInfo-${value.id}-${idx}`}
+              error={error?.[index]?.[field.id]?.message}
+            />
+          ))}
         </div>
       </div>
     </div>
