@@ -170,10 +170,10 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           },
         }));
         if (response.payload && response.payload?.dapp?.owner) {
-          const response = await postData.post("/run", checkout);
-          if (response.data) {
+          const runResponse = await postData.post("/run", checkout);
+          if (runResponse.data) {
             // store data into LS
-            setLsUuid(response.data)
+            setLsUuid(runResponse.data)
             setLsFormData({
               ...formData,
               commit: checkout,
@@ -181,7 +181,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             })
             // Emit uuid, checkout
             onSubmit({
-              runId: response.data,
+              runId: runResponse.data,
               commitHash: checkout,
               repo: username + "/" + repoName
             });
