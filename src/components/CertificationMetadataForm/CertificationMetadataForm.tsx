@@ -72,11 +72,11 @@ const Component = (props: FieldConfig) => {
 const CertificationMetadataForm: React.FC<{
   config: ICertificationMetadataForm;
   submitting: boolean;
-  initData: any;
+  initData?: any;
   form: any;
   onSubmit: (data: any) => any;
   onFormReset: () => void;
-}> = ({ config, submitting, initData, form, onSubmit, onFormReset }) => {
+}> = ({ config, submitting, initData = null, form, onSubmit, onFormReset }) => {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: fieldArrayName,
@@ -100,7 +100,7 @@ const CertificationMetadataForm: React.FC<{
 
   const initializeFormState = () => {
     form.clearErrors(); // clear form errors
-    form.reset(initData);
+    initData ? form.reset(initData) : form.reset();
   };
 
   useEffect(() => {

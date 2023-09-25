@@ -152,10 +152,10 @@ const ReportUpload = () => {
         <CertificationMetadataForm
           config={REPORT_UPLOAD_FIELDS as any}
           submitting={submitting}
-          initData={{
-            twitter: profile?.twitter,
-            website: profile?.website,
-          }}
+          // initData={{
+          //   twitter: profile?.twitter,
+          //   website: profile?.website,
+          // }}
           form={form}
           onSubmit={formHandler}
           onFormReset={() => {

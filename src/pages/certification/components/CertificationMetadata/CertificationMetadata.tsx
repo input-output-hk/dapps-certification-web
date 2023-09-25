@@ -123,12 +123,12 @@ const CertificationMetadata: React.FC<{
         <CertificationMetadataForm
           config={CERTIFICATION_METADATA_FIELDS as any}
           submitting={submitting}
-          initData={profile ? {
-            name: profile.fullName || profile.companyName || "",
-            email: profile.contactEmail || profile.email || "",
-            twitter: profile.twitter || "",
-            website: profile.website || ""
-          } : null}
+          // initData={profile ? {
+          //   name: profile.fullName || profile.companyName || "",
+          //   email: profile.contactEmail || profile.email || "",
+          //   twitter: profile.twitter || "",
+          //   website: profile.website || ""
+          // } : null}
           form={form}
           onSubmit={formHandler}
           onFormReset={() => {
