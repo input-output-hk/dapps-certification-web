@@ -5,8 +5,7 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 import { ellipsizeString } from "utils/utils";
 
-// import { useAppSelector } from "store/store";
-import CertificationForm from "./components/AuditorRunTestForm/AuditorRunTestForm";
+import AuditorRunTestForm from "./components/AuditorRunTestForm/AuditorRunTestForm";
 import TimelineView from "./components/TimelineView/TimelineView";
 import { clearPersistentStates } from "./components/AuditorRunTestForm/utils";
 import { LocalStorageKeys } from "constants/constants";
@@ -15,7 +14,6 @@ import { IAuditorRunTestFormFields } from "./components/AuditorRunTestForm/audit
 import Loader from "components/Loader/Loader";
 
 const Certification = () => {
-    // const { features: subscribedFeatures } = useAppSelector((state) => state.auth);
     const [lsFormData] = useLocalStorage(LocalStorageKeys.certificationFormData, "");
     const [lsUuid] = useLocalStorage(LocalStorageKeys.certificationUuid, "");
     const [disableForm, setDisableForm] = useState(false);
@@ -29,7 +27,7 @@ const Certification = () => {
     const [formData, setFormData] = useState<IAuditorRunTestFormFields | null>(null);
     const [forceFormValidation, setForceFormValidation] = useState(false);
 
-    const onCertificationFormSubmit = (data: {
+    const onTestingFormSubmit = (data: {
         runId: string;
         commitHash: string;
         repo: string;
@@ -68,7 +66,7 @@ const Certification = () => {
         resetStates()
     }
 
-    const certificationFormError = () => {
+    const testingFormError = () => {
         setDisableForm(false)
         if (runId) {
             onTestRunAbort();
@@ -85,7 +83,7 @@ const Certification = () => {
             if (repoURL && commitHash && version && name && version && subject) {
                 const [, , , username, repoName] = data.repoURL.split("/");
                 setFormData(data);
-                onCertificationFormSubmit({
+                onTestingFormSubmit({
                     runId: lsUuid as string,
                     commitHash: commitHash,
                     repo: username + "/" + repoName,
@@ -127,14 +125,14 @@ const Certification = () => {
                 className="content-area-box shadow-lg bg-white px-5 xs:px-7 xs:py-4 flex flex-col tab:flex-row tab:px-5"
             >
                 <div className="sm:w-full tab:w-1/2 px-0 mb-6 tab:px-22 tab:mb-0">
-                    <CertificationForm
+                    <AuditorRunTestForm
                         loadingRunId={()=> { setClickedFormSubmit(true) }}
-                        onSubmit={onCertificationFormSubmit}
+                        onSubmit={onTestingFormSubmit}
                         disable={disableForm}
                         testAgain={testAgain}
                         clearForm={clearForm}
                         initialData={formData}
-                        onError={certificationFormError}
+                        onError={testingFormError}
                         forceValidate={forceFormValidation}
                     />
                 </div>

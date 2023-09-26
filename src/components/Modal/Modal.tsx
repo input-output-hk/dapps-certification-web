@@ -49,6 +49,9 @@ const Modal = (props: any) => {
         aria-labelledby={props.modalId || "customized-dialog-title"}
         open={props.open}
         PaperProps={{id: props.id}}
+        className={props?.className}
+        fullWidth={props?.fullWidth}
+        fullScreen={props?.fullScreen}
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
           {props.title}

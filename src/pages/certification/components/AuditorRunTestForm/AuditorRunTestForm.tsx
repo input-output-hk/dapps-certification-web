@@ -25,6 +25,7 @@ import {
 import { useConfirm } from "material-ui-confirm";
 import { useSearchParams } from "react-router-dom";
 import useLocalStorage from "hooks/useLocalStorage";
+import { updateProfile } from "store/slices/auth.slice";
 
 interface IAuditorRunTestForm {
   disable: boolean;
@@ -158,7 +159,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     const triggerAPI = async () => {
       try {
         const checkout = commitHash || commit;
-        const profileResponse = await fetchData.put("/profile/current", {
+        const response: any = await dispatch(updateProfile({
           ...profile,
           dapp: {
             owner: username,
@@ -167,12 +168,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             version: version,
             subject: subject
           },
-        });
-        if (profileResponse.data.dapp.owner) {
-          const response = await postData.post("/run", checkout);
-          if (response.data) {
+        }));
+        if (response.payload && response.payload?.dapp?.owner) {
+          const runResponse = await postData.post("/run", checkout);
+          if (runResponse.data) {
             // store data into LS
-            setLsUuid(response.data)
+            setLsUuid(runResponse.data)
             setLsFormData({
               ...formData,
               commit: checkout,
@@ -180,7 +181,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             })
             // Emit uuid, checkout
             onSubmit({
-              runId: response.data,
+              runId: runResponse.data,
               commitHash: checkout,
               repo: username + "/" + repoName
             });
