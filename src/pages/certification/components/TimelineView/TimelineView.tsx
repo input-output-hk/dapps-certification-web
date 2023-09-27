@@ -80,6 +80,37 @@ const TimelineView: React.FC<{
     navigate("/report/" + uuid, { state: { certifiable: true, repo: repo, commitHash: commitHash } });
   };
 
+  const assignProgressToTasks = (progress: any) => {
+    setPlannedTestingTasks(
+      plannedTestingTasks.map((item: PlanObj) => {
+        const currentTask = progress["current-task"];
+        if (currentTask && item.name === currentTask["name"]) {
+          const currentProgressStats = progress["qc-progress"];
+          item.discarded = currentProgressStats["discarded"];
+          item.progress = Math.trunc(
+            ((currentProgressStats["successes"] +
+              currentProgressStats["failures"]) /
+              currentProgressStats["expected"]) *
+              100
+          );
+        }
+        if (progress["finished-tasks"].length) {
+          progress["finished-tasks"].forEach((entry: any) => {
+            if (item.name === entry["task"]["name"]) {
+              if (entry.succeeded) {
+                item.progress = 100;
+              } else {
+                item.progress = -1;
+              }
+              recalculateTestTaskProgress(entry['task'])
+            }
+          });
+        }
+        return item;
+      })
+    );
+  }
+
   const handleTestingTimelineDetails = (
     status: string,
     state: string,
@@ -106,30 +137,7 @@ const TimelineView: React.FC<{
         );
       } else if (plannedTestingTasks.length && resProgress) {
         // planned tasks are already defined
-        setPlannedTestingTasks(
-          plannedTestingTasks.map((item: PlanObj) => {
-            const currentTask = resProgress["current-task"];
-            if (currentTask && item.name === currentTask["name"]) {
-              const currentProgressStats = resProgress["qc-progress"];
-              item.discarded = currentProgressStats["discarded"];
-              item.progress = Math.trunc(
-                ((currentProgressStats["successes"] +
-                  currentProgressStats["failures"]) /
-                  currentProgressStats["expected"]) *
-                  100
-              );
-            }
-            if (resProgress["finished-tasks"].length) {
-              resProgress["finished-tasks"].forEach((entry: any) => {
-                if (item.name === entry["task"]["name"] && entry.succeeded) {
-                  item.progress = 100;
-                  recalculateTestTaskProgress(entry['task'])
-                }
-              });
-            }
-            return item;
-          })
-        );
+        assignProgressToTasks(resProgress)
       }
     }
   };
@@ -180,6 +188,11 @@ const TimelineView: React.FC<{
       triggerFormReset();
     }
   };
+
+  const processLatestTestingProgressFromLogs = (response: {status: any}) => {
+    if (plannedTestingTasks && response.status)
+      assignProgressToTasks(response.status);
+  }
 
   useEffect(() => {
     if (uuid.length) {
@@ -264,6 +277,7 @@ const TimelineView: React.FC<{
               runId={uuid}
               endPolling={runStatus === "finished" || runState === "failed"}
               open={runState === "failed"}
+              latestTestingProgress={processLatestTestingProgressFromLogs}
             />
 
             {runStatus === "certifying" || runStatus === "finished" ? (
@@ -318,7 +332,9 @@ const TimelineView: React.FC<{
                                 ) 
                               : (task.progress === 100 ?
                                   <StatusIcon iconName={"status-check"} altText={"passed"} />
-                                  : <span>{task.progress}%</span>
+                                  : task.progress === -1 ? 
+                                    <StatusIcon iconName={"failed"} />  
+                                    : <span>{task.progress}%</span>
                                 )
 
                               }
