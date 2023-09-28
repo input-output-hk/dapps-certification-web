@@ -46,14 +46,14 @@ const Widget = (props: { title?: string, subtitle?: string, value?: number, colo
 const Home = () => {
   return (
     <Container maxWidth="xl" className="pt-8">
-      <Typography className="text-center font-bold tracking-[.2em] text-main text-4xl mb-16">
+      <Typography className="text-center font-bold tracking-[.2em] text-main text-4xl mb-12">
         Plutus Testing Tool
       </Typography>
       <Grid container spacing={4}>
 
         <Grid item xs={4}>
           <Paper elevation={0} className="text-center rounded-none shadow p-4">
-            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-5">
+            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-6">
               Ali-Hill/minimal-ptt-examples: 57538a3e1ddba14366b0e718107cef5ce9aabb61
             </Typography>
             <ProgressIndicator status="working" value={25} />
@@ -64,7 +64,7 @@ const Home = () => {
 
         <Grid item xs={4}>
           <Paper elevation={0} className="text-center rounded-none shadow p-4">
-            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-5">
+            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-6">
               Ali-Hill/minimal-ptt-examples: 57538a3e1ddba14366b0e718107cef5ce9aabb61
             </Typography>
             <ProgressIndicator status="success" value={100} />
@@ -85,7 +85,7 @@ const Home = () => {
 
         <Grid item xs={4}>
           <Paper elevation={0} className="text-center rounded-none shadow p-4">
-            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-5">
+            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-6">
               Ali-Hill/minimal-ptt-examples: 57538a3e1ddba14366b0e718107cef5ce9aabb61
             </Typography>
             <ProgressIndicator status="failed" value={100} />

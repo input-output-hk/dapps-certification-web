@@ -86,6 +86,11 @@ export const transformEmptyStringToNullInObj = (obj: any) => {
   return obj;
 }
 
+export const removeEmptyStringsDeep = (obj: any) => {
+  Object.keys(obj).forEach(key => (obj[key] && typeof obj[key] === 'object') && removeEmptyStringsDeep(obj[key]) || (obj[key] === '') && delete obj[key]);
+  return obj;
+};
+
 export const getErrorMessage = (errorObj: any) => {
   let errorMsg = "Something wrong occurred. Please try again later.";
     if (typeof errorObj === "string") {
