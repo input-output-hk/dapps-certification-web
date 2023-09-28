@@ -10,6 +10,7 @@ import { removeEmptyStringsDeep, exportObjectToJsonFile } from "utils/utils";
 import { useAppDispatch, useAppSelector } from "store/store";
 
 import InputGroup from "compositions/InputGroup";
+import Container from "compositions/InputGroup/components/Container";
 import AuditReportForm from "./components/AuditReportForm";
 import ReportScriptForm from "./components/ReportScriptForm";
 import FeedbackModal from "./components/FeedbackModal";
@@ -27,6 +28,7 @@ interface Props {
 const CertificationMetadataForm = (props: Props) => {
   const dispatch = useAppDispatch();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const { profile } = useAppSelector((state) => state.auth);
   const { loading, success, errorMessage, onchain, offchain, subject, uuid } = useAppSelector((state) => state.reportUpload);
 
@@ -38,13 +40,15 @@ const CertificationMetadataForm = (props: Props) => {
   useEffect(() => { if (errorMessage !== null) setShowModal(true) }, [errorMessage]);
 
   useEffect(() => {
-    if (onchain !== null && offchain !== null && subject !== null) {
+    if (onchain !== null && offchain !== null && subject !== null && submitted) {
       exportObjectToJsonFile(offchain, `Off-Chain_${uuid ? uuid : subject}.json`);
       exportObjectToJsonFile(onchain, `On-Chain_${uuid ? uuid : subject}.json`);
+      setSubmitted(false);
     }
-  }, [onchain, offchain, subject, uuid]);
+  }, [onchain, offchain, subject, uuid, submitted]);
 
   const onSubmit = (form: ReportForm) => {
+    setSubmitted(true);
     const request = removeEmptyStringsDeep(form) as ReportForm;
     dispatch(sendReport({
       request: {
@@ -57,8 +61,10 @@ const CertificationMetadataForm = (props: Props) => {
   }
 
   const onCloseModal = () => {
-    setShowModal(false);
-    if (props.onClose) props.onClose();
+    if (!loading) {
+      setShowModal(false);
+      if (props.onClose) props.onClose();
+    }
   }
 
   return (
@@ -106,16 +112,20 @@ const CertificationMetadataForm = (props: Props) => {
               removeScript={removeScript}
               standalone={props.standalone}
             />
-            <Paper elevation={0} className="shadow rounded-none p-4 mt-4 text-right">
-              <Button
-                variant="outlined" size="large"
-                type="submit" className="button-outlined-highlighted"
-                endIcon={<SendIcon />}
-                disabled={loading}
-              >
-                Send Report
-              </Button>
-            </Paper>
+            <Box className="mt-4">
+              <Container standalone={props.standalone}>
+                <Box className="text-right pt-4">
+                  <Button
+                    variant="outlined" size="large"
+                    type="submit" className="button-outlined-highlighted"
+                    endIcon={<SendIcon />}
+                    disabled={loading}
+                  >
+                    Send Report
+                  </Button>
+                </Box>
+              </Container>
+            </Box>
           </Grid>
         </Grid>
       </form>
