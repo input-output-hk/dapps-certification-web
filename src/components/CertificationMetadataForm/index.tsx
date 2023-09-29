@@ -36,8 +36,8 @@ const CertificationMetadataForm = (props: Props) => {
   const { fields: scriptFields, append: appendScript, remove: removeScript } = useFieldArray({ name: 'scripts', control });
   const { fields: reportFields, append: appendReport, remove: removeReport } = useFieldArray({ name: 'report', control });
 
-  useEffect(() => { if (success) setShowModal(true) }, [success]);
-  useEffect(() => { if (errorMessage !== null) setShowModal(true) }, [errorMessage]);
+  useEffect(() => { if (submitted && success) setShowModal(true) }, [success, submitted]);
+  useEffect(() => { if (submitted && errorMessage !== null) setShowModal(true) }, [errorMessage, submitted]);
 
   useEffect(() => {
     if (onchain !== null && offchain !== null && subject !== null && submitted) {
@@ -54,7 +54,9 @@ const CertificationMetadataForm = (props: Props) => {
       request: {
         ...request,
         certificationLevel: parseInt(request.certificationLevel),
-        report: request.report.map(report => report.value)
+        report: {
+          reportURLs: request.report.map(report => report.value),
+        },
       },
       uuid: props.uuid
     }));

@@ -6,7 +6,9 @@ export interface ReportUploadRequest {
   summary: string;
   disclaimer: string;
   subject: string;
-  report: string[];
+  report: {
+    reportURLs: string[];
+  };
   certificateIssuer: {
     name: string;
     logo?: string;
