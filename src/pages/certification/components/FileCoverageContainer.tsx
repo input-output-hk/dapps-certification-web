@@ -97,7 +97,7 @@ const FileCoverageContainer: React.FC<{
     return (<>
         {coverageIndexFiles ? (
             <div id="coverageIndicator">
-                <ul>{renderRows()}</ul>
+                {renderRows()}
             </div>
         ) : null}
     </>);

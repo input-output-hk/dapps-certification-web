@@ -1,15 +1,6 @@
 /* eslint-disable no-useless-escape */
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-function isValidJSON(text: string) {
-  try {
-    const result = JSON.parse(text);
-    return typeof result === "object" && result !== null;
-  } catch (e) {
-    return false;
-  }
-}
-
 // <any> - string | null | boolean + to fix type errors while using the value
 function useLocalStorage<T>(
   key: string,

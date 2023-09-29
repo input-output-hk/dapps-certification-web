@@ -4,6 +4,7 @@ import TableComponent from "components/Table/Table"
 import { generateCollapsibleContent, processData } from "./fullReportTable.helper";
 
 import './fullReportTable.css';
+import StatusIcon from "components/StatusIcon/StatusIcon";
 
 const columns = [
   {
@@ -17,17 +18,9 @@ const columns = [
     disableSortBy: true,
     Cell: (props: any) => {
       if (props.row.original.status === 'success') {
-        return <img
-          className="image"
-          src="/images/passed.svg"
-          alt="success"
-        />
+        return <StatusIcon iconName={"passed"} altText={"success"} />
       } else if (props.row.original.status === 'failure') {
-        return <img
-          className="image"
-          src="/images/failed.svg"
-          alt="failure"
-        />
+        return <StatusIcon iconName={"failed"} />
       } else { return null; }
     }
   }
