@@ -93,6 +93,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       // fetch CLIENT_ID from api
       const clientId = (await fetchData.get("/github/client-id").catch(error => { throw new Error(error) }))
         .data as string;
+      localStorage.setItem('testingForm', JSON.stringify(form.getValues()))
       clientId && window.location.assign(
         `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`
       );
@@ -147,6 +148,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       // do nothing
       return;
     }
+
 
     const [, , , username, repoName, , commitHash] =
       formData.repoURL.split("/");
@@ -217,6 +219,13 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     }
     // the enclosed snippet is to be triggered only once right when the component is rendered to check if the url contains code (to validate if it is a redirect from github)
     
+    const formDataInLS = localStorage.getItem('testingForm')
+    if (formDataInLS && formDataInLS !== 'undefined') {
+      const profileFormData = JSON.parse(formDataInLS);
+      form.reset(profileFormData)
+      localStorage.removeItem('testingForm')
+    }
+
     // Run on unmount
     return () => {
       dispatch(clearAccessStatus())
