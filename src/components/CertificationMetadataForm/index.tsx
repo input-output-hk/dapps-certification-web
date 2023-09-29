@@ -32,7 +32,7 @@ const CertificationMetadataForm = (props: Props) => {
   const { profile } = useAppSelector((state) => state.profile);
   const { loading, success, errorMessage, onchain, offchain, subject, uuid } = useAppSelector((state) => state.reportUpload);
 
-  const { control, register, handleSubmit, getFieldState, formState } = useForm<ReportForm>({ defaultValues: getDefaultValues(profile), resolver });
+  const { control, register, handleSubmit, getFieldState, formState } = useForm<ReportForm>({ defaultValues: getDefaultValues(profile), resolver, mode: 'onBlur' });
   const { fields: scriptFields, append: appendScript, remove: removeScript } = useFieldArray({ name: 'scripts', control });
   const { fields: reportFields, append: appendReport, remove: removeReport } = useFieldArray({ name: 'report', control });
 
