@@ -19,6 +19,7 @@ import { auditorRunTestFormSchema } from "./auditorRunTestForm.schema";
 import { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
 import {
   clearAccessStatus,
+  clearAccessToken,
   getUserAccessToken,
   verifyRepoAccess,
 } from "store/slices/repositoryAccess.slice";
@@ -76,7 +77,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 
   const { repoUrl } = useAppSelector((state) => state.certification);
   const { profile } = useAppSelector((state) => state.auth);
-  const { showConfirmConnection, accessStatus } = useAppSelector((state) => state.repoAccess);
+  const { showConfirmConnection, accessStatus, accessToken } = useAppSelector((state) => state.repoAccess);
   const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
@@ -93,6 +94,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       // fetch CLIENT_ID from api
       const clientId = (await fetchData.get("/github/client-id").catch(error => { throw new Error(error) }))
         .data as string;
+      localStorage.setItem('testingForm', JSON.stringify(form.getValues()))
       clientId && window.location.assign(
         `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`
       );
@@ -148,6 +150,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       return;
     }
 
+
     const [, , , username, repoName, , commitHash] =
       formData.repoURL.split("/");
     dispatch(setRepoUrl(`https://github.com/${username}/${repoName}`));
@@ -166,10 +169,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             repo: repoName,
             name: name,
             version: version,
-            subject: subject
+            subject: subject,
+            githubToken: accessToken || null,
           },
         }));
         if (response.payload && response.payload?.dapp?.owner) {
+          dispatch(clearAccessToken())
           const runResponse = await postData.post("/run", checkout);
           if (runResponse.data) {
             // store data into LS
@@ -217,6 +222,13 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     }
     // the enclosed snippet is to be triggered only once right when the component is rendered to check if the url contains code (to validate if it is a redirect from github)
     
+    const formDataInLS = localStorage.getItem('testingForm')
+    if (formDataInLS && formDataInLS !== 'undefined') {
+      const profileFormData = JSON.parse(formDataInLS);
+      form.reset(profileFormData)
+      localStorage.removeItem('testingForm')
+    }
+
     // Run on unmount
     return () => {
       dispatch(clearAccessStatus())
