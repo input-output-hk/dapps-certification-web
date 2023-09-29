@@ -276,7 +276,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           type="submit" 
           variant="contained" size="large"
           className="button block py-3 px-14 mt-10 mb-20 mx-auto w-[200px]"
-          // disabled={!form.formState.isValid || submitting || disable || accessStatus !== "accessible"}
+          disabled={!form.formState.isValid || submitting || disable || getRepoAccessStatus() !== "accessible"}
         >
           Test
         </Button>
