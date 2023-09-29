@@ -14,7 +14,7 @@ const getFieldSchema = (fieldType: FieldType, required: boolean): AnySchema => {
     case FieldType.Subject: schema = Schema.Subject; break;
     case FieldType.Hash: schema = Schema.Hash; break;
     case FieldType.CommitHash: schema = Schema.CommitHash; break;
-    case FieldType.WalletAddress: schema = Schema.WalletAddress; break;
+    case FieldType.ContractAddress: schema = Schema.ContractAddress; break;
     case FieldType.DiscordUrl: schema = Schema.DiscordUrl; break;
     case FieldType.WebsiteUrl: schema = Schema.WebsiteUrl; break;
     case FieldType.ReportUrl: schema = Schema.ReportUrl; break;
@@ -30,9 +30,9 @@ const getFieldSchema = (fieldType: FieldType, required: boolean): AnySchema => {
 const buildSchema = (fields: Field[]): AnyObjectSchema => {
   const schema = {} as {[key: string]: AnySchema};
   for (const field of fields) {
-    if (field.type == FieldType.Object) {
+    if (field.type === FieldType.Object) {
       schema[field.name] = buildSchema(field.fields || []);
-    } else if (field.type == FieldType.Array) {
+    } else if (field.type === FieldType.Array) {
       schema[field.name] = yup.array().of(buildSchema(field.fields || []));
     } else {
       schema[field.name] = getFieldSchema(field.type, field.required !== undefined ? field.required : false);

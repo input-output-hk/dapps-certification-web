@@ -56,11 +56,6 @@ export const formatTimeToReadable = (duration: number) => {
     return timeStr
 }
 
-// unused now
-// export const convertAdaToLovelace = (fee_ada: number) => {
-//   return BigNum.from_str((fee_ada * 1000000).toString())
-// }
-
 export const getObjectByPath = (object: { [x: string]: any }, path: string): any => {
   path = path.replace(/\[(\w+)\]/g, ".$1"); // convert indexes to properties
   path = path.replace(/^\./, ""); // strip a leading dot
@@ -86,8 +81,12 @@ export const transformEmptyStringToNullInObj = (obj: any) => {
   return obj;
 }
 
+// Deletes all the keys with empty strings from an object
 export const removeEmptyStringsDeep = (obj: any) => {
-  Object.keys(obj).forEach(key => (obj[key] && typeof obj[key] === 'object') && removeEmptyStringsDeep(obj[key]) || (obj[key] === '') && delete obj[key]);
+  Object.keys(obj).forEach(key =>
+    (obj[key] && typeof obj[key] === 'object' && removeEmptyStringsDeep(obj[key])) ||
+    (obj[key] === '' && delete obj[key])
+  );
   return obj;
 };
 

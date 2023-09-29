@@ -6,19 +6,30 @@ export const Email = yup.string()
   .email('The field value must be a valid email address');
 
 export const Subject = yup.string()
-  .max(64, 'The field value must be a valid name with up to 64 characters');
+  .max(64, 'The field value must be up to 64 characters')
+  .matches(/^[A-Za-z0-9_]{0,64}$/, {
+    message: 'The field value can only contains alphabetical and numeric characters',
+    excludeEmptyString: true
+  });
 
 export const Hash = yup.string()
-  .matches(/[0-9a-fA-F]{64}/, 'The field value must be a valid hash with 64 characters');
+  .length(64, 'The field value must be a valid hash with 64 characters')
+  .matches(/[0-9a-fA-F]{1,64}/, {
+    message: 'The field value must be a valid hash with 64 characters',
+    excludeEmptyString: true
+  });
 
 export const CommitHash = yup.string()
   .min(7, 'The field value must be at least 7 characters of the commit hash')
   .max(40, 'The field value must has more than 40 characters')
-  .matches(/^[a-f0-9]{7,40}$/, 'The field value must be a valid commit hash');
+  .matches(/^[a-f0-9]{7,40}$/, {
+    message: 'The field value must be a valid commit hash',
+    excludeEmptyString: true
+  });
 
-export const WalletAddress = yup.string()
+export const ContractAddress = yup.string()
   .matches(/^(addr_test1|addr1)[a-zA-Z0-9]{53,}$/, {
-    message: 'The field value must be a valid wallet address',
+    message: 'The field value must be a valid contract address',
     excludeEmptyString: true
   });
 

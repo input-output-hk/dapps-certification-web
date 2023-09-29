@@ -6,7 +6,7 @@ export enum FieldType {
   Subject,
   Hash,
   CommitHash,
-  WalletAddress,
+  ContractAddress,
   DiscordUrl,
   WebsiteUrl,
   ReportUrl,

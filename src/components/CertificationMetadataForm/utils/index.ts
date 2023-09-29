@@ -100,7 +100,7 @@ const internalScriptFields: Field[] = [
   {
     label: 'Contract Address',
     name: 'contractAddress',
-    type: FieldType.WalletAddress,
+    type: FieldType.ContractAddress,
     required: true,
   },
 ];
