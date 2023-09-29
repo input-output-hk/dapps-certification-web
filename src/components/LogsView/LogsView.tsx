@@ -20,7 +20,7 @@ const LogsView: FC<{
   const [showLogs, setShowLogs] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const logContentRef = useRef<HTMLDivElement>(null);
-  const lastLog = useRef<number | null>(null);
+  const lastLog = useRef<any>(null);
 
   const showLogView = () => {
     setShowLogs(true);
@@ -37,9 +37,15 @@ const LogsView: FC<{
   const { logInfo: logs } = useLogs(runId, oneTime || endPolling, !oneTime);
 
   useEffect(() => {
-    lastLog.current = logs.length ? logs.length - 1 : null;
+    if (endPolling && latestTestingProgress) {
+      lastLog.current = logs[logs.length - 2]
+      if (lastLog.current?.Source.indexOf('run-certify') !== -1) {
+        // is 2nd last entry in logs when Source has run-certify
+        latestTestingProgress(JSON.parse(lastLog.current.Text));
+      }
+    }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" }); // scroll to bottom
-  }, [logs]);
+  }, [logs, endPolling, latestTestingProgress]);
 
   useEffect(() => {
     open && showLogView();
@@ -66,17 +72,7 @@ const LogsView: FC<{
             </span>
           </div>
           <div className="log-content" ref={logContentRef}>
-            {logs.map((item: any, index: number) => {
-              if (
-                latestTestingProgress && 
-                lastLog.current &&
-                index === lastLog.current - 1 &&
-                item.Source.indexOf("run-certify") !== -1
-              ) {
-                // is 2nd last entry in logs when Source has run-certify
-                latestTestingProgress(JSON.parse(item.Text));
-              }
-
+            {logs.map((item: any, index: number) => { 
               let logData = "";
               try {
                 const data = JSON.parse(item.Text);

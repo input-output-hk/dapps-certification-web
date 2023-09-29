@@ -7,6 +7,46 @@ export interface ICertificationTask {
   name: string;
   runTimeTaken?: any;
 }
+
+export interface IFinishedTestingTaskDetails {
+  "qc-result": {
+    discarded: number; 
+    expected: number; 
+    failures: number;
+    succeeded: number;
+  },
+  succeeded: boolean, 
+  task: {
+    name: string;
+    index: number;
+  }
+}
+
+export interface ITestingProgress {
+  "current-task": {
+    name: string;
+    index: number;
+  },
+  "finished-tasks": Array<IFinishedTestingTaskDetails>,
+  "progress-index": number,
+  "qc-progress": {
+    discarded: number; 
+    failures: number; 
+    succeeded: number;
+    expected?: number;
+  }
+} 
+
+export interface PlanObj {
+  key: string;
+  name: string;
+  label: string;
+  discarded: number;
+  progress: number | 'On Going';
+  expected?: number;
+  completed?: number;
+}
+
 export const CertificationTasks: ICertificationTask[] = [{
   label: 'UnitTests',
   key: '_certRes_unitTestResults',
@@ -112,4 +152,74 @@ export const getCertificationTaskName = (key: string) => {
 
 export const taskKeys = () => {
   return CertificationTasks.map(item => item.key)
+}
+
+export const parseTestCount = (resultText: string) => {
+  if (resultText.indexOf("+++ OK, passed ") !== -1) {
+    // has the num of tests ran
+    return parseInt(resultText.split("+++ OK, passed ")[1].split(" tests")[0], 10)
+  } else {
+    return 1;
+  }
+}
+
+export const calculateCurrentProgress = (plannedTasks: PlanObj[]) => {
+  return plannedTasks.reduce((accumulator, task) => { 
+    return accumulator + (task.completed || 0)
+  }, 0)
+}
+
+export const calculateExpectedProgress = (plannedTasks: PlanObj[]) => {
+  return plannedTasks.reduce((accumulator, task) => { 
+    return accumulator + (task.expected || 0)
+  }, 0)
+}
+
+const DEFAULT_TESTS_COUNT: number = 100;
+// calculate the expected and completed to populate the Progress Card
+export const getProgressCardInfo = (keyResult: any, currentTask: PlanObj) => {
+  const item = {...currentTask}
+  if (isTaskSuccess(keyResult, item.key)) {
+    if (item.name === 'dl-tests') {
+      keyResult.forEach((dlTest: any) => {
+        item.expected = (item.expected || 0) + (dlTest[1].numTests - dlTest[1].numDiscarded)
+      })
+    } else if (item.name === 'unit-tests') {
+      keyResult.forEach((unitTest: any) => {
+        item.expected = (item.expected || 0) + parseTestCount(unitTest.resultDescription)
+      })
+    } else {
+      item.expected = keyResult.numTests - keyResult.numDiscarded
+    }
+    item.completed = item.expected
+  } else {
+    if (!item.hasOwnProperty('expected')) {
+      // expected not already calculated from 'finished-tasks'
+      if (item.name === 'unit-tests') {
+        keyResult.forEach((unitTest: any) => {
+          if (unitTest.resultOutcome.tag === 'Failure') {
+            item.expected = (item.expected || 0) + 1
+            item.completed = 0
+          } else if (unitTest.resultOutcome.tag === 'Success') {
+            item.expected = (item.expected || 0) + parseTestCount(unitTest.resultDescription)
+            item.completed = (item.completed || 0) + parseTestCount(unitTest.resultDescription)
+          }
+        })
+      } else if (item.name === 'dl-tests') {
+        keyResult.forEach((dlTest: any) => {
+          if (dlTest[1].tag === 'Success') {
+            item.expected = (item.expected || 0) + (dlTest[1].numTests - dlTest[1].numDiscarded)
+            item.completed = (item.completed || 0) + (dlTest[1].numTests - dlTest[1].numDiscarded)
+          } else if (dlTest[1].tag === 'Failure') {
+            item.expected = (item.expected || 0) + DEFAULT_TESTS_COUNT
+            item.completed = (item.completed || 0) + (dlTest[1].numTests || 0)
+          }
+        })
+      } else {
+        item.expected = DEFAULT_TESTS_COUNT
+        item.completed = keyResult.numTests || 0
+      }
+    }
+  }
+  return item
 }

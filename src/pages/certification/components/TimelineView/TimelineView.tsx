@@ -14,10 +14,16 @@ import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
 import { processFinishedJson, processTimeLineConfig } from "components/TimelineItem/timeline.helper";
 import {
+  calculateCurrentProgress,
+  calculateExpectedProgress,
   CertificationTasks,
+  getProgressCardInfo,
   ICertificationTask,
+  IFinishedTestingTaskDetails,
   isAnyTaskFailure,
   isTaskSuccess,
+  ITestingProgress,
+  PlanObj
 } from "./../../Certification.helper";
 import LogsView from "components/LogsView/LogsView";
 import ProgressCard from "components/ProgressCard/ProgressCard";
@@ -30,14 +36,8 @@ import StatusIcon from "components/StatusIcon/StatusIcon";
 
 
 const TIMEOFFSET = 1000;
-
-interface PlanObj {
-  key: string;
-  name: string;
-  label: string;
-  discarded: number;
-  progress: number;
-}
+const PROGRESS_PASS = 100;
+const PROGRESS_FAIL = -1;
 
 const TimelineView: React.FC<{
   uuid: string;
@@ -63,8 +63,6 @@ const TimelineView: React.FC<{
   const [hasFailedTasks, setHasFailedTasks] = useState(false);
   const [plannedTestingTasks, setPlannedTestingTasks] = useState<PlanObj[]>([]);
 
-  const currentPropertyBasedTestProgress = useRef<string[]>([]);
-
   const abortTestRun = () => {
     confirm({ title: "", description: "Are sure you want to abort this run!" })
       .then(async () => {
@@ -79,37 +77,6 @@ const TimelineView: React.FC<{
   const viewFullReport = () => {
     navigate("/report/" + uuid, { state: { certifiable: true, repo: repo, commitHash: commitHash } });
   };
-
-  const assignProgressToTasks = (progress: any) => {
-    setPlannedTestingTasks(
-      plannedTestingTasks.map((item: PlanObj) => {
-        const currentTask = progress["current-task"];
-        if (currentTask && item.name === currentTask["name"]) {
-          const currentProgressStats = progress["qc-progress"];
-          item.discarded = currentProgressStats["discarded"];
-          item.progress = Math.trunc(
-            ((currentProgressStats["successes"] +
-              currentProgressStats["failures"]) /
-              currentProgressStats["expected"]) *
-              100
-          );
-        }
-        if (progress["finished-tasks"].length) {
-          progress["finished-tasks"].forEach((entry: any) => {
-            if (item.name === entry["task"]["name"]) {
-              if (entry.succeeded) {
-                item.progress = 100;
-              } else {
-                item.progress = -1;
-              }
-              recalculateTestTaskProgress(entry['task'])
-            }
-          });
-        }
-        return item;
-      })
-    );
-  }
 
   const handleTestingTimelineDetails = (
     status: string,
@@ -136,17 +103,44 @@ const TimelineView: React.FC<{
           })
         );
       } else if (plannedTestingTasks.length && resProgress) {
-        // planned tasks are already defined
-        assignProgressToTasks(resProgress)
+        setPlannedTestingTasks(
+          plannedTestingTasks.map((item: PlanObj) => {
+            const currentTask = resProgress["current-task"];
+            if (currentTask && item.name === currentTask["name"]) {
+              const currentProgressStats = resProgress["qc-progress"];
+              item.discarded = currentProgressStats["discarded"];
+              item.progress = currentProgressStats["expected"] ? Math.trunc(
+                ((currentProgressStats["successes"] + currentProgressStats["failures"]) / 
+                  // currentProgressStats["expected"]) * 100
+                  (currentProgressStats["expected"] - currentProgressStats["discarded"])) * 100
+              ) : "On Going";
+            }
+            const isInFinished = resProgress["finished-tasks"].find((task: IFinishedTestingTaskDetails) => task.task.name === item.name)
+            if (isInFinished) {
+              item.discarded = isInFinished["qc-result"].discarded
+              item.progress = isInFinished.succeeded ? PROGRESS_PASS : PROGRESS_FAIL
+            }
+            return item
+          })
+        )
       }
+    } else if (status === 'finished') {
+      const isArrayResult = Array.isArray(res.data.result);
+      const resultJson = isArrayResult
+        ? res.data.result[0]
+        : res.data.result;
+      setPlannedTestingTasks(
+        plannedTestingTasks.map((item: PlanObj) => {
+          if (isTaskSuccess(resultJson[item.key], item.key)) {
+            item.progress = PROGRESS_PASS
+          } else {
+            item.progress = PROGRESS_FAIL;
+          }
+          return {...item, ...getProgressCardInfo(resultJson[item.key], item)}
+        })
+      )
     }
   };
-
-  const recalculateTestTaskProgress = (task: any) => {
-    if (currentPropertyBasedTestProgress.current.indexOf(task['name']) === -1) {
-      currentPropertyBasedTestProgress.current.push(task['name'])
-    }
-  }
 
   const triggerFetchRunStatus = async () => {
     let config = timelineConfig;
@@ -190,8 +184,39 @@ const TimelineView: React.FC<{
   };
 
   const processLatestTestingProgressFromLogs = (response: {status: any}) => {
-    if (plannedTestingTasks && response.status)
-      assignProgressToTasks(response.status);
+    if (plannedTestingTasks && response.status) {
+      const progress: ITestingProgress = response.status;
+
+      plannedTestingTasks.map((task:PlanObj) => {
+        const finishedTask = progress["finished-tasks"].find(entry => task.name === entry.task.name)
+        if (finishedTask) {
+          if (!task.expected) {
+            task.expected = finishedTask["qc-result"].expected;
+          }
+          task.progress = finishedTask.succeeded ? PROGRESS_PASS : PROGRESS_FAIL;
+        } else if (progress['current-task'].name === task.name) {
+          if (!task.expected && progress['qc-progress'].hasOwnProperty('expected')) {
+            task.expected = progress['qc-progress'].expected
+          }
+        }
+        return task;
+      })
+    }
+  }
+
+  const getTaskProgress = (task: PlanObj, index: number) => {
+    return (runStatus === "finished" && (plannedTestingTasks.length - 1 === index))
+    ? (isTaskSuccess(resultData[task.key], task.key) ?
+        <StatusIcon iconName={"status-check"} altText={"passed"} /> 
+        : <StatusIcon iconName={"failed"} />
+      ) 
+    : (task.progress === PROGRESS_PASS ?
+        <StatusIcon iconName={"status-check"} altText={"passed"} />
+        : task.progress === PROGRESS_FAIL ? 
+          <StatusIcon iconName={"failed"} />  
+          : <span>{task.progress}{typeof task.progress === "number" ? "%" : ""}</span>
+      )
+
   }
 
   useEffect(() => {
@@ -283,13 +308,18 @@ const TimelineView: React.FC<{
             {runStatus === "certifying" || runStatus === "finished" ? (
               <>
                 <div className="flex justify-around flex-wrap gap-[8px]">
-                  {runStatus === "finished" && <FileCoverageContainer
+                  {runStatus === "finished" && (<>
+                    <FileCoverageContainer
                       githubLink={repo || ""}
                       result={resultData}
                       coverageFile={coverageFile}
                     />
-                  }
-                  <ProgressCard title={"Property Based Testing"} currentValue={currentPropertyBasedTestProgress.current.length * 100} totalValue={plannedTestingTasks.length * 100}/>
+                    <ProgressCard 
+                      title={"Property Based Testing"} 
+                      currentValue={calculateCurrentProgress(plannedTestingTasks)} 
+                      totalValue={calculateExpectedProgress(plannedTestingTasks)}
+                    />
+                  </>)}
                 </div>
 
                 <div id="testingProgressContainer" className="mt-20">
@@ -321,24 +351,7 @@ const TimelineView: React.FC<{
                               {task.discarded}
                             </td>
                             <td className="text-center whitespace-nowrap p-2">
-                              {
-                              (runStatus === "finished" && (plannedTestingTasks.length - 1 === index))
-                              ? (isTaskSuccess(resultData[task.key], task.key) ?
-                                  (<>
-                                    <StatusIcon iconName={"status-check"} altText={"passed"} /> 
-                                    {recalculateTestTaskProgress(task)}
-                                  </>)
-                                  : <StatusIcon iconName={"failed"} />
-                                ) 
-                              : (task.progress === 100 ?
-                                  <StatusIcon iconName={"status-check"} altText={"passed"} />
-                                  : task.progress === -1 ? 
-                                    <StatusIcon iconName={"failed"} />  
-                                    : <span>{task.progress}%</span>
-                                )
-
-                              }
-                              
+                              {getTaskProgress(task, index)}
                             </td>
                           </tr>
                         );
