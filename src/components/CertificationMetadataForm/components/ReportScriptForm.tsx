@@ -86,10 +86,20 @@ const ReportScriptFormInstance = (props: InstanceProps) => {
 
 const ReportScriptForm = (props: Props) => (
   <Container standalone={props.standalone}>
-    <Box className="flex flex-row pt-4">
-      <Typography variant="subtitle1" className="text-main flex-1">
-        DAPP Scripts
-      </Typography>
+    <Typography variant="subtitle1" className="text-main pt-4">
+      DAPP Scripts
+    </Typography>
+    {props.scriptFields.map((field, index) => (
+      <ReportScriptFormInstance
+        key={field.id}
+        index={index}
+        formState={props.formState}
+        register={props.register}
+        getFieldState={props.getFieldState}
+        onRemove={() => props.removeScript(index)}
+      />
+    ))}
+    <Box className="pt-4 text-right">
       <Button
         variant="outlined"
         size="small"
@@ -104,16 +114,6 @@ const ReportScriptForm = (props: Props) => (
         Add Script
       </Button>
     </Box>
-    {props.scriptFields.map((field, index) => (
-      <ReportScriptFormInstance
-        key={field.id}
-        index={index}
-        formState={props.formState}
-        register={props.register}
-        getFieldState={props.getFieldState}
-        onRemove={() => props.removeScript(index)}
-      />
-    ))}
   </Container>
 );
 
