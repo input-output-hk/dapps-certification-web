@@ -90,8 +90,12 @@ export const removeEmptyStringsDeep = (obj: any) => {
   return obj;
 };
 
+// Deletes all the keys with null value from an object
 export const removeNullsDeep = (obj: any) => {
-  Object.keys(obj).forEach(key => (obj[key] && typeof obj[key] === 'object') && removeEmptyStringsDeep(obj[key]) || (obj[key] === null) && delete obj[key]);
+  Object.keys(obj).forEach(key =>
+    (obj[key] && typeof obj[key] === 'object' && removeEmptyStringsDeep(obj[key])) ||
+    (obj[key] === null && delete obj[key])
+  );
   return obj;
 };
 

@@ -35,7 +35,7 @@ const Profile = () => {
   
   const defaultValues = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
   const { verified, fetched, loading: verifying, clientId, githubToken } = useAppSelector(state => state.repositoryAccess);
-  const { register, handleSubmit, reset, clearErrors, formState, getFieldState } = useForm<UserProfile>({ defaultValues, resolver });
+  const { register, handleSubmit, reset, clearErrors, formState, getFieldState } = useForm<UserProfile>({ defaultValues, resolver, mode: 'onBlur' });
 
   useEffect(() => {
     dispatch(fetchClientId({}));
@@ -131,8 +131,27 @@ const Profile = () => {
                 standalone={true}
                 disabled={!isEditing}
               />
+
+              <Paper elevation={0} className="shadow rounded-none p-4 flex flex-row-reverse justify-between items-end mt-4">
+                {!isEditing && (
+                  <Button
+                    variant="outlined" size="large" className="button-outlined-highlighted"
+                    startIcon={<EditIcon />} onClick={startEditing}>Edit profile</Button>
+                )}
+                {isEditing && (
+                  <>
+                    <Button
+                      variant="outlined" size="large" color="success" className="normal-case"
+                      startIcon={<SaveIcon />} disabled={profileLoading} type="submit">Save changes</Button>
+                    <Button
+                      variant="outlined" size="large" color="error" className="normal-case"
+                      startIcon={<CancelIcon />} disabled={profileLoading} onClick={cancelEditing}>Cancel</Button>
+                  </>
+                )}
+              </Paper>
             </Grid>
-            <Grid item md={12} lg={6}>
+            {/* Removing the dapp form for now */}
+            {/* <Grid item md={12} lg={6}>
               {needsToValidateRepository && (
                 <Alert
                   variant="outlined" severity="warning" className="mb-4"
@@ -172,7 +191,7 @@ const Profile = () => {
                   </>
                 )}
               </Paper>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Container>
       </form>
