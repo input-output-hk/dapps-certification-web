@@ -14,6 +14,7 @@ const Input = (props: InputProps) => (
     type="text"
     variant="outlined"
     className={props.noGutter ? undefined : 'mt-4'}
+    disabled={props.disabled}
     label={`${props.field.label}${props.field.required ? ' *' : ''}`}
     placeholder={props.field.placeholder}
     select={props.field.type === FieldType.Dropdown}

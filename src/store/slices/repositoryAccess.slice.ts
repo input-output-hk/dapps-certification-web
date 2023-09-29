@@ -1,107 +1,106 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRepoAccess, postExternal, fetchData } from "api/api";
-import { AxiosResponse } from "axios";
-import { LocalStorageKeys } from "constants/constants";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getRepoAccess } from "api/api";
 
-interface RepoAccessState {
-  verifying: boolean;
-  accessible: boolean;
-  showConfirmConnection: boolean;
-  accessToken: string;
-  accessStatus: string;
+
+interface RepositoryAccessState {
+  verified: boolean;
+  loading: boolean;
+  fetched: boolean;
+  clientId: string | null;
+  githubToken: string | null;
 }
-const initialState: RepoAccessState = {
-  verifying: false,
-  accessible: false,
-  showConfirmConnection: false,
-  accessToken: "",
-  accessStatus: "",
+
+const initialState: RepositoryAccessState = {
+  verified: false,
+  loading: false,
+  fetched: false,
+  clientId: null,
+  githubToken: null,
 };
 
-export const verifyRepoAccess = createAsyncThunk(
-  "verifyRepoAccess",
-  async (payload: any, { rejectWithValue }) => {
-    try {
-      const response = await getRepoAccess.get(
-        "/repo/" + payload.owner + "/" + payload.repo
-      );
-      return response.data;
-    } catch (e: any) {
-      return rejectWithValue(e.response.data);
-    }
+export const verify = createAsyncThunk('verify', async (payload: { repo: string, owner: string }, thunkApi) => {
+  try {
+    await getRepoAccess.get(`/repo/${payload.owner}/${payload.repo}`);
+  } catch (error) {
+    return thunkApi.rejectWithValue(null);
   }
-);
+});
 
-export const getUserAccessToken = createAsyncThunk(
-  "getUserAccessToken",
-  async (payload: any) =>
-    fetchData.post<any, AxiosResponse<{ access_token: string }>, any>(
-      `/github/access-token/${payload.code}`
-    )
-);
+export const verifyWithAccessToken = createAsyncThunk('verifyWithAccessToken', async (payload: { code: string, repo: string, owner: string }, thunkApi) => {
+  try {
+    const accessTokenRes = await getRepoAccess.post(`/github/access-token/${payload.code}`);
+    const accessToken = accessTokenRes.data.access_token;
+    await getRepoAccess.get(`/repo/${payload.owner}/${payload.repo}`);
+    return accessToken;
+  } catch (error) {
+    return thunkApi.rejectWithValue(null);
+  }
+});
 
-export const repoAccessSlice = createSlice({
-  name: "repoAccess",
+export const fetchClientId = createAsyncThunk('fetchClientId', async (payload: {}, thunkApi) => {
+  try {
+    const response = await getRepoAccess.get('/github/client-id');
+    return response.data;
+  } catch (error) {
+    return thunkApi.rejectWithValue(null);
+  }
+});
+
+export const repositoryAccessSlice = createSlice({
+  name: "repositoryAccess",
   initialState,
   reducers: {
-    clearStates: () => {
-      localStorage.removeItem(LocalStorageKeys.accessToken);
-      return initialState;
-    },
-    clearAccessToken: (state) => {
-      state.accessToken = "";
-      return state;
-    },
-    hideConfirmConnection: (state) => {
-      state.showConfirmConnection = false;
-      return state;
-    },
-    setRepoAccessible: (state) => {
-      state.accessible = true;
-      return state;
-    },
-    clearAccessStatus: (state) => {
-      state.accessible = false;
-      state.accessStatus = "";
-      return state
-    }
+    clear: (state) => ({ ...initialState, githubToken: state.githubToken })
   },
   extraReducers: (builder) => {
     builder
-      .addCase(verifyRepoAccess.rejected, (state, actions) => {
-        state.verifying = false;
-        state.accessible = false;
-        state.showConfirmConnection = true;
-        state.accessStatus = "notAccessible";
+
+      // VERIFY
+      .addCase(verify.pending, (state) => {
+        state.verified = false;
+        state.loading = true;
+        state.fetched = false;
       })
-      .addCase(verifyRepoAccess.pending, (state, actions) => {
-        state.verifying = true;
-        state.accessStatus = "verifying";
-        state.showConfirmConnection = false;
+      .addCase(verify.fulfilled, (state, actions) => {
+        state.verified = true;
+        state.loading = false;
+        state.fetched = true;
       })
-      .addCase(verifyRepoAccess.fulfilled, (state, actions) => {
-        state.accessible = true;
-        state.verifying = false;
-        state.accessStatus = "accessible";
-        state.showConfirmConnection = false;
+      .addCase(verify.rejected, (state) => {
+        state.loading = false;
+        state.fetched = true;
       })
-      .addCase(getUserAccessToken.rejected, (state, actions) => {
-        state.accessToken = "";
+
+      // VERIFY WITH ACCESS TOKEN
+      .addCase(verifyWithAccessToken.pending, (state) => {
+        state.verified = false;
+        state.loading = true;
+        state.fetched = false;
       })
-      .addCase(getUserAccessToken.pending, (state, actions) => {})
-      .addCase(getUserAccessToken.fulfilled, (state, actions) => {
-        const token: string = actions.payload?.data.access_token;
-        localStorage.setItem(LocalStorageKeys.accessToken, token);
-        state.accessToken = token;
-      });
+      .addCase(verifyWithAccessToken.fulfilled, (state, actions) => {
+        state.githubToken = actions.payload;
+        state.verified = true;
+        state.loading = false;
+        state.fetched = true;
+      })
+      .addCase(verifyWithAccessToken.rejected, (state) => {
+        state.loading = false;
+        state.fetched = true;
+      })
+
+      // FETCH CLIENT ID
+      .addCase(fetchClientId.pending, (state) => {
+        state.clientId = null;
+      })
+      .addCase(fetchClientId.fulfilled, (state, actions) => {
+        state.clientId = actions.payload;
+      })
+      .addCase(fetchClientId.rejected, (state) => {
+        state.clientId = null;
+      })
   },
 });
-export const {
-  clearStates,
-  clearAccessToken,
-  hideConfirmConnection,
-  setRepoAccessible,
-  clearAccessStatus
-} = repoAccessSlice.actions;
 
-export default repoAccessSlice.reducer;
+export const { clear } = repositoryAccessSlice.actions;
+
+export default repositoryAccessSlice.reducer;

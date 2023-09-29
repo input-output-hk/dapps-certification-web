@@ -16,6 +16,7 @@ const getFieldSchema = (fieldType: FieldType, required: boolean): AnySchema => {
     case FieldType.CommitHash: schema = Schema.CommitHash; break;
     case FieldType.WalletAddress: schema = Schema.WalletAddress; break;
     case FieldType.DiscordUrl: schema = Schema.DiscordUrl; break;
+    case FieldType.LinkedInUrl: schema = Schema.LinkedInUrl; break;
     case FieldType.WebsiteUrl: schema = Schema.WebsiteUrl; break;
     case FieldType.ReportUrl: schema = Schema.ReportUrl; break;
     case FieldType.LogoUrl: schema = Schema.LogoUrl; break;

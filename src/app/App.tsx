@@ -5,9 +5,10 @@ import { CircularProgress, Typography } from "@mui/material";
 const Session = lazy(() => import("../pages/session"));
 const Landing = lazy(() => import("../pages/landing"));
 const Home = lazy(() => import("../pages/home"));
-const Certification = lazy(() => import("../pages/certification/Certification"));
 const TestingHistory = lazy(() => import("../pages/testingHistory"));
 const ReportUpload = lazy(() => import("../pages/reportUpload"))
+const Profile = lazy(() => import("../pages/profile"))
+const Certification = lazy(() => import("../pages/certification/Certification"));
 const CertificationResult = lazy(() => import("../pages/certification/certification-result/CertificationResult"));
 
 const ComingSoon = () => (
@@ -23,7 +24,7 @@ const App = () => {
           <Route path="home" element={<Home />} />
           <Route path="testing" element={<Certification />} />
           <Route path="history" element={<TestingHistory />} />
-          <Route path="profile" element={<ComingSoon />} />
+          <Route path="profile" element={<Profile />} />
           <Route path="support" element={<ComingSoon />} />
           <Route path="documentation" element={<ComingSoon />} />
           <Route path="audit-report-upload" element={<ReportUpload />} />

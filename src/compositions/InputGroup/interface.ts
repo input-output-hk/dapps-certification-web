@@ -8,6 +8,7 @@ export enum FieldType {
   CommitHash,
   WalletAddress,
   DiscordUrl,
+  LinkedInUrl,
   WebsiteUrl,
   ReportUrl,
   LogoUrl,
@@ -40,6 +41,7 @@ export interface InputGroupProps<T extends FieldValues = any> {
   register: UseFormRegister<T>;
   getFieldState: UseFormGetFieldState<T>;
   standalone?: boolean;
+  disabled?: boolean;
 }
 
 export interface InputProps<T extends FieldValues = any> {
@@ -48,4 +50,5 @@ export interface InputProps<T extends FieldValues = any> {
   register: UseFormRegister<T>;
   getFieldState: UseFormGetFieldState<T>;
   noGutter?: boolean;
+  disabled?: boolean;
 }

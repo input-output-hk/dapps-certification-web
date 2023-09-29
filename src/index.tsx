@@ -2,13 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
+import { PersistGate } from "redux-persist/integration/react";
 import { StyledEngineProvider, ThemeProvider, CssBaseline } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { ConfirmProvider } from "material-ui-confirm";
 
 import App from "./app/App";
 import reportWebVitals from "./reportWebVitals";
-import store from "store/store";
+import store, { persistor } from "store/store";
 
 import "./index.css";
 
@@ -55,7 +56,9 @@ root.render(
         <CssBaseline />
         <ConfirmProvider>
           <Provider store={store}>
-            <App />
+            <PersistGate loading={null} persistor={persistor}>
+              <App />
+            </PersistGate>
           </Provider>
         </ConfirmProvider>
       </ThemeProvider>

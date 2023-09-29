@@ -17,15 +17,11 @@ import { getErrorMessage } from "utils/utils";
 import { clearRepoUrl, setRepoUrl } from "../../slices/certification.slice";
 import { auditorRunTestFormSchema } from "./auditorRunTestForm.schema";
 import { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
-import {
-  clearAccessStatus,
-  getUserAccessToken,
-  verifyRepoAccess,
-} from "store/slices/repositoryAccess.slice";
+import { verify, verifyWithAccessToken, clear } from "store/slices/repositoryAccess.slice";
 import { useConfirm } from "material-ui-confirm";
 import { useSearchParams } from "react-router-dom";
 import useLocalStorage from "hooks/useLocalStorage";
-import { updateProfile } from "store/slices/auth.slice";
+import { updateProfile } from "store/slices/profile.slice";
 
 interface IAuditorRunTestForm {
   disable: boolean;
@@ -50,18 +46,23 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 }) => {
 
   const dispatch = useAppDispatch();
+  const { profile } = useAppSelector((state) => state.profile);
   const form: any = useForm({
     schema: auditorRunTestFormSchema,
     mode: "all",
+    defaultValues: profile && profile.dapp ? {
+      repoURL: profile.dapp.owner && profile.dapp.repo ? `https://github.com/${profile.dapp.owner}/${profile.dapp.repo}` : undefined,
+      name: profile.dapp.name, version: profile.dapp.version,
+    } : undefined
   });
 
   const checkRepoAccess = (urlValue: string) => {
     if (urlValue) {
       const [, , , username, repoName] = urlValue.split("/");
       if (username && repoName) {
-        dispatch(verifyRepoAccess({ owner: username, repo: repoName }));
+        dispatch(verify({ owner: username, repo: repoName }));
       } else {
-        dispatch(clearAccessStatus())
+        dispatch(clear());
       }
     }
   }
@@ -75,8 +76,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   }, [forceValidate])
 
   const { repoUrl } = useAppSelector((state) => state.certification);
-  const { profile } = useAppSelector((state) => state.auth);
-  const { showConfirmConnection, accessStatus } = useAppSelector((state) => state.repoAccess);
+  const { fetched, verified, loading } = useAppSelector((state) => state.repositoryAccess);
   const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
@@ -201,16 +201,14 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     // to extract ?code= from the app base url redirected after Github connect
     if (githubAccessCode) {
       (async () => {
-        await dispatch(getUserAccessToken({ code: githubAccessCode }));
-        searchParams.delete("code");
-        setSearchParams(searchParams);
-
         const formData = form.getValues();
         const [, , , username, repoName] = formData.repoURL.split("/");
 
         const timeout = setTimeout(async () => {
           clearTimeout(timeout);
-          await dispatch(verifyRepoAccess({ owner: username, repo: repoName }));
+          await dispatch(verifyWithAccessToken({ owner: username, repo: repoName, code: githubAccessCode }));
+          searchParams.delete("code");
+          setSearchParams(searchParams);
           localStorage.removeItem(LocalStorageKeys.accessToken);
         }, 0);
       })();
@@ -219,7 +217,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     
     // Run on unmount
     return () => {
-      dispatch(clearAccessStatus())
+      dispatch(clear());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -261,9 +259,15 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   }, [testAgain]);
 
   useEffect(() => {
-    showConfirmConnection && confirmConnectModal();
+    fetched && !verified && confirmConnectModal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showConfirmConnection]);
+  }, [fetched, verified]);
+
+  const getRepoAccessStatus = () => {
+    if (loading) return 'verifying';
+    if (fetched && verified) return 'accessible';
+    return 'notAccessible';
+  }
 
   return (
     <div>
@@ -272,7 +276,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           type="submit" 
           variant="contained" size="large"
           className="button block py-3 px-14 mt-10 mb-20 mx-auto w-[200px]"
-          disabled={!form.formState.isValid || submitting || disable || accessStatus !== "accessible"}
+          // disabled={!form.formState.isValid || submitting || disable || accessStatus !== "accessible"}
         >
           Test
         </Button>
@@ -290,9 +294,9 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
               {...form.register("repoURL")}
             />
 
-            {(accessStatus && !disable) ? (
+            {((fetched || loading) && !disable) ? (
               <div className="absolute right-[-25px] top-6">
-                <RepoAccessStatus status={accessStatus} />
+                <RepoAccessStatus status={getRepoAccessStatus()} />
               </div>
             ) : null}
           </div>

@@ -80,32 +80,32 @@ const RegisterSection = (props: Props) => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               className="mb-6"
-              required fullWidth variant="standard"
-              label="Company name" type="text"
+              fullWidth variant="standard"
+              label="Company name *" type="text"
               error={errors.companyName !== undefined}
               helperText={errors.companyName !== undefined ? 'The field value is invalid' : undefined}
               {...register("companyName", { required: true })}
             />
             <TextField
               className="mb-6"
-              required fullWidth variant="standard"
-              label="Contact email" type="email"
+              fullWidth variant="standard"
+              label="Contact email *" type="email"
               error={errors.contactEmail !== undefined}
               helperText={errors.contactEmail !== undefined ? 'The field value is invalid' : undefined}
               {...register("contactEmail", { required: true, pattern: /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-_]+\.[A-Za-z]{2,64}$/i })}
             />
             <TextField
               className="mb-6"
-              required fullWidth variant="standard"
-              label="Company Email" type="email"
+              fullWidth variant="standard"
+              label="Company Email *" type="email"
               error={errors.email !== undefined}
               helperText={errors.email !== undefined ? 'The field value is invalid' : undefined}
               {...register("email", { required: true, pattern: /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-_]+\.[A-Za-z]{2,64}$/i })}
             />
             <TextField
               className="mb-6"
-              required fullWidth variant="standard"
-              label="Full name" type="text"
+              fullWidth variant="standard"
+              label="Full name *" type="text"
               error={errors.fullName !== undefined}
               helperText={errors.fullName !== undefined ? 'The field value is invalid' : undefined}
               {...register("fullName", { required: true })}
@@ -121,7 +121,7 @@ const RegisterSection = (props: Props) => {
             <TextField
               className="mb-6"
               fullWidth variant="standard"
-              label="LinkedIn" type="url"
+              label="LinkedIn" type="text"
               error={errors.linkedin !== undefined}
               helperText={errors.linkedin !== undefined ? 'The field value is invalid' : undefined}
               {...register("linkedin", { pattern: /^(http(s)?:\/\/)?([\w]+\.)?linkedin\.com\/(pub|in|profile|company)\/([a-zA-Z0-9_-]+)$/i })}
@@ -129,7 +129,7 @@ const RegisterSection = (props: Props) => {
             <TextField
               className="mb-6"
               fullWidth variant="standard"
-              label="Website" type="url"
+              label="Website" type="text"
               error={errors.website !== undefined}
               helperText={errors.website !== undefined ? 'The field value is invalid' : undefined}
               {...register("website", { pattern: /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,255}\.[a-z]{2,6}(\b([-a-zA-Z0-9@:%_\+.~#()?&\/\/=]*))?$/i })}
