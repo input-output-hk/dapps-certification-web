@@ -6,8 +6,6 @@ import { useDelayedApi } from "hooks/useDelayedApi";
 import { fetchData } from "api/api";
 import { Log } from '../pages/certification/Certification.helper'
 import { setStates, setEnded, setBuildInfo } from "pages/certification/slices/logRunTime.slice";
-// import { LocalStorageKeys } from "constants/constants";
-// import useLocalStorage from "./useLocalStorage";
 
 const TIME_OFFSET = 1000;
 
@@ -22,8 +20,6 @@ export const useLogs = (
     const [fetchingLogs, setFetchingLogs] = useState(false);
     const [refetchLogsOffset] = useState(1);
 
-    // const [, setCertificationRunTime] = useLocalStorage(LocalStorageKeys.certificationRunTime, null)
-    
     const { startTime, endTime, runState, ended } = useAppSelector((state) => state.runTime)
 
     const enabled = !fetchingLogs && !(ended > 1) && !!uuid
