@@ -19,6 +19,7 @@ import { auditorRunTestFormSchema } from "./auditorRunTestForm.schema";
 import { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
 import {
   clearAccessStatus,
+  clearAccessToken,
   getUserAccessToken,
   verifyRepoAccess,
 } from "store/slices/repositoryAccess.slice";
@@ -76,7 +77,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 
   const { repoUrl } = useAppSelector((state) => state.certification);
   const { profile } = useAppSelector((state) => state.auth);
-  const { showConfirmConnection, accessStatus } = useAppSelector((state) => state.repoAccess);
+  const { showConfirmConnection, accessStatus, accessToken } = useAppSelector((state) => state.repoAccess);
   const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
@@ -168,10 +169,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             repo: repoName,
             name: name,
             version: version,
-            subject: subject
+            subject: subject,
+            githubToken: accessToken || null,
           },
         }));
         if (response.payload && response.payload?.dapp?.owner) {
+          dispatch(clearAccessToken())
           const runResponse = await postData.post("/run", checkout);
           if (runResponse.data) {
             // store data into LS
