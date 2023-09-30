@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useConfirm } from "material-ui-confirm";
@@ -14,8 +14,16 @@ import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
 import { processFinishedJson, processTimeLineConfig } from "components/TimelineItem/timeline.helper";
 import {
+  calculateCurrentProgress,
+  calculateExpectedProgress,
   CertificationTasks,
+  getProgressCardInfo,
+  ICertificationTask,
+  IFinishedTestingTaskDetails,
   isAnyTaskFailure,
+  isTaskSuccess,
+  ITestingProgress,
+  PlanObj
 } from "./../../Certification.helper";
 import LogsView from "components/LogsView/LogsView";
 import ProgressCard from "components/ProgressCard/ProgressCard";
@@ -24,16 +32,12 @@ import DownloadResult from "../DownloadResult/DownloadResult";
 import FileCoverageContainer from "../FileCoverageContainer";
 import { clearPersistentStates } from "../AuditorRunTestForm/utils";
 import Loader from "components/Loader/Loader";
+import StatusIcon from "components/StatusIcon/StatusIcon";
 
 
 const TIMEOFFSET = 1000;
-
-interface PlanObj {
-  name: string;
-  label: string;
-  discarded: number;
-  progress: number;
-}
+const PROGRESS_PASS = 100;
+const PROGRESS_FAIL = -1;
 
 const TimelineView: React.FC<{
   uuid: string;
@@ -85,41 +89,56 @@ const TimelineView: React.FC<{
       if (!plannedTestingTasks.length && resPlan.length) {
         setPlannedTestingTasks(
           resPlan.map((item: { index: number; name: string }) => {
+            const TaskConfig: ICertificationTask | undefined = CertificationTasks.find((task) => task.name === item.name)
+            if (!TaskConfig) {
+              return null;
+            }
             return {
+              key: TaskConfig.key,
               name: item.name,
-              label: CertificationTasks.find((task) => task.name === item.name)
-                ?.label,
+              label: TaskConfig.label,
               discarded: 0,
               progress: 0,
             };
           })
         );
       } else if (plannedTestingTasks.length && resProgress) {
-        // planned tasks are already defined
         setPlannedTestingTasks(
           plannedTestingTasks.map((item: PlanObj) => {
             const currentTask = resProgress["current-task"];
             if (currentTask && item.name === currentTask["name"]) {
               const currentProgressStats = resProgress["qc-progress"];
               item.discarded = currentProgressStats["discarded"];
-              item.progress = Math.trunc(
-                ((currentProgressStats["successes"] +
-                  currentProgressStats["failures"]) /
-                  currentProgressStats["expected"]) *
-                  100
-              );
+              item.progress = currentProgressStats["expected"] ? Math.trunc(
+                ((currentProgressStats["successes"] + currentProgressStats["failures"]) / 
+                  // currentProgressStats["expected"]) * 100
+                  (currentProgressStats["expected"] - currentProgressStats["discarded"])) * 100
+              ) : "On Going";
             }
-            if (resProgress["finished-tasks"].length) {
-              resProgress["finished-tasks"].forEach((entry: any) => {
-                if (item.name === entry["task"]["name"] && entry.succeeded) {
-                  item.progress = 100;
-                }
-              });
+            const isInFinished = resProgress["finished-tasks"].find((task: IFinishedTestingTaskDetails) => task.task.name === item.name)
+            if (isInFinished) {
+              item.discarded = isInFinished["qc-result"].discarded
+              item.progress = isInFinished.succeeded ? PROGRESS_PASS : PROGRESS_FAIL
             }
-            return item;
+            return item
           })
-        );
+        )
       }
+    } else if (status === 'finished') {
+      const isArrayResult = Array.isArray(res.data.result);
+      const resultJson = isArrayResult
+        ? res.data.result[0]
+        : res.data.result;
+      setPlannedTestingTasks(
+        plannedTestingTasks.map((item: PlanObj) => {
+          if (isTaskSuccess(resultJson[item.key], item.key)) {
+            item.progress = PROGRESS_PASS
+          } else {
+            item.progress = PROGRESS_FAIL;
+          }
+          return {...item, ...getProgressCardInfo(resultJson[item.key], item)}
+        })
+      )
     }
   };
 
@@ -163,6 +182,42 @@ const TimelineView: React.FC<{
       triggerFormReset();
     }
   };
+
+  const processLatestTestingProgressFromLogs = (response: {status: any}) => {
+    if (plannedTestingTasks && response.status) {
+      const progress: ITestingProgress = response.status;
+
+      plannedTestingTasks.map((task:PlanObj) => {
+        const finishedTask = progress["finished-tasks"].find(entry => task.name === entry.task.name)
+        if (finishedTask) {
+          if (!task.expected) {
+            task.expected = finishedTask["qc-result"].expected;
+          }
+          task.progress = finishedTask.succeeded ? PROGRESS_PASS : PROGRESS_FAIL;
+        } else if (progress['current-task'].name === task.name) {
+          if (!task.expected && progress['qc-progress'].hasOwnProperty('expected')) {
+            task.expected = progress['qc-progress'].expected
+          }
+        }
+        return task;
+      })
+    }
+  }
+
+  const getTaskProgress = (task: PlanObj, index: number) => {
+    return (runStatus === "finished" && (plannedTestingTasks.length - 1 === index))
+    ? (isTaskSuccess(resultData[task.key], task.key) ?
+        <StatusIcon iconName={"status-check"} altText={"passed"} /> 
+        : <StatusIcon iconName={"failed"} />
+      ) 
+    : (task.progress === PROGRESS_PASS ?
+        <StatusIcon iconName={"status-check"} altText={"passed"} />
+        : task.progress === PROGRESS_FAIL ? 
+          <StatusIcon iconName={"failed"} />  
+          : <span>{task.progress}{typeof task.progress === "number" ? "%" : ""}</span>
+      )
+
+  }
 
   useEffect(() => {
     if (uuid.length) {
@@ -247,18 +302,24 @@ const TimelineView: React.FC<{
               runId={uuid}
               endPolling={runStatus === "finished" || runState === "failed"}
               open={runState === "failed"}
+              latestTestingProgress={processLatestTestingProgressFromLogs}
             />
 
             {runStatus === "certifying" || runStatus === "finished" ? (
               <>
-                <div className="flex justify-around">
-                  {runStatus === "finished" && <FileCoverageContainer
+                <div className="flex justify-around flex-wrap gap-[8px]">
+                  {runStatus === "finished" && (<>
+                    <FileCoverageContainer
                       githubLink={repo || ""}
                       result={resultData}
                       coverageFile={coverageFile}
                     />
-                  }
-                  {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000}/> */}
+                    <ProgressCard 
+                      title={"Property Based Testing"} 
+                      currentValue={calculateCurrentProgress(plannedTestingTasks)} 
+                      totalValue={calculateExpectedProgress(plannedTestingTasks)}
+                    />
+                  </>)}
                 </div>
 
                 <div id="testingProgressContainer" className="mt-20">
@@ -277,7 +338,7 @@ const TimelineView: React.FC<{
                       </tr>
                     </thead>
                     <tbody>
-                      {plannedTestingTasks.map((task: PlanObj) => {
+                      {plannedTestingTasks.map((task: PlanObj, index: number) => {
                         return (
                           <tr
                             key={task.name}
@@ -290,15 +351,7 @@ const TimelineView: React.FC<{
                               {task.discarded}
                             </td>
                             <td className="text-center whitespace-nowrap p-2">
-                              {task.progress === 100 ? (
-                                <img
-                                  className="image"
-                                  src="/images/status-check.svg"
-                                  alt="complete"
-                                />
-                              ) : (
-                                <span>{task.progress}%</span>
-                              )}
+                              {getTaskProgress(task, index)}
                             </td>
                           </tr>
                         );

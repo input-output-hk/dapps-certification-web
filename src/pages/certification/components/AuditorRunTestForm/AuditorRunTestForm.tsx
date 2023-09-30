@@ -83,6 +83,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   }, [forceValidate])
 
   const { repoUrl } = useAppSelector((state) => state.certification);
+
   const { showConfirmConnection, accessStatus, accessToken } = useAppSelector((state) => state.repoAccess);
   const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
@@ -176,7 +177,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             name: name,
             version: version,
             subject: subject,
-            githubToken: accessToken || null,
+            githubToken: accessToken,
           },
         }));
         if (response.payload && response.payload?.dapp?.owner) {

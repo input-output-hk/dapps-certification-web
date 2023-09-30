@@ -9,6 +9,7 @@ COPY ./tsconfig.json /app/tsconfig.json
 COPY ./.env.production /app/.env.production
 COPY ./config-overrides.js /app/config-overrides.js
 COPY ./jest.config.js /app/jest.config.js
+COPY ./tailwind.config.js /app/tailwind.config.js
 
 RUN sed -i 's/http:\/\/excuse.ro:9672/https:\/\/dapps-certification.scdev.aws.iohkdev.io/g' package.json
 RUN sed -i 's/http:\/\/localhost:3000/http:\/\/localhost:80/g'  package.json

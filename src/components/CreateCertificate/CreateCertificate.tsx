@@ -191,7 +191,11 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
                 onCloseModal={onCloseMetadataForm}
                 fullWidth
             >
-                <CertificationMetadataForm uuid={uuid} onClose={onCloseMetadataForm}/>
+                <CertificationMetadataForm
+                    uuid={uuid}
+                    isReviewCertification={true}
+                    onClose={onCloseMetadataForm}
+                />
             </Modal>
         );
     }

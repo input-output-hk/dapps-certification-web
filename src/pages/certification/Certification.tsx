@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Typography, Container } from "@mui/material";
+import { Button } from "@mui/material";
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
@@ -94,11 +94,13 @@ const Certification = () => {
     }, [lsFormData]);
 
     return (
-        <Container className="py-4" maxWidth="xl">
-            <Typography variant="h5" className="font-medium text-main mb-6">
-                {runId ? "Run: " + ellipsizeString(runId) : "Testing Tool"}
-            </Typography>
-            <div className="content-area">
+        <div className="content-area">
+            <div className="content-area-title-section py-7 flex justify-between">
+                <h2 className="m-0">
+                    {runId
+                        ? "Run: " + ellipsizeString(runId)
+                        : "Testing Tool"}
+                </h2>
                 {runEnded && (
                     <div className="flex gap-x-4">
                         <Button
@@ -151,7 +153,7 @@ const Certification = () => {
                     )}
                 </div>
             </div>
-        </Container>
+        </div>
     );
 };
 
