@@ -54,9 +54,7 @@ const CertificationMetadataForm = (props: Props) => {
       request: {
         ...request,
         certificationLevel: parseInt(request.certificationLevel),
-        report: {
-          reportURLs: request.report.map(report => report.value),
-        },
+        report: request.report.map(report => report.value),
       },
       uuid: props.uuid
     }));
