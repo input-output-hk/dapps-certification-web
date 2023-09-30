@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
@@ -21,7 +21,7 @@ import "../Certification.scss";
 import DownloadResult from "../components/DownloadResult/DownloadResult";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 import FullReportTable from "./FullReportTable";
-import { isAnyTaskFailure } from "../Certification.helper";
+import { calculateCurrentProgress, calculateExpectedProgress, CertificationTasks, getProgressCardInfo, ICertificationTask, isAnyTaskFailure, PlanObj } from "../Certification.helper";
 
 const CertificationResult = () => {
   const param = useParams<{ uuid: string }>();
@@ -31,6 +31,8 @@ const CertificationResult = () => {
   const [unitTestSuccess, setUnitTestSuccess] = useState(true); // assuming unit tests will pass
   const [errorToast, setErrorToast] = useState(false);
   const [timelineConfig, setTimelineConfig] = useState(TIMELINE_CONFIG);
+
+  const testTaskProgress = useRef<PlanObj[]>([])
 
   useEffect(() => {
     (async () => {
@@ -52,6 +54,27 @@ const CertificationResult = () => {
           const unitTestResult = processFinishedJson(resultJson);
           setUnitTestSuccess(unitTestResult);
           setResultData(resultJson);
+          const resultTaskKeys = Object.keys(resultJson)
+          resultTaskKeys.forEach((key: any) => {
+            
+            const TaskConfig: ICertificationTask | undefined = CertificationTasks.find((task) => task.key === key)
+            if (!TaskConfig || !resultJson[key]) {
+              // do nothing
+            } else {
+              const taskEntry = {
+                key: TaskConfig.key,
+                name: TaskConfig.name,
+                label: TaskConfig.label,
+                discarded: 0,
+                progress: 0
+              }
+
+              testTaskProgress.current.push({
+                ...taskEntry,
+                ...getProgressCardInfo(resultJson[key], taskEntry)
+              })
+            }
+          })
         }
       } catch (error) {
         handleErrorScenario();
@@ -101,8 +124,11 @@ const CertificationResult = () => {
                   result={resultData}
                   coverageFile={coverageFile}
                 />}
-                {/* <ProgressCard title={"Property Based Testing"} currentValue={100} totalValue={1000} /> */}
-
+                <ProgressCard
+                  title={"Property Based Testing"}
+                  currentValue={calculateCurrentProgress(testTaskProgress.current)}
+                  totalValue={calculateExpectedProgress(testTaskProgress.current)}
+                />
               </div>
             </>) : null}
           </>
