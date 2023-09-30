@@ -2,11 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchData } from "api/api";
 
 export interface ReportUploadRequest {
-  certificationLevel: number;
+  certificationLevel?: number;
   summary: string;
   disclaimer: string;
-  subject: string;
-  report: string[];
+  subject?: string;
+  report?: string[];
   certificateIssuer: {
     name: string;
     logo?: string;
@@ -92,7 +92,7 @@ export const reportUploadSlice = createSlice({
         state.success = true;
         state.onchain = actions.payload.onchain;
         state.offchain = actions.payload.offchain;
-        state.subject = actions.payload.subject;
+        state.subject = actions.payload.subject || null;
         state.uuid = actions.payload.uuid;
       })
       .addCase(sendReport.rejected, (state, actions) => {

@@ -5,7 +5,7 @@ import { Box, Grid, Paper, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
 import { sendReport } from "store/slices/reportUpload.slice";
-import { resolver, getDefaultValues, informationFields, auditorFields } from "./utils";
+import { getResolver, getDefaultValues, getInformationFields, auditorFields } from "./utils";
 import { removeEmptyStringsDeep, exportObjectToJsonFile } from "utils/utils";
 import { useAppDispatch, useAppSelector } from "store/store";
 
@@ -22,6 +22,7 @@ import "./index.css";
 interface Props {
   uuid?: string;
   standalone?: boolean;
+  isReviewCertification?: boolean;
   onClose?: () => void;
 }
 
@@ -32,7 +33,9 @@ const CertificationMetadataForm = (props: Props) => {
   const { profile } = useAppSelector((state) => state.auth);
   const { loading, success, errorMessage, onchain, offchain, subject, uuid } = useAppSelector((state) => state.reportUpload);
 
-  const { control, register, handleSubmit, getFieldState, formState } = useForm<ReportForm>({ defaultValues: getDefaultValues(profile), resolver, mode: 'onBlur' });
+  const { control, register, handleSubmit, getFieldState, formState } = useForm<ReportForm>({
+    defaultValues: getDefaultValues(profile), resolver: getResolver(props.isReviewCertification), mode: 'onBlur'
+  });
   const { fields: scriptFields, append: appendScript, remove: removeScript } = useFieldArray({ name: 'scripts', control });
   const { fields: reportFields, append: appendReport, remove: removeReport } = useFieldArray({ name: 'report', control });
 
@@ -40,7 +43,7 @@ const CertificationMetadataForm = (props: Props) => {
   useEffect(() => { if (submitted && errorMessage !== null) setShowModal(true) }, [errorMessage, submitted]);
 
   useEffect(() => {
-    if (onchain !== null && offchain !== null && subject !== null && submitted) {
+    if (onchain !== null && offchain !== null && submitted) {
       exportObjectToJsonFile(offchain, `Off-Chain_${uuid ? uuid : subject}.json`);
       exportObjectToJsonFile(onchain, `On-Chain_${uuid ? uuid : subject}.json`);
       setSubmitted(false);
@@ -53,8 +56,8 @@ const CertificationMetadataForm = (props: Props) => {
     dispatch(sendReport({
       request: {
         ...request,
-        certificationLevel: parseInt(request.certificationLevel),
-        report: request.report.map(report => report.value),
+        certificationLevel: !props.isReviewCertification ? parseInt(request.certificationLevel) : undefined,
+        report: !props.isReviewCertification ? request.report.map(report => report.value) : undefined,
       },
       uuid: props.uuid
     }));
@@ -72,17 +75,15 @@ const CertificationMetadataForm = (props: Props) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid item md={12} lg={props.standalone ? 6 : 12}>
-            <Box className="mb-4">
-              <InputGroup
-                title="Certification Information"
-                fields={informationFields}
-                formState={formState}
-                register={register}
-                getFieldState={getFieldState}
-                standalone={props.standalone}
-              />
-            </Box>
-            <Box className="mb-4">
+            <InputGroup
+              title="Certification Information"
+              fields={getInformationFields(props.isReviewCertification)}
+              formState={formState}
+              register={register}
+              getFieldState={getFieldState}
+              standalone={props.standalone}
+            />
+            <Box className="mt-4">
               <InputGroup
                 title="Auditor Information"
                 fields={auditorFields}
@@ -92,15 +93,19 @@ const CertificationMetadataForm = (props: Props) => {
                 standalone={props.standalone}
               />
             </Box>
-            <AuditReportForm
-              formState={formState}
-              register={register}
-              getFieldState={getFieldState}
-              reportFields={reportFields}
-              appendReport={appendReport}
-              removeReport={removeReport}
-              standalone={props.standalone}
-            />
+            {!props.isReviewCertification && (
+              <Box className="mt-4">
+                <AuditReportForm
+                  formState={formState}
+                  register={register}
+                  getFieldState={getFieldState}
+                  reportFields={reportFields}
+                  appendReport={appendReport}
+                  removeReport={removeReport}
+                  standalone={props.standalone}
+                />
+              </Box>
+            )}
           </Grid>
           <Grid item md={12} lg={props.standalone ? 6 : 12}>
             <ReportScriptForm
@@ -114,7 +119,7 @@ const CertificationMetadataForm = (props: Props) => {
             />
             <Box className="mt-4">
               <Container standalone={props.standalone}>
-                <Box className="text-right pt-4">
+                <Box className="pt-4 flex flex-row-reverse justify-between items-end">
                   <Button
                     variant="outlined" size="large"
                     type="submit" className="button-outlined-highlighted"
@@ -123,6 +128,16 @@ const CertificationMetadataForm = (props: Props) => {
                   >
                     Send Report
                   </Button>
+                  {props.isReviewCertification && (
+                    <Button
+                      variant="outlined" size="large"
+                      className="normal-case" color="error"
+                      onClick={props.onClose}
+                      disabled={loading}
+                    >
+                      Cancel
+                    </Button>
+                  )}
                 </Box>
               </Container>
             </Box>
