@@ -17,7 +17,7 @@ const rootReducer = combineReducers({
   register: registerSlice,
   profile: profileSlice,
   walletTransaction: walletTransactionSlice,
-  repositoryAccess: repositoryAccessSlice,
+  repoAccess: repositoryAccessSlice,
   certification: certificationReducer,
   deleteTestHistory,
   runTime: logRunTimeSlice,

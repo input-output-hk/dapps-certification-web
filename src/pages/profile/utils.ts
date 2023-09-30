@@ -4,7 +4,7 @@ import { buildFormResolver } from "compositions/InputGroup/utils";
 import type { UserProfile } from "store/slices/profile.slice";
 import { Resolver } from "react-hook-form";
 
-export const profileFields: Field[] = [
+export const fields: Field[] = [
   {
     label: 'Company name',
     name: 'companyName',
@@ -40,40 +40,4 @@ export const profileFields: Field[] = [
   },
 ];
 
-const internalDAppFields: Field[] = [
-  {
-    label: 'Name',
-    name: 'name',
-    type: FieldType.Text,
-    required: true,
-  },
-  {
-    label: 'Owner',
-    name: 'owner',
-    type: FieldType.Text,
-    required: true,
-  },
-  {
-    label: 'Repository',
-    name: 'repo',
-    type: FieldType.Text,
-    required: true,
-  },
-  {
-    label: 'Version',
-    name: 'version',
-    type: FieldType.Text,
-    required: true,
-  },
-];
-
-export const dAppFields = internalDAppFields.map(f => ({ ...f, name: `dapp.${f.name}` }));
-
-export const resolver: Resolver<UserProfile> = buildFormResolver<UserProfile>([
-  ...profileFields,
-  {
-    name: 'dapp',
-    type: FieldType.Object,
-    fields: internalDAppFields,
-  },
-]);
+export const resolver: Resolver<UserProfile> = buildFormResolver<UserProfile>(fields);

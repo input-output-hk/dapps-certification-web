@@ -1,7 +1,6 @@
 import { Address, BaseAddress, RewardAddress } from "@emurgo/cardano-serialization-lib-browser";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { clearProfile } from "./profile.slice";
 import { LocalStorageKeys } from "constants/constants";
 import { fetchData } from "api/api";
 
@@ -160,7 +159,6 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
 });
 
 export const logout = createAsyncThunk('logout', async (payload: {}, { dispatch }) => {
-  dispatch(clearProfile());
   localStorage.clear();
 });
 

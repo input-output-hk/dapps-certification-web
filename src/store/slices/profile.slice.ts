@@ -16,15 +16,13 @@ export interface UserProfile {
     owner: string;
     repo: string;
     version: string;
-    githubToken?: string;
+    githubToken?: string | null;
     subject?: string;
   } | null;
 }
 
 interface ProfileState {
   profile: UserProfile | null;
-  isProfileUpdatedLocally: boolean;
-  needsToValidateRepository: boolean;
   errorMessage: string | null;
   loading: boolean;
   success: boolean;
@@ -32,8 +30,6 @@ interface ProfileState {
 
 const initialState: ProfileState = {
   profile: null,
-  isProfileUpdatedLocally: false,
-  needsToValidateRepository: false,
   errorMessage: null,
   loading: false,
   success: false,
@@ -66,26 +62,12 @@ export const profileSlice = createSlice({
   initialState,
   reducers: {
     clearProfile: () => initialState,
-    updateProfileLocally: (state, actions) => ({
-      ...initialState,
-      profile: actions.payload,
-      isProfileUpdatedLocally: true,
-      needsToValidateRepository: (
-        state.needsToValidateRepository ||
-        actions.payload.dapp.repo !== state.profile?.dapp?.repo ||
-        actions.payload.dapp.owner !== state.profile?.dapp?.owner
-      ),
-    })
   },
   extraReducers: (builder) => {
     builder
       // FETCH PROFILE
       .addCase(fetchProfile.fulfilled, (state, actions) => {
-        if (!state.needsToValidateRepository) {
-          state.profile = actions.payload;
-        } else {
-          state.profile = { ...actions.payload, dapp: state.profile?.dapp || null };
-        }
+        state.profile = actions.payload;
       })
       .addCase(fetchProfile.rejected, (state) => {
         state.profile = null;
@@ -99,8 +81,6 @@ export const profileSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, actions) => {
         state.profile = actions.payload;
-        state.needsToValidateRepository = false;
-        state.isProfileUpdatedLocally = false;
         state.loading = false;
         state.success = true;
       })
@@ -110,7 +90,5 @@ export const profileSlice = createSlice({
       })
   },
 });
-
-export const { clearProfile, updateProfileLocally } = profileSlice.actions;
 
 export default profileSlice.reducer;
