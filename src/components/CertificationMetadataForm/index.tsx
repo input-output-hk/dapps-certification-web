@@ -58,6 +58,7 @@ const CertificationMetadataForm = (props: Props) => {
         ...request,
         certificationLevel: !props.isReviewCertification ? parseInt(request.certificationLevel) : undefined,
         report: !props.isReviewCertification ? request.report.map(report => report.value) : undefined,
+        subject: props.isReviewCertification && profile?.dapp?.subject ? undefined : request.subject
       },
       uuid: props.uuid
     }));

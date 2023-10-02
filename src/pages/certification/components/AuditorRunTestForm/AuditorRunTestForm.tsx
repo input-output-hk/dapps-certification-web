@@ -4,11 +4,10 @@ import { useAppDispatch, useAppSelector } from "store/store";
 import { useForm } from "hooks/useForm";
 import { fetchData, postData } from "api/api";
 
-import { Button } from "@mui/material";
+import { Alert, Button, Snackbar } from "@mui/material";
 
 import { LocalStorageKeys } from "constants/constants";
 import TextArea from "components/TextArea/TextArea";
-import Toast from "components/Toast/Toast";
 import { Form } from "compositions/Form/Form";
 import { Input } from "compositions/Form/components/Input";
 import RepoAccessStatus from "components/RepoAccessStatus/RepoAccessStatus";
@@ -174,8 +173,8 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             owner: username,
             repo: repoName,
             name: name,
-            version: version,
-            subject: subject,
+            version: version || null,
+            subject: subject || null,
             githubToken: accessToken || null,
           },
         }));
@@ -339,7 +338,6 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             label="DApp Version"
             type="text"
             id="version"
-            required={true}
             disabled={submitting}
             {...form.register("version")}
           />
@@ -347,14 +345,25 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           <TextArea
             placeholder="DApp Subject"
             maxRows={2}
-            required={true}
             disabled={submitting}
             {...form.register("subject")}
           />
         </div>
       </Form>
 
-      {showError ? <Toast message={showError} /> : null}
+      <Snackbar
+          open={showError ? true : false}
+          autoHideDuration={5000}
+          onClose={() => setShowError("")}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+          <Alert
+          severity="error" variant="filled"
+          onClose={() => setShowError("")}
+          >
+              {showError}
+          </Alert>
+      </Snackbar>
     </div>
   );
 };
