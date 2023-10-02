@@ -394,7 +394,6 @@ const TestHistory = () => {
           showColViz={true} 
           updateMyData={updateMyData}
           skipPageReset={skipPageReset}
-          showAllRows={true}
           loading={loading}
         />
       </Box>
