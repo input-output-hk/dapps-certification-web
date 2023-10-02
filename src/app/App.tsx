@@ -5,14 +5,19 @@ import { CircularProgress, Typography } from "@mui/material";
 const Session = lazy(() => import("../pages/session"));
 const Landing = lazy(() => import("../pages/landing"));
 const Home = lazy(() => import("../pages/home"));
-const Certification = lazy(() => import("../pages/certification/Certification"));
 const TestingHistory = lazy(() => import("../pages/testingHistory"));
 const ReportUpload = lazy(() => import("../pages/reportUpload"))
+const Profile = lazy(() => import("../pages/profile"))
+const Certification = lazy(() => import("../pages/certification/Certification"));
 const CertificationResult = lazy(() => import("../pages/certification/certification-result/CertificationResult"));
 
 const ComingSoon = () => (
   <Typography>Coming soon...</Typography>
 );
+
+const Support = () => (
+  <Typography><p>Contact us on your dedicated Slack channel for support or questions.</p></Typography>
+)
 
 const App = () => {
   return (
@@ -23,8 +28,8 @@ const App = () => {
           <Route path="home" element={<Home />} />
           <Route path="testing" element={<Certification />} />
           <Route path="history" element={<TestingHistory />} />
-          <Route path="profile" element={<ComingSoon />} />
-          <Route path="support" element={<ComingSoon />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="support" element={<Support />} />
           <Route path="documentation" element={<ComingSoon />} />
           <Route path="audit-report-upload" element={<ReportUpload />} />
           <Route path="/report/:uuid" element={<CertificationResult />} />

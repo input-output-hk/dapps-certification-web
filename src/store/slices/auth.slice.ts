@@ -6,30 +6,10 @@ import { fetchData } from "api/api";
 
 import type { RootState } from "../rootReducer";
 
-export interface UserProfile {
-  address?: string;
-  email?: string;
-  fullName?: string;
-  companyName?: string;
-  contactEmail?: string;
-  linkedin?: string | null;
-  twitter?: string | null;
-  website?: string | null;
-  dapp: {
-    name: string;
-    owner: string;
-    repo: string;
-    version: string;
-    githubToken?: string;
-    subject?: string;
-  } | null;
-}
-
 interface AuthState {
   isSessionFetched: boolean;
   isConnected: boolean;
   hasAnActiveSubscription: boolean;
-  profile: UserProfile | null;
   features: string[];
   networkId: number | null;
   wallet: any;
@@ -48,7 +28,6 @@ const initialState: AuthState = {
   isSessionFetched: false,
   isConnected: false,
   hasAnActiveSubscription: false,
-  profile: null,
   features: [],
   networkId: null,
   wallet: null,
@@ -167,7 +146,7 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
       }
 
       if (forceLogout) {
-        await dispatch(logout());
+        await dispatch(logout({}));
         isListening = false;
         return true;
       } else {
@@ -179,49 +158,14 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
   return false;
 });
 
-export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: any, { rejectWithValue }) => {
-  try {
-    const response = await fetchData.get('/profile/current');
-    if (response.status !== 200) throw new Error();
-    return response.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
-  }
+export const logout = createAsyncThunk('logout', async (payload: {}, { dispatch }) => {
+  localStorage.clear();
 });
-
-export const updateProfile = createAsyncThunk('updateProfile', async(payload: UserProfile, {rejectWithValue}) => {
-  try {
-    const response = await fetchData.put('/profile/current', payload);
-    if (response.status !== 200) throw new Error();
-    return response.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response.data);
-  }
-})
-// export const getProfileDetails: any = createAsyncThunk("getProfileDetails", async (data: any, { rejectWithValue }) => {
-//   localStorage.setItem(LocalStorageKeys.address, data.address)
-//   const response = await fetchData.get("/profile/current")
-//   // FOR MOCK - const response = await fetchData.get(data.url || 'static/data/current-profile.json', data)
-//   // return response.data
-//   return {...response.data, dapp: {
-//     "name": "Test",
-//     "owner": "Ali-Hill",
-//     "repo": "minimal-ptt-examples",
-//     "version": "1",
-//   }}
-// })
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout: (state) => {
-      localStorage.clear();
-      return {
-        ...initialState,
-        isSessionFetched: true
-      };
-    },
     stopListenWalletChanges: (state) => {
       return {
         ...state,
@@ -275,6 +219,14 @@ export const authSlice = createSlice({
         state.isSessionFetched = true;
       })
 
+      // LOGOUT
+      .addCase(logout.fulfilled, (state) => {
+        state = {
+          ...initialState,
+          isSessionFetched: true
+        };
+      })
+
       // START LISTEN WALLET CHANGES
       .addCase(startListenWalletChanges.pending, (state) => {
         state.listeningWalletChanges = true;
@@ -288,31 +240,9 @@ export const authSlice = createSlice({
         state.listeningWalletChanges = false;
         state.resetWalletChanges = false;
       })
-
-      // FETCH PROFILE
-      .addCase(fetchProfile.pending, (state) => {
-        state.profile = null;
-      })
-      .addCase(fetchProfile.fulfilled, (state, actions) => {
-        state.profile = actions.payload;
-      })
-      .addCase(fetchProfile.rejected, (state) => {
-        state.profile = null;
-      })
-
-      // UPDATE PROFILE
-      .addCase(updateProfile.pending, (state) => {
-        // do nothing; state.profile intact
-      })
-      .addCase(updateProfile.fulfilled, (state, actions) => {
-        state.profile = actions.payload;
-      })
-      .addCase(updateProfile.rejected, (state) => {
-        // do nothing; state.profile intact
-      })
   },
 });
 
-export const { logout, stopListenWalletChanges } = authSlice.actions;
+export const { stopListenWalletChanges } = authSlice.actions;
 
 export default authSlice.reducer;

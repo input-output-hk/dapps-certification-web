@@ -382,9 +382,9 @@ const TestHistory = () => {
   };
   
   return (
-    <Container className="pt-4" maxWidth="xl">
+    <Container className="pt-4" maxWidth={false}>
       <Typography variant="h5" className="font-medium text-main mb-6">
-        Testing history
+        Testing History
       </Typography>
 
       <Box>

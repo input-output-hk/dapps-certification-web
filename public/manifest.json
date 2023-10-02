@@ -1,6 +1,6 @@
 {
-  "short_name": "dapps_certification",
-  "name": "dApps Certification",
+  "short_name": "plutus_dapps_testing",
+  "name": "Plutus DApps testing",
   "icons": [],
   "start_url": ".",
   "display": "standalone",

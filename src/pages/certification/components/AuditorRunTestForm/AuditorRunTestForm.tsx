@@ -19,13 +19,14 @@ import { auditorRunTestFormSchema } from "./auditorRunTestForm.schema";
 import { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
 import {
   clearAccessStatus,
+  clearAccessToken,
   getUserAccessToken,
   verifyRepoAccess,
 } from "store/slices/repositoryAccess.slice";
 import { useConfirm } from "material-ui-confirm";
 import { useSearchParams } from "react-router-dom";
 import useLocalStorage from "hooks/useLocalStorage";
-import { updateProfile } from "store/slices/auth.slice";
+import { updateProfile } from "store/slices/profile.slice";
 
 interface IAuditorRunTestForm {
   disable: boolean;
@@ -50,9 +51,19 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 }) => {
 
   const dispatch = useAppDispatch();
+  const confirm = useConfirm();
+
+  const { repoUrl } = useAppSelector((state) => state.certification);
+  const { profile } = useAppSelector((state) => state.profile);
+  const { showConfirmConnection, accessStatus, accessToken, verifying } = useAppSelector((state) => state.repoAccess);
+  
   const form: any = useForm({
     schema: auditorRunTestFormSchema,
     mode: "all",
+    defaultValues: profile && profile.dapp ? {
+      repoURL: profile.dapp.owner && profile.dapp.repo ? `https://github.com/${profile.dapp.owner}/${profile.dapp.repo}` : undefined,
+      name: profile.dapp.name, version: profile.dapp.version,
+    } : undefined
   });
 
   const checkRepoAccess = (urlValue: string) => {
@@ -74,10 +85,6 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forceValidate])
 
-  const { repoUrl } = useAppSelector((state) => state.certification);
-  const { profile } = useAppSelector((state) => state.auth);
-  const { showConfirmConnection, accessStatus } = useAppSelector((state) => state.repoAccess);
-  const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
 
@@ -93,6 +100,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       // fetch CLIENT_ID from api
       const clientId = (await fetchData.get("/github/client-id").catch(error => { throw new Error(error) }))
         .data as string;
+      localStorage.setItem('testingForm', JSON.stringify(form.getValues()))
       clientId && window.location.assign(
         `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo`
       );
@@ -148,6 +156,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       return;
     }
 
+
     const [, , , username, repoName, , commitHash] =
       formData.repoURL.split("/");
     dispatch(setRepoUrl(`https://github.com/${username}/${repoName}`));
@@ -166,10 +175,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             repo: repoName,
             name: name,
             version: version,
-            subject: subject
+            subject: subject,
+            githubToken: accessToken || null,
           },
         }));
         if (response.payload && response.payload?.dapp?.owner) {
+          dispatch(clearAccessToken())
           const runResponse = await postData.post("/run", checkout);
           if (runResponse.data) {
             // store data into LS
@@ -186,6 +197,8 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
               repo: username + "/" + repoName
             });
           }
+        } else {
+          handleError(response)
         }
       } catch (e) {
         handleError(e);
@@ -217,6 +230,13 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     }
     // the enclosed snippet is to be triggered only once right when the component is rendered to check if the url contains code (to validate if it is a redirect from github)
     
+    const formDataInLS = localStorage.getItem('testingForm')
+    if (formDataInLS && formDataInLS !== 'undefined') {
+      const profileFormData = JSON.parse(formDataInLS);
+      form.reset(profileFormData)
+      localStorage.removeItem('testingForm')
+    }
+
     // Run on unmount
     return () => {
       dispatch(clearAccessStatus())
@@ -272,19 +292,19 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           type="submit" 
           variant="contained" size="large"
           className="button block py-3 px-14 mt-10 mb-20 mx-auto w-[200px]"
-          disabled={!form.formState.isValid || submitting || disable || accessStatus !== "accessible"}
+          disabled={!form.formState.isValid || submitting || disable || accessStatus !== "accessible" || verifying}
         >
           Test
         </Button>
 
-        <div className={disable ? "disabled" : ""}>
+        <div className={disable || verifying ? "disabled" : ""}>
           <div className="relative input-wrapper">
             <Input
               label="GitHub Repository"
               type="text"
               id="repoURL"
               required={true}
-              disabled={submitting}
+              disabled={submitting || verifying}
               tooltipText="Github Repository URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash)."
               triggerOnBlur={checkRepoAccess}
               {...form.register("repoURL")}
@@ -292,7 +312,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 
             {(accessStatus && !disable) ? (
               <div className="absolute right-[-25px] top-6">
-                <RepoAccessStatus status={accessStatus} />
+                <RepoAccessStatus status={accessStatus} classes={showConfirmConnection ? "cursor-pointer" : ""} onClick={() => {showConfirmConnection && confirmConnectModal()}} />
               </div>
             ) : null}
           </div>

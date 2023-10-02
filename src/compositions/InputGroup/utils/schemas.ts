@@ -39,6 +39,12 @@ export const DiscordUrl = yup.string()
     excludeEmptyString: true 
   });
 
+export const LinkedInUrl = yup.string()
+  .matches(/^(http(s)?:\/\/)?([\w]+\.)?linkedin\.com\/(pub|in|profile|company)\/([a-zA-Z0-9_-]+)$/i, {
+    message: 'The field value must be a valid LinkedIn URL',
+    excludeEmptyString: true 
+  });
+
 export const WebsiteUrl = yup.string()
   .matches(/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,255}\.[a-z]{2,6}(\b([-a-zA-Z0-9@:%_\+.~#()?&\/\/=]*))?$/, {
     message: 'The field value must be a valid URL',

@@ -1,8 +1,8 @@
 import { Field, FieldType } from "compositions/InputGroup/interface";
 import { buildFormResolver } from "compositions/InputGroup/utils";
 
-import type { ReportForm } from "../interface";
-import type { UserProfile } from "store/slices/auth.slice";
+import type { ReportForm } from "./interface";
+import type { UserProfile } from "store/slices/profile.slice";
 import { Resolver } from "react-hook-form";
 
 const internalInformationFields: Field[] = [
@@ -143,8 +143,8 @@ const internalScriptContractFields: Field[] = [
   },
 ];
 
-export const resolver: Resolver<ReportForm> = buildFormResolver<ReportForm>([
-  ...internalInformationFields,
+export const getResolver= (isReviewCertification?: boolean) => buildFormResolver<ReportForm>([
+  ...getInformationFields(isReviewCertification),
   {
     name: 'certificateIssuer',
     type: FieldType.Object,
@@ -157,11 +157,11 @@ export const resolver: Resolver<ReportForm> = buildFormResolver<ReportForm>([
       },
     ],
   },
-  {
+  !isReviewCertification ? {
     name: 'report',
     type: FieldType.Array,
     fields: [internalReportField],
-  },
+  } : null,
   {
     name: 'scripts',
     type: FieldType.Array,
@@ -174,7 +174,7 @@ export const resolver: Resolver<ReportForm> = buildFormResolver<ReportForm>([
       },
     ],
   },
-]);
+].filter(field => field !== null) as Field[]);
 
 export const getDefaultValues = (profile: UserProfile | null): ReportForm => ({
   certificationLevel: '0',
@@ -197,7 +197,9 @@ export const getDefaultValues = (profile: UserProfile | null): ReportForm => ({
   }]
 });
 
-export const informationFields = internalInformationFields;
+export const getInformationFields = (isReviewCertification?: boolean) =>
+  !isReviewCertification ? internalInformationFields : internalInformationFields.filter(
+    field => field.name !== 'subject' && field.name !== 'certificationLevel')
 
 export const auditorFields = [
   ...internalAuditorFields.map(f => ({ ...f, name: `certificateIssuer.${f.name}` })),
