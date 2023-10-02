@@ -15,6 +15,10 @@ const ComingSoon = () => (
   <Typography>Coming soon...</Typography>
 );
 
+const Support = () => (
+  <Typography><p>Contact us on your dedicated Slack channel for support or questions.</p></Typography>
+)
+
 const App = () => {
   return (
     <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
@@ -25,7 +29,7 @@ const App = () => {
           <Route path="testing" element={<Certification />} />
           <Route path="history" element={<TestingHistory />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="support" element={<ComingSoon />} />
+          <Route path="support" element={<Support />} />
           <Route path="documentation" element={<ComingSoon />} />
           <Route path="audit-report-upload" element={<ReportUpload />} />
           <Route path="/report/:uuid" element={<CertificationResult />} />

@@ -51,9 +51,12 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 }) => {
 
   const dispatch = useAppDispatch();
+  const confirm = useConfirm();
 
+  const { repoUrl } = useAppSelector((state) => state.certification);
   const { profile } = useAppSelector((state) => state.profile);
-
+  const { showConfirmConnection, accessStatus, accessToken, verifying } = useAppSelector((state) => state.repoAccess);
+  
   const form: any = useForm({
     schema: auditorRunTestFormSchema,
     mode: "all",
@@ -82,10 +85,6 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forceValidate])
 
-  const { repoUrl } = useAppSelector((state) => state.certification);
-
-  const { showConfirmConnection, accessStatus, accessToken } = useAppSelector((state) => state.repoAccess);
-  const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
 
@@ -177,7 +176,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             name: name,
             version: version,
             subject: subject,
-            githubToken: accessToken,
+            githubToken: accessToken || null,
           },
         }));
         if (response.payload && response.payload?.dapp?.owner) {
@@ -198,6 +197,8 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
               repo: username + "/" + repoName
             });
           }
+        } else {
+          handleError(response)
         }
       } catch (e) {
         handleError(e);
@@ -291,19 +292,19 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
           type="submit" 
           variant="contained" size="large"
           className="button block py-3 px-14 mt-10 mb-20 mx-auto w-[200px]"
-          disabled={!form.formState.isValid || submitting || disable || accessStatus !== "accessible"}
+          disabled={!form.formState.isValid || submitting || disable || accessStatus !== "accessible" || verifying}
         >
           Test
         </Button>
 
-        <div className={disable ? "disabled" : ""}>
+        <div className={disable || verifying ? "disabled" : ""}>
           <div className="relative input-wrapper">
             <Input
               label="GitHub Repository"
               type="text"
               id="repoURL"
               required={true}
-              disabled={submitting}
+              disabled={submitting || verifying}
               tooltipText="Github Repository URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash)."
               triggerOnBlur={checkRepoAccess}
               {...form.register("repoURL")}
@@ -311,7 +312,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 
             {(accessStatus && !disable) ? (
               <div className="absolute right-[-25px] top-6">
-                <RepoAccessStatus status={accessStatus} />
+                <RepoAccessStatus status={accessStatus} classes={showConfirmConnection ? "cursor-pointer" : ""} onClick={() => {showConfirmConnection && confirmConnectModal()}} />
               </div>
             ) : null}
           </div>
