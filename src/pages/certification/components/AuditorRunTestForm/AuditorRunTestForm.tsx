@@ -170,7 +170,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             name: name,
             version: version,
             subject: subject,
-            githubToken: accessToken,
+            githubToken: accessToken || null,
           },
         }));
         if (response.payload && response.payload?.dapp?.owner) {
@@ -191,6 +191,8 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
               repo: username + "/" + repoName
             });
           }
+        } else {
+          handleError(response)
         }
       } catch (e) {
         handleError(e);
