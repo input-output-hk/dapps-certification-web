@@ -13,6 +13,7 @@ import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import GridViewIcon from '@mui/icons-material/GridView';
 import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -63,7 +64,8 @@ const TableComponent: FC<any> = ({
   skipPageReset,
   showAllRows = false,
   collapsibleRows = false,
-  rowProps = () => ({})
+  rowProps = () => ({}),
+  loading = false
 }) => {
   const data = useMemo(() => dataSet, [dataSet]);
   const [pageNo, setPageNo] = useState(0);
@@ -90,7 +92,7 @@ const TableComponent: FC<any> = ({
       // That way we can call this function from our
       // cell renderer!
       updateMyData,
-      initialState: { pageIndex: 0, pageSize: 5 } as any,
+      initialState: showAllRows ? undefined : { pageIndex: 0, pageSize: 5 } as any,
     },
     useSortBy,
     usePagination
@@ -184,30 +186,28 @@ const TableComponent: FC<any> = ({
               </>
             </TableBody>
           </Table>
-          {data.length === 0 && (
-            <Typography className="text-center pt-4">
+          {!loading && data.length === 0 && (
+            <Typography className="text-center p-4">
               No data found
             </Typography>
           )}
+          {loading && (
+            <Box className="flex items-center justify-center p-8">
+              <CircularProgress color="secondary" />
+            </Box>
+          )}
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={showAllRows ? [{label:"All", value: -1}] : [5, 10, 20]}
-          component="div"
-          count={data.length}
-          rowsPerPage={showAllRows ? -1 : rowsPerPage}
-          page={pageNo}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            '.MuiTablePagination-root':{
-              display: 'none !important'
-            },
-            '.MuiTablePagination-toolbar': {
-              display: 'none !important'
-            }
-
-          }}
-        />
+        {!showAllRows && (
+          <TablePagination
+            rowsPerPageOptions={showAllRows ? [{label:"All", value: -1}] : [5, 10, 20]}
+            component="div"
+            count={data.length}
+            rowsPerPage={showAllRows ? -1 : rowsPerPage}
+            page={pageNo}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        )}
       </Paper>
     </Box>
   );
