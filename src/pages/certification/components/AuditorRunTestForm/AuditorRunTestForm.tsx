@@ -26,7 +26,7 @@ import {
 import { useConfirm } from "material-ui-confirm";
 import { useSearchParams } from "react-router-dom";
 import useLocalStorage from "hooks/useLocalStorage";
-import { updateProfile } from "store/slices/auth.slice";
+import { updateProfile } from "store/slices/profile.slice";
 
 interface IAuditorRunTestForm {
   disable: boolean;
@@ -51,9 +51,19 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 }) => {
 
   const dispatch = useAppDispatch();
+  const confirm = useConfirm();
+
+  const { repoUrl } = useAppSelector((state) => state.certification);
+  const { profile } = useAppSelector((state) => state.profile);
+  const { showConfirmConnection, accessStatus, accessToken, verifying } = useAppSelector((state) => state.repoAccess);
+  
   const form: any = useForm({
     schema: auditorRunTestFormSchema,
     mode: "all",
+    defaultValues: profile && profile.dapp ? {
+      repoURL: profile.dapp.owner && profile.dapp.repo ? `https://github.com/${profile.dapp.owner}/${profile.dapp.repo}` : undefined,
+      name: profile.dapp.name, version: profile.dapp.version,
+    } : undefined
   });
 
   const checkRepoAccess = (urlValue: string) => {
@@ -75,10 +85,6 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forceValidate])
 
-  const { repoUrl } = useAppSelector((state) => state.certification);
-  const { profile } = useAppSelector((state) => state.auth);
-  const { showConfirmConnection, accessStatus, accessToken, verifying } = useAppSelector((state) => state.repoAccess);
-  const confirm = useConfirm();
   const [submitting, setSubmitting] = useState(false);
   const [showError, setShowError] = useState("");
 

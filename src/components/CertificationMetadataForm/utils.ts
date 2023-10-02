@@ -1,8 +1,8 @@
 import { Field, FieldType } from "compositions/InputGroup/interface";
 import { buildFormResolver } from "compositions/InputGroup/utils";
 
-import type { ReportForm } from "../interface";
-import type { UserProfile } from "store/slices/auth.slice";
+import type { ReportForm } from "./interface";
+import type { UserProfile } from "store/slices/profile.slice";
 import { Resolver } from "react-hook-form";
 
 const internalInformationFields: Field[] = [

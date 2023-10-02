@@ -30,7 +30,7 @@ const CertificationMetadataForm = (props: Props) => {
   const dispatch = useAppDispatch();
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
-  const { profile } = useAppSelector((state) => state.auth);
+  const { profile } = useAppSelector((state) => state.profile);
   const { loading, success, errorMessage, onchain, offchain, subject, uuid } = useAppSelector((state) => state.reportUpload);
 
   const { control, register, handleSubmit, getFieldState, formState } = useForm<ReportForm>({

@@ -28,7 +28,7 @@ const AppBar = () => {
   }
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logout({}));
   };
 
   return (

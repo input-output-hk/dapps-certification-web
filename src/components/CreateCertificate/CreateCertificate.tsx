@@ -41,7 +41,8 @@ interface Certificate {
 
 const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { walletAddress: address, wallet, profile, features} = useAppSelector((state) => state.auth);
+    const { walletAddress: address, wallet, features } = useAppSelector((state) => state.auth);
+    const { profile } = useAppSelector((state) => state.profile);
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
     const [ transactionId, setTransactionId ] = useState("")
@@ -187,7 +188,7 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
                 open={openMetadataModal}
                 title="Certification Metadata"
                 className="certification-metadata"
-                onCloseModal={()=> {}}
+                onCloseModal={onCloseMetadataForm}
                 fullWidth
             >
                 <CertificationMetadataForm
