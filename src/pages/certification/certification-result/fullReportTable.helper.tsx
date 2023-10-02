@@ -68,7 +68,7 @@ export const renderCharts = (data?: any) => {
 
 
 const FailedTaskDetails = (dataObj: any) => {
-    return (<div className="task-details bg-red-background border-red-background">
+    return (<div className="">
         <span className="font-neutral-900 text-red-title block mb-10"><i>{dataObj.reason}</i></span>
         <div className="whitespace-pre">
             <span>Failing TestCase(s):</span>
