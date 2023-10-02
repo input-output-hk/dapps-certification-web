@@ -62,9 +62,15 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
     mode: "all",
     defaultValues: profile && profile.dapp ? {
       repoURL: profile.dapp.owner && profile.dapp.repo ? `https://github.com/${profile.dapp.owner}/${profile.dapp.repo}` : undefined,
-      name: profile.dapp.name, version: profile.dapp.version,
+      name: profile.dapp.name, 
+      version: profile.dapp.version,
+      subject: profile.dapp.subject,
     } : undefined
   });
+
+  if (profile && profile.dapp) {
+    forceValidate = true
+  }
 
   const checkRepoAccess = (urlValue: string) => {
     if (urlValue) {
