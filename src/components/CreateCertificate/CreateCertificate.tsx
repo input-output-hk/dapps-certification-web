@@ -10,7 +10,7 @@ import { useAppSelector } from "store/store";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
 
 import Modal from "components/Modal/Modal";
-import CertificationMetadata from "pages/certification/components/CertificationMetadata/CertificationMetadata";
+import CertificationMetadataForm from "components/CertificationMetadataForm";
 
 import "./CreateCertificate.scss";
 
@@ -190,7 +190,11 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
                 onCloseModal={()=> {}}
                 fullWidth
             >
-                <CertificationMetadata uuid={uuid} onCloseForm={onCloseMetadataForm}/>
+                <CertificationMetadataForm
+                    uuid={uuid}
+                    isReviewCertification={true}
+                    onClose={onCloseMetadataForm}
+                />
             </Modal>
         );
     }

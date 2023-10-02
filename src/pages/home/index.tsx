@@ -50,7 +50,7 @@ const Home = () => {
 
   return (
     <Container maxWidth="xl" className="pt-8">
-      <Typography className="text-center font-bold tracking-[.2em] text-main text-4xl mb-16">
+      <Typography className="text-center font-bold tracking-[.2em] text-main text-4xl mb-12">
         Plutus Testing Tool
       </Typography>
       <div id="homeContentWrapper" className="flex justify-evenly gap-[10px]">

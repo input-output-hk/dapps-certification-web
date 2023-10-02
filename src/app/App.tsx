@@ -7,7 +7,7 @@ const Landing = lazy(() => import("../pages/landing"));
 const Home = lazy(() => import("../pages/home"));
 const Certification = lazy(() => import("../pages/certification/Certification"));
 const TestingHistory = lazy(() => import("../pages/testingHistory"));
-const ReportUpload = lazy(() => import("../pages/auditing/reportUpload/ReportUpload"))
+const ReportUpload = lazy(() => import("../pages/reportUpload"))
 const CertificationResult = lazy(() => import("../pages/certification/certification-result/CertificationResult"));
 
 const ComingSoon = () => (

@@ -191,6 +191,8 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
               repo: username + "/" + repoName
             });
           }
+        } else {
+          handleError(response)
         }
       } catch (e) {
         handleError(e);

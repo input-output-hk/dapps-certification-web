@@ -7,22 +7,22 @@ import { fetchData } from "api/api";
 import type { RootState } from "../rootReducer";
 
 export interface UserProfile {
-  address?: string,
-  companyName?: string,
-  contactEmail?: string,
+  address?: string;
+  email?: string;
+  fullName?: string;
+  companyName?: string;
+  contactEmail?: string;
+  linkedin?: string | null;
+  twitter?: string | null;
+  website?: string | null;
   dapp: {
-    githubToken?: string | null,
-    name: string,
-    owner: string,
-    repo: string,
-    subject?: string,
-    version: string
-  } | null,
-  email?: string,
-  fullName?: string,
-  linkedin?: string,
-  twitter?: string,
-  website?: string
+    name: string;
+    owner: string;
+    repo: string;
+    version: string;
+    githubToken?: string | null;
+    subject?: string;
+  } | null;
 }
 
 interface AuthState {

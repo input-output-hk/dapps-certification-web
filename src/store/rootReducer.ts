@@ -9,6 +9,7 @@ import logRunTimeSlice from "pages/certification/slices/logRunTime.slice";
 import priceSlice from "pages/landing/slices/price.slice";
 import tiersSlice from "pages/landing/slices/tiers.slice";
 import repoAccessSlice from "./slices/repositoryAccess.slice";
+import reportUploadSlice from "./slices/reportUpload.slice";
 
 const rootReducer = combineReducers({
   auth: authSlice,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   runTime: logRunTimeSlice,
   price: priceSlice,
   tiers: tiersSlice,
+  reportUpload: reportUploadSlice,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

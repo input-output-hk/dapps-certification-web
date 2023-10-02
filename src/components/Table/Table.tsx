@@ -127,7 +127,7 @@ const TableComponent: FC<any> = ({
         {showColViz && (
           <>
             <IconButton
-              className="absolute top-[-35px] right-0"
+              className="absolute top-[-48px] right-0"
               onClick={handleShowColVizMenu}
             >
               <GridViewIcon />

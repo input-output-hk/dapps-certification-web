@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 
 import { fetchData } from "api/api";
 
-import { Container, Box, Button, IconButton } from "@mui/material";
+import { Container, Box, Button, IconButton, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
@@ -380,8 +380,10 @@ const TestHistory = () => {
   };
   
   return (
-    <Container className="pt-4" maxWidth="xl">
-      <h2>Testing history</h2>
+    <Container className="pt-4" maxWidth={false}>
+      <Typography variant="h5" className="font-medium text-main mb-6">
+        Testing history
+      </Typography>
 
       <Box>
         <TableComponent
