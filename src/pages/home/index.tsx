@@ -1,6 +1,7 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Container, Grid, Paper, Box, Typography, CircularProgress } from "@mui/material";
+import { Container, Paper, Box, Typography, CircularProgress, Button } from "@mui/material";
 import SuccessIcon from "@mui/icons-material/Check";
 import FailedIcon from "@mui/icons-material/Close";
 import ProgressIcon from '@mui/icons-material/Schedule';
@@ -44,57 +45,38 @@ const Widget = (props: { title?: string, subtitle?: string, value?: number, colo
 );
 
 const Home = () => {
+
+  const navigate = useNavigate();
+
   return (
     <Container maxWidth="xl" className="pt-8">
       <Typography className="text-center font-bold tracking-[.2em] text-main text-4xl mb-16">
         Plutus Testing Tool
       </Typography>
-      <Grid container spacing={4}>
+      <div id="homeContentWrapper" className="flex justify-evenly gap-[10px]">
 
-        <Grid item xs={4}>
-          <Paper elevation={0} className="text-center rounded-none shadow p-4">
-            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-5">
-              Ali-Hill/minimal-ptt-examples: 57538a3e1ddba14366b0e718107cef5ce9aabb61
-            </Typography>
-            <ProgressIndicator status="working" value={25} />
-            <Widget title="Running" subtitle="--/--" />
-            <Widget />
+        <Paper elevation={0} className="text-center rounded-none shadow p-4 flex justify-between items-center" style={{flexFlow: "column"}}>
+          <h2>Testing</h2>
+          <p>Test your Dapp using Plutus Testing Tool</p>
+          <Button variant="outlined" size="large" className="button-outlined w-[200px]"
+            onClick={() => {navigate('/testing')}}>Test here</Button>
+        </Paper>
+
+        <Paper elevation={0} className="text-center rounded-none shadow p-4 flex justify-between items-center" style={{flexFlow: "column"}}>
+            <h2>Generate a certificate metadata</h2>
+            <p>Generate a CIP-96 compliant certificate for your audits</p>
+            <Button variant="outlined" size="large" className="button-outlined w-[200px]"
+            onClick={() => {navigate('/audit-report-upload')}}>Generate here</Button>
           </Paper>
-        </Grid>
 
-        <Grid item xs={4}>
-          <Paper elevation={0} className="text-center rounded-none shadow p-4">
-            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-5">
-              Ali-Hill/minimal-ptt-examples: 57538a3e1ddba14366b0e718107cef5ce9aabb61
-            </Typography>
-            <ProgressIndicator status="success" value={100} />
-            <Widget
-              title="Code coverage"
-              subtitle="238/251"
-              color="#a78bfa"
-              value={45}
-            />
-            <Widget
-              title="Property Based Testing"
-              subtitle="500/1000"
-              color="#fbbf24"
-              value={75}
-            />
+          <Paper elevation={0} className="text-center rounded-none shadow p-4 flex justify-between items-center" style={{flexFlow: "column"}}>
+            <h2>Documentation</h2>
+            <p>Access the documentation</p>
+            <Button  variant="outlined" size="large" className="button-outlined w-[200px]"
+            onClick={() => {window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}}>Read here</Button>
           </Paper>
-        </Grid>
+      </div>
 
-        <Grid item xs={4}>
-          <Paper elevation={0} className="text-center rounded-none shadow p-4">
-            <Typography className="font-medium text-main text-xl text-ellipsis overflow-hidden whitespace-nowrap mb-5">
-              Ali-Hill/minimal-ptt-examples: 57538a3e1ddba14366b0e718107cef5ce9aabb61
-            </Typography>
-            <ProgressIndicator status="failed" value={100} />
-            <Widget title="Build failed" subtitle="--/--" />
-            <Widget />
-          </Paper>
-        </Grid>
-
-      </Grid>
     </Container>
   );
 };
