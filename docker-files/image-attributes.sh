@@ -1,3 +1,3 @@
 #!/bin/bash
 dockerImage="plutus-certification-web"
-imageTag="10"
+imageTag="11"
