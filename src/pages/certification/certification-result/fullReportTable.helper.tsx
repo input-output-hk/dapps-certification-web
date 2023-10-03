@@ -17,7 +17,7 @@ export const processData = (resultData: any) => {
 
     taskKeys().forEach((key: string) => {
         const dataObj = resultData[key];
-        if (dataObj) {
+        if (dataObj && (Array.isArray(dataObj) ? dataObj.length > 0 : true)) {
             let testStatus = null;
             if (resultKeys.indexOf(key) !== -1) {
                 testStatus = dataObj.tag.toLowerCase()
