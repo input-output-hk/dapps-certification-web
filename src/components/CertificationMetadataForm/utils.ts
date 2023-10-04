@@ -177,7 +177,7 @@ export const getResolver= (isReviewCertification?: boolean) => buildFormResolver
 ].filter(field => field !== null) as Field[]);
 
 export const getDefaultValues = (profile: UserProfile | null): ReportForm => ({
-  certificationLevel: '0',
+  certificationLevel: '',
   summary: '',
   disclaimer: '',
   subject: '',
