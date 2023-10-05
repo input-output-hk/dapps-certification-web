@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 
 import { Box, Grid, Paper, Button } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
+import DownloadIcon from "@mui/icons-material/Download";
 
 import { sendReport } from "store/slices/reportUpload.slice";
 import { getResolver, getDefaultValues, getInformationFields, auditorFields } from "./utils";
@@ -33,7 +33,7 @@ const CertificationMetadataForm = (props: Props) => {
   const { profile } = useAppSelector((state) => state.profile);
   const { loading, success, errorMessage, onchain, offchain, subject, uuid } = useAppSelector((state) => state.reportUpload);
 
-  const { control, register, handleSubmit, getFieldState, formState } = useForm<ReportForm>({
+  const { control, register, handleSubmit, getFieldState, formState, watch } = useForm<ReportForm>({
     defaultValues: getDefaultValues(profile), resolver: getResolver(props.isReviewCertification), mode: 'onBlur'
   });
   const { fields: scriptFields, append: appendScript, remove: removeScript } = useFieldArray({ name: 'scripts', control });
@@ -109,6 +109,7 @@ const CertificationMetadataForm = (props: Props) => {
           </Grid>
           <Grid item md={12} lg={props.standalone ? 6 : 12}>
             <ReportScriptForm
+              watch={watch}
               formState={formState}
               register={register}
               getFieldState={getFieldState}
@@ -123,10 +124,10 @@ const CertificationMetadataForm = (props: Props) => {
                   <Button
                     variant="outlined" size="large"
                     type="submit" className="button-outlined-highlighted"
-                    endIcon={<SendIcon />}
+                    endIcon={<DownloadIcon />}
                     disabled={loading}
                   >
-                    Send Report
+                    Download Metadata Files
                   </Button>
                   {props.isReviewCertification && (
                     <Button
