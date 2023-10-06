@@ -46,6 +46,7 @@ dayjs.extend(tz)
 
 const TestHistory = () => {
   const [data, setData] = useState<Array<Run>>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [runningSpinner, setRunningSpinner] = useState("");
   const [highlightLabelFor, setHighlightLabelFor] = useState("");
   const [skipPageReset, setSkipPageReset] = useState(false);
@@ -363,6 +364,7 @@ const TestHistory = () => {
 
   const fetchTableData = async () => {
     const result = await fetchData.get("/run")
+    setLoading(false);
     /** For mock */
     // const result = await fetchData.get("static/data/history.json");
     if (result.data.length) {
@@ -392,6 +394,7 @@ const TestHistory = () => {
           showColViz={true} 
           updateMyData={updateMyData}
           skipPageReset={skipPageReset}
+          loading={loading}
         />
       </Box>
 

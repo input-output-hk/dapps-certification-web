@@ -3,7 +3,6 @@ import { buildFormResolver } from "compositions/InputGroup/utils";
 
 import type { ReportForm } from "./interface";
 import type { UserProfile } from "store/slices/profile.slice";
-import { Resolver } from "react-hook-form";
 
 const internalInformationFields: Field[] = [
   {
@@ -177,7 +176,7 @@ export const getResolver= (isReviewCertification?: boolean) => buildFormResolver
 ].filter(field => field !== null) as Field[]);
 
 export const getDefaultValues = (profile: UserProfile | null): ReportForm => ({
-  certificationLevel: '0',
+  certificationLevel: '',
   summary: '',
   disclaimer: '',
   subject: '',

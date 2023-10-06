@@ -17,7 +17,7 @@ export const processData = (resultData: any) => {
 
     taskKeys().forEach((key: string) => {
         const dataObj = resultData[key];
-        if (dataObj) {
+        if (dataObj && (Array.isArray(dataObj) ? dataObj.length > 0 : true)) {
             let testStatus = null;
             if (resultKeys.indexOf(key) !== -1) {
                 testStatus = dataObj.tag.toLowerCase()
@@ -68,7 +68,7 @@ export const renderCharts = (data?: any) => {
 
 
 const FailedTaskDetails = (dataObj: any) => {
-    return (<div className="task-details bg-red-background border-red-background">
+    return (<div className="">
         <span className="font-neutral-900 text-red-title block mb-10"><i>{dataObj.reason}</i></span>
         <div className="whitespace-pre">
             <span>Failing TestCase(s):</span>
