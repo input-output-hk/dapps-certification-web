@@ -54,15 +54,6 @@ module.exports = {
         darkGray: '#5a5a5a',
         lighterGreen: '#dff0d8',
         lightGreen: '#e2eee2',
-        primaryBtnColor: '#7f5af0',
-        primaryBtnHoverColor: '#6c4bd2',
-        secondaryBtnColor: '#f9f9f9',
-        secondaryTextColor: '#6f7786',
-        gradientBtnTextColor: '#727272',
-        inputGray: '#3d3b39',
-        inputLabelGray: '#6f7786',
-        mutedGray: '#f9f9f9',
-        danger: '#ff5470'
       },
       backgroundImage: {
         landing: 'url(assets/images/landing-background.png)',
