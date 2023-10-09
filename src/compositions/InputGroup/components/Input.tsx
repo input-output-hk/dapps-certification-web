@@ -23,6 +23,7 @@ const Input = (props: InputProps) => (
     error={props.getFieldState(props.field.name, props.formState).error !== undefined}
     helperText={props.getFieldState(props.field.name, props.formState).error?.message}
     { ...props.register(props.field.name, { required: props.field.required }) }
+    onBlur={props.onBlur ? props.onBlur : props.register(props.field.name, { required: props.field.required }).onBlur}
   >
     {(props.field.options || []).map(option =>
       <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>

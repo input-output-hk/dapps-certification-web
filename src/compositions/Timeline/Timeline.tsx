@@ -2,7 +2,7 @@ import React from "react";
 
 import TimelineItem from "components/TimelineItem/TimelineItem";
 
-import "./Timeline.scss";
+import "./Timeline.css";
 import { useAppSelector } from "store/store";
 
 const Timeline = (props: any) => {

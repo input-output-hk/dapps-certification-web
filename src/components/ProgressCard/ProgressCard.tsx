@@ -1,7 +1,7 @@
 import Tooltip from '@mui/material/Tooltip';
 import { useMemo } from 'react';
 import CircularProgressBar from "./CircularProgressBar";
-import "./ProgressCard.scss";
+import "./ProgressCard.css";
 
 const ProgressCard: React.FC<{
   title: string;
@@ -15,7 +15,7 @@ const ProgressCard: React.FC<{
 
   const Card = useMemo(() => {
     return (
-      <div className="flex max-w-full  content-between shadow shadow-lg bg-white rounded-sm flex-col p-3 sm:flex-row w-fit">
+      <div className="flex max-w-full  content-between shadow-lg bg-white rounded-sm flex-col p-3 sm:flex-row w-fit">
         <div className="inline-flex flex-col justify-around">
           <h5 className="text-neutral truncate max-w-full">
             {title}

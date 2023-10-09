@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { useForm } from "hooks/useForm";
 import { fetchData, postData } from "api/api";
 
-import { Button } from "@mui/material";
+import { Button, Snackbar, Alert, Box } from "@mui/material";
 
+import InputGroup from "compositions/InputGroup";
+import Input from "compositions/InputGroup/components/Input";
 import { LocalStorageKeys } from "constants/constants";
-import TextArea from "components/TextArea/TextArea";
-import Toast from "components/Toast/Toast";
-import { Form } from "compositions/Form/Form";
-import { Input } from "compositions/Form/components/Input";
 import RepoAccessStatus from "components/RepoAccessStatus/RepoAccessStatus";
 import { getErrorMessage } from "utils/utils";
 
+import { resolver, RepoField, CommitField, NameField, VersionField, SubjectField } from "./utils";
 import { clearRepoUrl, setRepoUrl } from "../../slices/certification.slice";
 import { auditorRunTestFormSchema } from "./auditorRunTestForm.schema";
 import { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
@@ -53,18 +52,26 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
 
+  const [initialized, setInitialized] = useState<boolean>(false);
+
   const { repoUrl } = useAppSelector((state) => state.certification);
   const { profile } = useAppSelector((state) => state.profile);
   const { showConfirmConnection, accessStatus, accessToken, verifying } = useAppSelector((state) => state.repoAccess);
-  
-  const form: any = useForm({
-    schema: auditorRunTestFormSchema,
-    mode: "all",
+
+  const form = useForm<IAuditorRunTestFormFields>({
+    resolver, mode: 'all',
     defaultValues: profile && profile.dapp ? {
       repoURL: profile.dapp.owner && profile.dapp.repo ? `https://github.com/${profile.dapp.owner}/${profile.dapp.repo}` : undefined,
       name: profile.dapp.name, version: profile.dapp.version,
     } : undefined
   });
+
+  const handleRepoFieldBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (event.target.value !== form.getValues().repoURL) {
+      checkRepoAccess(event.target.value);
+    }
+    form.setValue('repoURL', event.target.value);
+  }
 
   const checkRepoAccess = (urlValue: string) => {
     if (urlValue) {
@@ -76,6 +83,13 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       }
     }
   }
+
+  useEffect(() => {
+    if (form.getValues().repoURL && !initialized) {
+      setInitialized(true);
+      checkRepoAccess(form.getValues().repoURL);
+    }
+  }, [initialized, form.getValues().repoURL]);
 
   useEffect(() => { 
     if (forceValidate) {
@@ -287,7 +301,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
 
   return (
     <div>
-      <Form form={form} onSubmit={formHandler}>
+      <form onSubmit={form.handleSubmit(formHandler)}>
         <Button
           type="submit" 
           variant="contained" size="large"
@@ -300,61 +314,38 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
         <div className={disable || verifying ? "disabled" : ""}>
           <div className="relative input-wrapper">
             <Input
-              label="GitHub Repository"
-              type="text"
-              id="repoURL"
-              required={true}
+              noGutter={true}
+              field={RepoField}
+              formState={form.formState}
+              register={form.register}
+              getFieldState={form.getFieldState}
               disabled={submitting || verifying}
-              tooltipText="Github Repository URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash)."
-              triggerOnBlur={checkRepoAccess}
-              {...form.register("repoURL")}
+              onBlur={handleRepoFieldBlur}
             />
-
             {(accessStatus && !disable) ? (
-              <div className="absolute right-[-25px] top-6">
+              <div className="absolute right-[-32px] top-[22px]">
                 <RepoAccessStatus status={accessStatus} classes={showConfirmConnection ? "cursor-pointer" : ""} onClick={() => {showConfirmConnection && confirmConnectModal()}} />
               </div>
             ) : null}
           </div>
 
-          <Input
-            label="Commit Hash"
-            type="text"
-            id="commit"
-            required={true}
-            disabled={submitting}
-            {...form.register("commit")}
-          />
-
-          <Input
-            label="DApp Name"
-            type="text"
-            id="name"
-            required={true}
-            disabled={submitting}
-            {...form.register("name")}
-          />
-
-          <Input
-            label="DApp Version"
-            type="text"
-            id="version"
-            required={true}
-            disabled={submitting}
-            {...form.register("version")}
-          />
-
-          <TextArea
-            placeholder="DApp Subject"
-            maxRows={2}
-            required={true}
-            disabled={submitting}
-            {...form.register("subject")}
-          />
+          <Box className="mx-[-1rem]">
+            <InputGroup
+              fields={[CommitField, NameField, VersionField, SubjectField]}
+              formState={form.formState}
+              register={form.register}
+              getFieldState={form.getFieldState}
+              disabled={submitting}
+            />
+          </Box>
         </div>
-      </Form>
+      </form>
 
-      {showError ? <Toast message={showError} /> : null}
+      <Snackbar open={showError !== undefined && showError !== null && showError !== ""} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert severity="error" variant="filled">
+          {showError || 'Something wrong occurred. Please try again.'}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

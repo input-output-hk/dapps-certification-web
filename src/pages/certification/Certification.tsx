@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
@@ -11,7 +11,8 @@ import { clearPersistentStates } from "./components/AuditorRunTestForm/utils";
 import { LocalStorageKeys } from "constants/constants";
 import useLocalStorage from "hooks/useLocalStorage";
 import { IAuditorRunTestFormFields } from "./components/AuditorRunTestForm/auditorRunTestForm.interface";
-import Loader from "components/Loader/Loader";
+
+import './Certification.css';
 
 const Certification = () => {
     const [lsFormData] = useLocalStorage(LocalStorageKeys.certificationFormData, "");
@@ -148,7 +149,7 @@ const Certification = () => {
                         />
                     ) : (
                         <div className="w-full text-center text-xl text-neutral-300 font-medium pt-48">
-                            {clickedFormSubmit ? <Loader /> : <span>Fill the testing form</span>}
+                            {clickedFormSubmit ? <CircularProgress color="secondary" size={50} /> : <span>Fill the testing form</span>}
                         </div>
                     )}
                 </div>

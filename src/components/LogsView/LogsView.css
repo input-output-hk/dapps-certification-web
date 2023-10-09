@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    #logContainer {
+        margin: 10px;
+        text-align: end;
+        @media (max-width: 1199px) {
+            position: relative;
+        }
+    }
+    #viewLogsBtn {
+        margin-right: 1rem;
+    }
+    .log-information {
+        overflow-y: scroll;
+        margin: 0;
+        word-break: break-all;
+        background-color: #424242;
+        color: #ccc;
+        min-height: 200px;
+        max-height: 400px;
+        z-index: 1;
+        text-align: left;
+
+        .log-header {
+            height: 30px;
+            position: sticky;
+            top: 0;
+            padding: 0 10px;
+            background-color: #585858;
+            color: #e8e8e8;
+            font-weight: bold;
+            line-height: 30px;
+            h5 {
+                float: left;
+                margin: 0;
+            }
+            .minimize-btn {
+                cursor: pointer;
+                font-size: xxx-large;
+                float: right;
+            }
+        }
+        .log-content {
+            div.log {
+                padding: 5px 5px;
+                .log-time {
+                    margin-right: 15px;
+                }
+            }
+        }
+    }
+}

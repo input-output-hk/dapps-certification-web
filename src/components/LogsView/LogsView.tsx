@@ -1,7 +1,7 @@
 import { useLogs } from "hooks/useLogs";
 import React, { FC, useState, useEffect, useRef } from "react";
 
-import "./LogsView.scss";
+import "./LogsView.css";
 import LogsViewEntry from "./LogsViewEntry";
 
 const LogsView: FC<{

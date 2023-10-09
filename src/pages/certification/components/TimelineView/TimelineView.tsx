@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useConfirm } from "material-ui-confirm";
+import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 
 import { deleteTestHistoryData } from "pages/testingHistory/slices/deleteTestHistory.slice";
@@ -31,7 +32,6 @@ import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import DownloadResult from "../DownloadResult/DownloadResult";
 import FileCoverageContainer from "../FileCoverageContainer";
 import { clearPersistentStates } from "../AuditorRunTestForm/utils";
-import Loader from "components/Loader/Loader";
 import StatusIcon from "components/StatusIcon/StatusIcon";
 
 
@@ -258,7 +258,7 @@ const TimelineView: React.FC<{
   }, []);
 
   if (uuid && !runStatus) {
-    return <Loader />
+    return <CircularProgress color="secondary" size={50} />;
   }
 
   return (
