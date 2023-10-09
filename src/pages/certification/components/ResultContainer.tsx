@@ -25,7 +25,7 @@ const ResultContainer: React.FC<{
   };
 
   return (
-    <div id="resultContainer">
+    <div>
       <>
         {/* Unit Test results */}
         {unitTestSuccess === false && unitTestKeys.length

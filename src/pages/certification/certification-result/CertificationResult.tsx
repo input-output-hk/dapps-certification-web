@@ -134,10 +134,7 @@ const CertificationResult = () => {
           </>
         </div>
 
-        <div
-          id="certificationWrapper"
-          className="content-area-box shadow-lg bg-white px-5 py-4"
-        >
+        <div className="content-area-box shadow-lg bg-white px-5 py-4">
           <LogsView
             runId={param.uuid as string}
             endPolling={true}

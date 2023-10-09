@@ -11,8 +11,6 @@ import { payFromWallet } from "store/slices/walletTransaction.slice";
 
 import CertificationMetadataForm from "components/CertificationMetadataForm";
 
-import "./CreateCertificate.css";
-
 export interface Run {
     certificationPrice: number;
     commitDate: string;

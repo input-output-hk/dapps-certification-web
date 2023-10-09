@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import '../Certification.css';
+
 const UnitTestFailureCard: React.FC<{
     resultObj: any;
     }> = ({ resultObj }) => {

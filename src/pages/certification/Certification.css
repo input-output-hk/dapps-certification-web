@@ -3,101 +3,43 @@
 @tailwind utilities;
 
 @layer components {
-  #searchContainer {
-    @apply mb-0 mx-auto mt-[2rem] max-w-[65%] p-[10px];
-    @media (max-width: 768px) {
-      & {
-        max-width: fit-content;
-      }
-    }
-    .search-form {
-      @apply max-w-[340px] my-[30px] mx-auto flex flex-col relative;
-      .or-separator-text {
-        @apply text-center align-middle mb-[20px] text-bodyTextGray;
-      }
-      .footer {
-        @apply flex justify-center gap-x-[10px];
-        .btn { @apply flex; }
-      }
-    }
-    h2 {
-      @apply text-[16px] leading-[24px] text-bodyTextGray text-center;
-    }
+  .result-card {
+    @apply mb-[15px] p-[8px] overflow-auto border border-solid rounded-[5px];
   }
-  
-  #searchContainerEmpty {
-    p {
-      @apply leading-[36px] text-center text-[18px];
-    }
+  .failure {
+    @apply border-lightRed bg-lightRed;
   }
-
-  .btn-abort {
-    @apply bg-red text-darkBgTextColor;
+  .error-title {
+    @apply text-darkRed;
   }
-
-  #resultContainer {
-    .back-btn {
-      @apply bg-transparent cursor-pointer border-none;
-      img {
-        @apply w-[30px] p-[10px];
-      }
-    }
-    header {
-      @apply flex justify-between flex-wrap gap-[15px];
-      & > div {
-        @apply flex flex-wrap;
-        & > .btn {
-          @apply whitespace-nowrap m-0;
-          &button.report-download {
-            .icon-image {
-              @apply w-[1rem];
-            }
-          }
-        }
-      }
-    }
-    .result-card {
-      @apply mb-[15px] p-[8px] overflow-auto border border-solid rounded-[5px];
-    }
-    .failure {
-      @apply border-lightRed bg-lightRed;
-      .error-title {
-        @apply text-darkRed;
-      }
-    }
-    .result-card span {
-      @apply block mb-[10px];
-    }
-    .result-card label {
-      @apply block mb-[10px] font-semibold text-darkGray;
-    }
-    .result-card .accordion-content label {
-      @apply font-medium;
-    }
-    .failing-testcase {
-      @apply ml-[10px];
-    }
-    .failure-output {
-      @apply mt-[20px] whitespace-pre;
-    }
-    .success {
-      @apply bg-lighterGreen border-lightGreen;
-    }
-    .accordion-title {
-      @apply cursor-pointer;
-    }
-    .accordion-content {
-      @apply mt-[20px];
-    }
-    .chart-container {
-      @apply flex flex-wrap;
-      .chart-wrapper {
-        @apply w-[33%];
-      }
-    }
+  .result-card span {
+    @apply block mb-[10px];
   }
-
-  #certificationWrapper.flex > * {
-    @apply flex-1;
+  .result-card label {
+    @apply block mb-[10px] font-semibold text-darkGray;
+  }
+  .result-card .accordion-content label {
+    @apply font-medium;
+  }
+  .failing-testcase {
+    @apply ml-[10px];
+  }
+  .failure-output {
+    @apply mt-[20px] whitespace-pre;
+  }
+  .success {
+    @apply bg-lighterGreen border-lightGreen;
+  }
+  .accordion-title {
+    @apply cursor-pointer;
+  }
+  .accordion-content {
+    @apply mt-[20px];
+  }
+  .chart-container {
+    @apply flex flex-wrap;
+  }
+  .chart-wrapper {
+    @apply w-[33%];
   }
 }
