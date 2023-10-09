@@ -13,7 +13,7 @@ import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
 import {
   processFinishedJson,
   processTimeLineConfig,
-} from "components/TimelineItem/timeline.helper";
+} from "compositions/Timeline/components/TimelineItem/timeline.helper";
 
 import { ellipsizeString } from "../../../utils/utils";
 import DownloadResult from "../components/DownloadResult/DownloadResult";

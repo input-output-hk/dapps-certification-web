@@ -1,97 +1,56 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+.statusTimeline {
+  margin-top: 50px;
+}
 
-@layer components {
-  #statusTimeline {
-    margin-top: 50px;
-    ul {
-      display: flex;
-      list-style-type: none;
-      justify-content: space-between;
-      padding: 0;
-      position: relative;
+.statusTimelineUl {
+  display: flex;
+  list-style-type: none;
+  justify-content: space-between;
+  padding: 0;
+  position: relative;
 
-      &:before {
-        position: absolute;
-        content: " ";
-        background-color: #c7d9f6;
-        height: 2px;
-        top: 6px;
-        bottom: 26px;
-        left: 30px;
-        right: 0;
-        width: calc(100% - 80px);
-        margin-bottom: 20px;
-      }
-
-      li {
-        position: relative;
-        display: flex;
-        align-items: center;
-        flex-flow: column;
-        row-gap: 10px;
-
-        .image {
-          width: 25px;
-          padding: 5px;
-          border-radius: 16px;
-          margin-top: -10px;
-          @apply bg-white;
-        }
-
-        span.text {
-          margin-left: 10px;
-          font-size: 14px;
-        }
-        span.small-text {
-          font-size: small;
-        }
-
-        span.progress-percentage {
-          position: absolute;
-          top: 2px;
-          font-weight: bold;
-          @apply text-yellow-400;
-        }
-      }
-    }
+  &:before {
+    position: absolute;
+    content: " ";
+    background-color: #c7d9f6;
+    height: 2px;
+    top: 2px;
+    bottom: 26px;
+    left: 30px;
+    right: 0;
+    width: calc(100% - 80px);
+    margin-bottom: 20px;
   }
+}
 
+.statusTimelineLi {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-flow: column;
+  row-gap: 10px;
+}
 
-  @media (max-width: 768px) {
-    #statusTimeline {
-      ul {
-        justify-content: center;
+.statusTimelineImage {
+  background-color: #fff;
+  width: 25px;
+  padding: 5px;
+  border-radius: 16px;
+  margin-top: -10px;
+}
 
-        &:before {
-          display: none;
-        }
+.statusTimelineText {
+  margin-left: 10px;
+  font-size: 14px;
+}
 
-        li {
-          padding-left: 0.5em;
-          padding-right: 0.5em;
+.statusTimelineSmallText {
+  font-size: small;
+}
 
-          &:not(.active) span.text {
-            font-size: 8px!important;
-            margin-left: 0 !important;
-          }
-
-          &:not(:last-child):after {
-            bottom: 26px;
-            content: " ";
-            height: 3px;
-            left: 30px;
-            margin-bottom: 20px;
-            position: absolute;
-            right: 0;
-            top: 6px;
-            width: 100%;
-            z-index: -1;
-            @apply bg-gray-300;
-          }
-        }
-      }
-    }
-  }
+.statusTimelineProgressPercentage {
+  color: #FACC14;
+  position: absolute;
+  top: 2px;
+  font-weight: bold;
 }

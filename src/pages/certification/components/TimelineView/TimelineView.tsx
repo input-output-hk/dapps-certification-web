@@ -13,7 +13,7 @@ import { useDelayedApi } from "hooks/useDelayedApi";
 
 import Timeline from "compositions/Timeline/Timeline";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
-import { processFinishedJson, processTimeLineConfig } from "components/TimelineItem/timeline.helper";
+import { processFinishedJson, processTimeLineConfig } from "compositions/Timeline/components/TimelineItem/timeline.helper";
 import {
   calculateCurrentProgress,
   calculateExpectedProgress,

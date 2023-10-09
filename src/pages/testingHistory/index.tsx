@@ -15,7 +15,7 @@ import { useAppDispatch } from "store/store";
 import { deleteTestHistoryData } from "./slices/deleteTestHistory.slice";
 
 import TableComponent from "components/Table/Table";
-import { processFinishedJson } from "components/TimelineItem/timeline.helper";
+import { processFinishedJson } from "compositions/Timeline/components/TimelineItem/timeline.helper";
 import { isAnyTaskFailure } from "pages/certification/Certification.helper";
 import { Run } from 'components/CreateCertificate/CreateCertificate';
 import { exportObjectToJsonFile } from "utils/utils";
