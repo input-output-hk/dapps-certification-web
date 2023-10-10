@@ -53,10 +53,10 @@ export const auditorRunTestFormSchema = yup.object().shape({
         return true;
       },
     }),
-  version: yup.string(),
+  version: yup.string().nullable(),
   name: yup.string().required("This field is required"),
   subject: yup
-    .string()
+    .string().nullable()
     .max(64, "Please enter a valid subject with upto 64 characters")
     .matches(/^[0-9a-zA-Z_]*$/, "Please enter a valid subject (that has a-z, A-Z, 0-9 or _ characters only)."),
 });
