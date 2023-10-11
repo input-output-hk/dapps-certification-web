@@ -59,7 +59,7 @@ node_modules/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+.env.local
 
 # any static API response mock-ups
 public/static/data
