@@ -196,9 +196,12 @@ export const getDefaultValues = (profile: UserProfile | null): ReportForm => ({
   }]
 });
 
-export const getInformationFields = (isReviewCertification?: boolean) =>
+export const getInformationFields = (isReviewCertification: boolean = false, profileHasSubject: boolean = false) =>
   !isReviewCertification ? internalInformationFields : internalInformationFields.filter(
-    field => field.name !== 'subject' && field.name !== 'certificationLevel')
+    field => {
+      return (profileHasSubject ? field.name !== 'subject' : true) && field.name !== 'certificationLevel'
+    }
+  )
 
 export const auditorFields = [
   ...internalAuditorFields.map(f => ({ ...f, name: `certificateIssuer.${f.name}` })),

@@ -53,6 +53,25 @@ const initialState: ReportUploadState = {
   uuid: null,
 };
 
+export const generateRunCertificate = createAsyncThunk("generateRunCertificate", async (payload: string | null, { rejectWithValue }) => {
+  if (!payload) {
+    throw new Error("Metadata for Incorrect Run-ID requested")
+  }
+  try {
+    const response = await fetchData.post('/run/' + payload + '/certificate')
+    if (response.status !== 200) throw { response }
+    return {
+      status: "OK"
+    }
+  } catch (error: any) {
+    let errorMessage = 'Something went wrong. Please try again.';
+    if (error?.response?.data) {
+      errorMessage = `${error.response.statusText} - ${error.response.data}`;
+    }
+    return rejectWithValue(errorMessage);
+  }
+})
+
 export const sendReport = createAsyncThunk("sendReport", async (payload: { request: ReportUploadRequest, uuid?: string }, { rejectWithValue }) => {
   try {
     const response = await fetchData.post(payload.uuid ? `/run/${payload.uuid}/certificate` : '/auditor/reports', payload.request);
@@ -99,6 +118,16 @@ export const reportUploadSlice = createSlice({
         state.loading = false;
         state.success = false;
         state.errorMessage = actions.payload as string;
+      })
+      .addCase(generateRunCertificate.pending, (state)=> {
+        state.loading = true;
+      })
+      .addCase(generateRunCertificate.rejected, (state, actions)=> {
+        state.loading = false;
+        state.errorMessage = actions.payload as string;
+      })
+      .addCase(generateRunCertificate.fulfilled, (state)=> {
+        state.loading = false;
       })
   },
 });

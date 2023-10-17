@@ -4,7 +4,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { Box, Grid, Paper, Button } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 
-import { sendReport } from "store/slices/reportUpload.slice";
+import { generateRunCertificate, sendReport } from "store/slices/reportUpload.slice";
 import { getResolver, getDefaultValues, getInformationFields, auditorFields } from "./utils";
 import { removeEmptyStringsDeep, exportObjectToJsonFile } from "utils/utils";
 import { useAppDispatch, useAppSelector } from "store/store";
@@ -50,18 +50,21 @@ const CertificationMetadataForm = (props: Props) => {
     }
   }, [onchain, offchain, subject, uuid, submitted]);
 
-  const onSubmit = (form: ReportForm) => {
+  const onSubmit = async (form: ReportForm) => {
     setSubmitted(true);
     const request = removeEmptyStringsDeep(form) as ReportForm;
-    dispatch(sendReport({
-      request: {
-        ...request,
-        certificationLevel: !props.isReviewCertification ? parseInt(request.certificationLevel) : undefined,
-        report: !props.isReviewCertification ? request.report.map(report => report.value) : undefined,
-        subject: props.isReviewCertification && profile?.dapp?.subject ? undefined : request.subject
-      },
-      uuid: props.uuid
-    }));
+    const response: any = await dispatch(generateRunCertificate(uuid)); console.log(' after generateRunCertificate - ', response.data)
+    if (response.data.status === "OK") {
+      dispatch(sendReport({
+        request: {
+          ...request,
+          certificationLevel: !props.isReviewCertification ? parseInt(request.certificationLevel) : undefined,
+          report: !props.isReviewCertification ? request.report.map(report => report.value) : undefined,
+          subject: props.isReviewCertification && profile?.dapp?.subject ? undefined : request.subject
+        },
+        uuid: props.uuid
+      }));
+    }
   }
 
   const onCloseModal = () => {
@@ -78,7 +81,7 @@ const CertificationMetadataForm = (props: Props) => {
           <Grid item md={12} lg={props.standalone ? 6 : 12}>
             <InputGroup
               title="Certification Information"
-              fields={getInformationFields(props.isReviewCertification)}
+              fields={getInformationFields(props.isReviewCertification, profile?.dapp?.subject ? true : false)}
               formState={formState}
               register={register}
               getFieldState={getFieldState}
