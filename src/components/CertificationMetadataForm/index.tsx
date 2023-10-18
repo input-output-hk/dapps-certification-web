@@ -4,7 +4,8 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { Box, Grid, Paper, Button } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 
-import { generateRunCertificate, sendReport } from "store/slices/reportUpload.slice";
+import { updateProfile } from "store/slices/profile.slice";
+import { sendReport } from "store/slices/reportUpload.slice";
 import { getResolver, getDefaultValues, getInformationFields, auditorFields } from "./utils";
 import { removeEmptyStringsDeep, exportObjectToJsonFile } from "utils/utils";
 import { useAppDispatch, useAppSelector } from "store/store";
@@ -53,14 +54,21 @@ const CertificationMetadataForm = (props: Props) => {
   const onSubmit = async (form: ReportForm) => {
     setSubmitted(true);
     const request = removeEmptyStringsDeep(form) as ReportForm;
-    const response: any = await dispatch(generateRunCertificate(uuid)); console.log(' after generateRunCertificate - ', response.data)
-    if (response.data.status === "OK") {
+    
+    const updatedProfile: any = { 
+      ...profile, 
+      dapp: request.subject ? { ...profile?.dapp, subject: request.subject } : (profile ? profile.dapp : null)
+    };
+
+    const response: any = props.isReviewCertification && await dispatch(updateProfile(updatedProfile))
+    const {subject, certificationLevel, report, ...rest} = request
+    if (props.isReviewCertification ? response.payload.address : true) {
       dispatch(sendReport({
         request: {
-          ...request,
-          certificationLevel: !props.isReviewCertification ? parseInt(request.certificationLevel) : undefined,
-          report: !props.isReviewCertification ? request.report.map(report => report.value) : undefined,
-          subject: props.isReviewCertification && profile?.dapp?.subject ? undefined : request.subject
+          ...rest,
+          ...(!props.isReviewCertification ? {certificationLevel: parseInt(certificationLevel)} : {}),
+          ...(!props.isReviewCertification ? {report: report.map(report => report.value)} : {}),
+          ...(!props.isReviewCertification ? {subject: subject} : {})
         },
         uuid: props.uuid
       }));
