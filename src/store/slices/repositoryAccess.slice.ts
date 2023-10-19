@@ -1,57 +1,44 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRepoAccess, postExternal, fetchData } from "api/api";
-import { AxiosResponse } from "axios";
-import { LocalStorageKeys } from "constants/constants";
+import { AxiosRequestHeaders, AxiosResponse } from "axios";
+import { fetch } from "api";
+
+import { setAccessToken } from "./session.slice";
+
+import type { RootState } from "../rootReducer";
 
 interface RepoAccessState {
   verifying: boolean;
   accessible: boolean;
   showConfirmConnection: boolean;
-  accessToken: string;
   accessStatus: string;
 }
 const initialState: RepoAccessState = {
   verifying: false,
   accessible: false,
   showConfirmConnection: false,
-  accessToken: "",
-  accessStatus: "",
+  accessStatus: '',
 };
 
-export const verifyRepoAccess = createAsyncThunk(
-  "verifyRepoAccess",
-  async (payload: any, { rejectWithValue }) => {
-    try {
-      const response = await getRepoAccess.get(
-        "/repo/" + payload.owner + "/" + payload.repo
-      );
-      return response.data;
-    } catch (e: any) {
-      return rejectWithValue(e.response.data);
-    }
+export const verifyRepoAccess = createAsyncThunk('verifyRepoAccess', async (payload: { owner: string, repo: string }, thunkApi) => {
+  try {
+    const accessToken = (thunkApi.getState() as RootState).session.accessToken;
+    const headers = (accessToken ? { 'Authorization': accessToken } : {}) as AxiosRequestHeaders;
+    const response = await fetch<any>(thunkApi, { method: 'GET', url: `/repo/${payload.owner}/${payload.repo}`, headers }, false);
+    return response.data;
+  } catch (e: any) {
+    return thunkApi.rejectWithValue(e.response.data);
   }
-);
+});
 
-export const getUserAccessToken = createAsyncThunk(
-  "getUserAccessToken",
-  async (payload: any) =>
-    fetchData.post<any, AxiosResponse<{ access_token: string }>, any>(
-      `/github/access-token/${payload.code}`
-    )
-);
+export const getUserAccessToken = createAsyncThunk('getUserAccessToken', async (payload: { code: string }, thunkApi) => {
+  const response = await fetch<{ access_token: string }>(thunkApi, { method: 'POST', url: `/github/access-token/${payload.code}` });
+  await thunkApi.dispatch(setAccessToken({ accessToken: response.data.access_token }));
+});
 
 export const repoAccessSlice = createSlice({
   name: "repoAccess",
   initialState,
   reducers: {
-    clearStates: () => {
-      localStorage.removeItem(LocalStorageKeys.accessToken);
-      return initialState;
-    },
-    clearAccessToken: (state) => {
-      state.accessToken = "";
-      return state;
-    },
     hideConfirmConnection: (state) => {
       state.showConfirmConnection = false;
       return state;
@@ -85,23 +72,9 @@ export const repoAccessSlice = createSlice({
         state.accessStatus = "accessible";
         state.showConfirmConnection = false;
       })
-      .addCase(getUserAccessToken.rejected, (state, actions) => {
-        state.accessToken = "";
-      })
-      .addCase(getUserAccessToken.pending, (state, actions) => {})
-      .addCase(getUserAccessToken.fulfilled, (state, actions) => {
-        const token: string = actions.payload?.data.access_token;
-        localStorage.setItem(LocalStorageKeys.accessToken, token);
-        state.accessToken = token;
-      });
   },
 });
-export const {
-  clearStates,
-  clearAccessToken,
-  hideConfirmConnection,
-  setRepoAccessible,
-  clearAccessStatus
-} = repoAccessSlice.actions;
+
+export const { hideConfirmConnection, setRepoAccessible, clearAccessStatus } = repoAccessSlice.actions;
 
 export default repoAccessSlice.reducer;

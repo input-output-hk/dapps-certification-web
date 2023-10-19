@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchData } from "api/api";
+import { fetch } from "api";
 
 import { Address,
     Value,
@@ -26,18 +26,15 @@ type PaymentData = {
   address: string,
   payer: string
 }
-export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: PaymentData, { rejectWithValue }) => {
+export const payFromWallet: any = createAsyncThunk("payFromWallet", (data: PaymentData, thunkApi) => {
     return new Promise(async (resolve: any, reject) => {
         const throwError = (errorObj: any) => {
-            rejectWithValue(errorObj.info)
+            thunkApi.rejectWithValue(errorObj.info)
             reject(errorObj.info)
         }
         try {
             const cert_fee_in_lovelaces = data.fee
-
-            const walletAddrAPI = '/profile/current/wallet-address';
-            const walletAddressRes: any = await fetchData.get(walletAddrAPI).catch(throwError)
-
+            const walletAddressRes = await fetch<string[]>(thunkApi, { method: 'GET', url: '/profile/current/wallet-address' });
             const applicationWallet_receiveAddr = walletAddressRes.data[1];
             const cert_fee_lovelace: BigNum = cert_fee_in_lovelaces; //BigNum.from_str(cert_fee_in_lovelaces.toString())
 

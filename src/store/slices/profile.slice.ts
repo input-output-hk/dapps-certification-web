@@ -1,28 +1,29 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchData } from "api/api";
+import { fetch } from "api";
 
 export interface UserProfile {
-  address?: string;
-  email?: string;
-  fullName?: string;
-  companyName?: string;
-  contactEmail?: string;
-  linkedin?: string | null;
-  twitter?: string | null;
-  website?: string | null;
-  dapp?: {
+  address: string;
+  email: string;
+  fullName: string;
+  companyName: string;
+  contactEmail: string;
+  linkedin: string | null;
+  twitter: string | null;
+  website: string | null;
+  dapp: {
     name: string;
     owner: string;
     repo: string;
     version: string;
-    githubToken?: string | null;
-    subject?: string;
+    githubToken?: string;
   } | null;
 }
 
 interface ProfileState {
   profile: UserProfile | null;
+  isProfileUpdatedLocally: boolean;
+  needsToValidateRepository: boolean;
   errorMessage: string | null;
   loading: boolean;
   success: boolean;
@@ -30,6 +31,8 @@ interface ProfileState {
 
 const initialState: ProfileState = {
   profile: null,
+  isProfileUpdatedLocally: false,
+  needsToValidateRepository: false,
   errorMessage: null,
   loading: false,
   success: false,
@@ -37,7 +40,7 @@ const initialState: ProfileState = {
 
 export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {}, thunkApi) => {
   try {
-    const response = await fetchData.get('/profile/current');
+    const response = await fetch<UserProfile>(thunkApi, { method: 'GET', url: '/profile/current' });
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {
@@ -47,7 +50,8 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {},
 
 export const updateProfile = createAsyncThunk('updateProfile', async (data: UserProfile, thunkApi) => {
   try {
-    const response = await fetchData.put('/profile/current', data);
+    console.log(data);
+    const response = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: '/profile/current', data });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -62,12 +66,27 @@ export const profileSlice = createSlice({
   initialState,
   reducers: {
     clearProfile: () => initialState,
+    updateProfileLocally: (state, actions) => ({
+      ...initialState,
+      profile: actions.payload,
+      isProfileUpdatedLocally: true,
+      needsToValidateRepository: (
+        state.needsToValidateRepository ||
+        actions.payload.dapp.repo !== state.profile?.dapp?.repo ||
+        actions.payload.dapp.owner !== state.profile?.dapp?.owner
+      ),
+    })
   },
   extraReducers: (builder) => {
     builder
+
       // FETCH PROFILE
       .addCase(fetchProfile.fulfilled, (state, actions) => {
-        state.profile = actions.payload;
+        if (!state.needsToValidateRepository) {
+          state.profile = actions.payload;
+        } else {
+          state.profile = { ...actions.payload, dapp: state.profile?.dapp || null };
+        }
       })
       .addCase(fetchProfile.rejected, (state) => {
         state.profile = null;
@@ -81,6 +100,8 @@ export const profileSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, actions) => {
         state.profile = actions.payload;
+        state.needsToValidateRepository = false;
+        state.isProfileUpdatedLocally = false;
         state.loading = false;
         state.success = true;
       })
@@ -90,5 +111,7 @@ export const profileSlice = createSlice({
       })
   },
 });
+
+export const { clearProfile, updateProfileLocally } = profileSlice.actions;
 
 export default profileSlice.reducer;

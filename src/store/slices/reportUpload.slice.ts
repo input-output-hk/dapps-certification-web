@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchData } from "api/api";
+import { fetch } from "api";
 
 export interface ReportUploadRequest {
   certificationLevel?: number;
@@ -43,6 +43,11 @@ interface ReportUploadState {
   uuid: string|null;
 }
 
+interface SendReportResponse {
+  onchain: any;
+  offchain: any;
+}
+
 const initialState: ReportUploadState = {
   loading: false,
   success: false,
@@ -53,9 +58,9 @@ const initialState: ReportUploadState = {
   uuid: null,
 };
 
-export const sendReport = createAsyncThunk("sendReport", async (payload: { request: ReportUploadRequest, uuid?: string }, { rejectWithValue }) => {
+export const sendReport = createAsyncThunk("sendReport", async (payload: { request: ReportUploadRequest, uuid?: string }, thunkApi) => {
   try {
-    const response = await fetchData.post(payload.uuid ? `/run/${payload.uuid}/certificate` : '/auditor/reports', payload.request);
+    const response = await fetch<SendReportResponse>(thunkApi, { method: 'POST', url: payload.uuid ? `/run/${payload.uuid}/certificate` : '/auditor/reports', data: payload.request });
     if (response.status !== 200) throw { response };
     return {
       onchain: response.data.onchain,
@@ -68,7 +73,7 @@ export const sendReport = createAsyncThunk("sendReport", async (payload: { reque
     if (error?.response?.data) {
       errorMessage = `${error.response.statusText} - ${error.response.data}`;
     }
-    return rejectWithValue(errorMessage);
+    return thunkApi.rejectWithValue(errorMessage);
   }
 });
 
