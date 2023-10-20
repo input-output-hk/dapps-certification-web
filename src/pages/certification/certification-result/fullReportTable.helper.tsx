@@ -121,7 +121,7 @@ export const generateCollapsibleContent = (row: any) => {
         } 
         else if (key === "_certRes_DLTests") {
             return dataObj.map((entry: any, index: number) => {
-                return (<div className={`task-details ${status === "failure" ? "bg-red-background border-red-background" : ""}`}>
+                return (<div className={`task-details ${entry[1].tag.toLowerCase() === "failure" ? "bg-red-background border-red-background" : ""}`}>
                     {status === "success" && (<span className="font-neutral-900 block mb-10"><i>OK, passed {dataObj.length}/{dataObj.length} tests</i></span>)}
                     <div key={index}>
                         <label className={`font-neutral-900 ${status === "failure" ? "text-red-title block mb-10" : ""}`}>
