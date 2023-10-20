@@ -67,8 +67,8 @@ export const renderCharts = (data?: any) => {
 }
 
 
-const FailedTaskDetails = (dataObj: any) => {
-    return (<div className="">
+const FailedTaskDetails = (dataObj: any, multiple?: boolean) => {
+    return (<div className={`${multiple ? "" : "task-details bg-red-background border-red-background"}`}>
         <span className="font-neutral-900 text-red-title block mb-10"><i>{dataObj.reason}</i></span>
         <div className="whitespace-pre">
             <span>Failing TestCase(s):</span>
@@ -127,7 +127,7 @@ export const generateCollapsibleContent = (row: any) => {
                         <label className={`font-neutral-900 ${status === "failure" ? "text-red-title block mb-10" : ""}`}>
                             Test: {formatToTitleCase(entry[0])}
                         </label>
-                        {entry[1].tag.toLowerCase() === "success" ? SuccessTaskChart(entry[1]) : FailedTaskDetails(entry[1])}
+                        {entry[1].tag.toLowerCase() === "success" ? SuccessTaskChart(entry[1]) : FailedTaskDetails(entry[1], true)}
                     </div>
                 </div>)
             })
