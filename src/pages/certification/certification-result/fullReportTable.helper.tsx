@@ -112,8 +112,8 @@ export const generateCollapsibleContent = (row: any) => {
                 return dataObj.map((entry: any, index: number) => {
                     if (typeof entry !== 'string' && entry.resultOutcome.tag === 'Failure') {
                         return (<div className="task-details bg-red-background border-red-background">
-                            <span className="font-neutral-900 text-red-title block mb-10"><i>{dataObj.resultShortDescription}</i></span>
-                            <div>{dataObj.resultDescription}</div>
+                            <span className="font-neutral-900 text-red-title block mb-10"><i>{entry.resultShortDescription}</i></span>
+                            <div className="whitespace-pre">{entry.resultDescription}</div>
                         </div>)
                     }
                 })
