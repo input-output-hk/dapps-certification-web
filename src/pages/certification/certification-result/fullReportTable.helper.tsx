@@ -127,7 +127,7 @@ export const generateCollapsibleContent = (row: any) => {
                         <label className={`font-neutral-900 ${status === "failure" ? "text-red-title block mb-10" : ""}`}>
                             Test: {formatToTitleCase(entry[0])}
                         </label>
-                        {status === "success" ? SuccessTaskChart(entry[1]) : FailedTaskDetails(entry[1])}
+                        {entry[1].tag.toLowerCase() === "success" ? SuccessTaskChart(entry[1]) : FailedTaskDetails(entry[1])}
                     </div>
                 </div>)
             })
