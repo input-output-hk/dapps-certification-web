@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchData } from "api/api";
 
+import type { UserProfile } from "./profile.slice";
+
 export interface ReportUploadRequest {
   certificationLevel?: number;
   summary: string;
@@ -53,16 +55,24 @@ const initialState: ReportUploadState = {
   uuid: null,
 };
 
-export const sendReport = createAsyncThunk("sendReport", async (payload: { request: ReportUploadRequest, uuid?: string }, { rejectWithValue }) => {
+export const sendReport = createAsyncThunk("sendReport", async (payload: { request: ReportUploadRequest, uuid?: string, profile?: UserProfile }, { rejectWithValue, dispatch }) => {
   try {
-    const response = await fetchData.post(payload.uuid ? `/run/${payload.uuid}/certificate` : '/auditor/reports', payload.request);
-    if (response.status !== 200) throw { response };
-    return {
-      onchain: response.data.onchain,
-      offchain: response.data.offchain,
-      subject: payload.request.subject,
-      uuid: payload.uuid || null
-    };
+    let profileHasAddress = false;
+    if (payload.profile) {
+      const profileRes = await fetchData.put('/profile/current', payload.profile);
+      profileHasAddress = !!profileRes.data.address;
+    }
+    if (payload.profile && profileHasAddress || !payload.profile) {
+      const response = await fetchData.post(payload.uuid ? `/run/${payload.uuid}/certificate` : '/auditor/reports', payload.request);
+      if (response.status !== 200) throw { response };
+      return {
+        onchain: response.data.onchain,
+        offchain: response.data.offchain,
+        subject: payload.request.subject,
+        uuid: payload.uuid || null
+      };
+    }
+    return null;
   } catch (error: any) {
     let errorMessage = 'Something went wrong. Please try again.';
     if (error?.response?.data) {
@@ -89,11 +99,13 @@ export const reportUploadSlice = createSlice({
       })
       .addCase(sendReport.fulfilled, (state, actions) => {
         state.loading = false;
-        state.success = true;
-        state.onchain = actions.payload.onchain;
-        state.offchain = actions.payload.offchain;
-        state.subject = actions.payload.subject || null;
-        state.uuid = actions.payload.uuid;
+        if (actions.payload !== null) {
+          state.success = true;
+          state.onchain = actions.payload.onchain;
+          state.offchain = actions.payload.offchain;
+          state.subject = actions.payload.subject || null;
+          state.uuid = actions.payload.uuid;
+        }
       })
       .addCase(sendReport.rejected, (state, actions) => {
         state.loading = false;

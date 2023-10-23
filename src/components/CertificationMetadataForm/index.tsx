@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 
-import { Box, Grid, Paper, Button } from "@mui/material";
+import { Box, Grid, Button } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 
-import { updateProfile } from "store/slices/profile.slice";
 import { sendReport } from "store/slices/reportUpload.slice";
 import { getResolver, getDefaultValues, getInformationFields, auditorFields } from "./utils";
-import { removeEmptyStringsDeep, exportObjectToJsonFile } from "utils/utils";
+import { removeEmptyStringsDeep, exportObjectToJsonFile, removeNullsDeep } from "utils/utils";
 import { useAppDispatch, useAppSelector } from "store/store";
 
 import InputGroup from "compositions/InputGroup";
@@ -31,11 +30,13 @@ const CertificationMetadataForm = (props: Props) => {
   const dispatch = useAppDispatch();
   const [showModal, setShowModal] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [hasSubject, setHasSubject] = useState<boolean|null>(null);
   const { profile } = useAppSelector((state) => state.profile);
   const { loading, success, errorMessage, onchain, offchain, subject, uuid } = useAppSelector((state) => state.reportUpload);
 
+  const defaultValues = getDefaultValues(removeNullsDeep(JSON.parse(JSON.stringify(profile))));
   const { control, register, handleSubmit, getFieldState, formState, watch } = useForm<ReportForm>({
-    defaultValues: getDefaultValues(profile), resolver: getResolver(props.isReviewCertification), mode: 'onBlur'
+    defaultValues, resolver: getResolver(props.isReviewCertification, !!hasSubject), mode: 'onBlur'
   });
   const { fields: scriptFields, append: appendScript, remove: removeScript } = useFieldArray({ name: 'scripts', control });
   const { fields: reportFields, append: appendReport, remove: removeReport } = useFieldArray({ name: 'report', control });
@@ -51,28 +52,28 @@ const CertificationMetadataForm = (props: Props) => {
     }
   }, [onchain, offchain, subject, uuid, submitted]);
 
+  useEffect(() => {
+    if (hasSubject === null) {
+      setHasSubject(!!profile?.dapp?.subject);
+    }
+  }, [profile, hasSubject]);
+
   const onSubmit = async (form: ReportForm) => {
     setSubmitted(true);
-    const request = removeEmptyStringsDeep(form) as ReportForm;
-    
-    const updatedProfile: any = { 
-      ...profile, 
-      dapp: request.subject ? { ...profile?.dapp, subject: request.subject } : (profile ? profile.dapp : null)
-    };
-
-    const response: any = props.isReviewCertification && await dispatch(updateProfile(updatedProfile))
-    const {subject, certificationLevel, report, ...rest} = request
-    if (props.isReviewCertification ? response.payload.address : true) {
-      dispatch(sendReport({
-        request: {
-          ...rest,
-          ...(!props.isReviewCertification ? {certificationLevel: parseInt(certificationLevel)} : {}),
-          ...(!props.isReviewCertification ? {report: report.map(report => report.value)} : {}),
-          ...(!props.isReviewCertification ? {subject: subject} : {})
-        },
-        uuid: props.uuid
-      }));
-    }
+    const {subject, certificationLevel, report, ...rest} = removeEmptyStringsDeep(form) as ReportForm;
+    dispatch(sendReport({
+      uuid: props.uuid,
+      request: {
+        ...rest,
+        ...(!props.isReviewCertification ? {certificationLevel: parseInt(certificationLevel)} : {}),
+        ...(!props.isReviewCertification ? {report: report.map(report => report.value)} : {}),
+        ...(!props.isReviewCertification ? {subject: subject} : {})
+      },
+      profile: props.isReviewCertification ? { 
+        ...profile, 
+        dapp: subject ? { ...profile?.dapp, subject } : (profile ? profile.dapp : null)
+      } as any : undefined
+    }));
   }
 
   const onCloseModal = () => {
@@ -89,7 +90,7 @@ const CertificationMetadataForm = (props: Props) => {
           <Grid item md={12} lg={props.standalone ? 6 : 12}>
             <InputGroup
               title="Certification Information"
-              fields={getInformationFields(props.isReviewCertification, profile?.dapp?.subject ? true : false)}
+              fields={getInformationFields(props.isReviewCertification, !!hasSubject)}
               formState={formState}
               register={register}
               getFieldState={getFieldState}

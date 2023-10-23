@@ -142,8 +142,8 @@ const internalScriptContractFields: Field[] = [
   },
 ];
 
-export const getResolver= (isReviewCertification?: boolean) => buildFormResolver<ReportForm>([
-  ...getInformationFields(isReviewCertification),
+export const getResolver= (isReviewCertification?: boolean, hasSubject?: boolean) => buildFormResolver<ReportForm>([
+  ...getInformationFields(isReviewCertification, hasSubject),
   {
     name: 'certificateIssuer',
     type: FieldType.Object,
@@ -198,9 +198,7 @@ export const getDefaultValues = (profile: UserProfile | null): ReportForm => ({
 
 export const getInformationFields = (isReviewCertification: boolean = false, profileHasSubject: boolean = false) =>
   !isReviewCertification ? internalInformationFields : internalInformationFields.filter(
-    field => {
-      return (profileHasSubject ? field.name !== 'subject' : true) && field.name !== 'certificationLevel'
-    }
+    field => (profileHasSubject ? field.name !== 'subject' : true) && field.name !== 'certificationLevel'
   )
 
 export const auditorFields = [
