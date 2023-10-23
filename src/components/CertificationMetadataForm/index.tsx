@@ -58,7 +58,7 @@ const CertificationMetadataForm = (props: Props) => {
     }
   }, [profile, hasSubject]);
 
-  const onSubmit = async (form: ReportForm) => {
+  const onSubmit = (form: ReportForm) => {
     setSubmitted(true);
     const {subject, certificationLevel, report, ...rest} = removeEmptyStringsDeep(form) as ReportForm;
     dispatch(sendReport({
