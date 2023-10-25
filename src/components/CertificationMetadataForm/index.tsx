@@ -72,7 +72,7 @@ const CertificationMetadataForm = (props: Props) => {
       profile: props.isReviewCertification ? { 
         ...profile, 
         dapp: subject ? { ...profile?.dapp, subject } : (profile ? profile.dapp : null)
-      } as any : undefined
+      } as any : null
     }));
   }
 
