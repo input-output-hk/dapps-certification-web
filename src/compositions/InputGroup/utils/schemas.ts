@@ -19,13 +19,13 @@ export const Hash = yup.string()
     excludeEmptyString: true
   });
 
-export const CommitHash = yup.string()
-  .min(7, 'The field value must be at least 7 characters of the commit hash')
-  .max(40, 'The field value must has more than 40 characters')
-  .matches(/^[a-f0-9]{7,40}$/, {
-    message: 'The field value must be a valid commit hash',
-    excludeEmptyString: true
-  });
+  export const CommitHash = yup.string()
+    .min(7, 'The field value must have atleast 7 characters of the commit hash')
+    .max(40, 'The field value has more than 40 characters. Please enter a valid commit hash')
+    .matches(/^[a-f0-9]{7,40}$/, {
+      message: 'The field value must be a valid commit hash',
+      excludeEmptyString: true
+    });
 
 export const ContractAddress = yup.string()
   .matches(/^(addr_test1|addr1)[a-zA-Z0-9]{53,}$/, {
