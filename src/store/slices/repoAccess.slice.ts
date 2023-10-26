@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AxiosRequestHeaders, AxiosResponse } from "axios";
+import { AxiosRequestHeaders } from "axios";
 import { fetch } from "api";
 
 import { setAccessToken } from "./session.slice";

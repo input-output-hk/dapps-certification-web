@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchData } from "api/api";
+import { fetch } from "api";
 
 interface PriceState {
   price: number;
@@ -9,12 +9,12 @@ const initialState: PriceState = {
   price: 0
 };
 
-export const fetchPrice = createAsyncThunk("fetchPrice", async (payload: any, { rejectWithValue }) => {
+export const fetchPrice = createAsyncThunk("fetchPrice", async (payload: any, thunkApi) => {
   try {
-    const response = await fetchData.get('/ada-usd-price');
+    const response = await fetch<number>(thunkApi, { method: 'GET', url: '/ada-usd-price' });
     return response.data;
   } catch (e: any) {
-    return rejectWithValue(e.response.data);
+    return thunkApi.rejectWithValue(e.response.data);
   }
 });
 

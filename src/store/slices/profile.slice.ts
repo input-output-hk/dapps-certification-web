@@ -50,7 +50,6 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {},
 
 export const updateProfile = createAsyncThunk('updateProfile', async (data: UserProfile, thunkApi) => {
   try {
-    console.log(data);
     const response = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: '/profile/current', data });
     return response.data;
   } catch (error) {

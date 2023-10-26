@@ -11,7 +11,7 @@ import deleteTestHistorySlice from "pages/testingHistory/slices/deleteTestHistor
 import logRunTimeSlice from "pages/certification/slices/logRunTime.slice";
 import priceSlice from "pages/landing/slices/price.slice";
 import tiersSlice from "pages/landing/slices/tiers.slice";
-import repositoryAccessSlice from "./slices/repositoryAccess.slice";
+import repoAccessSlice from "./slices/repoAccess.slice";
 import reportUploadSlice from "./slices/reportUpload.slice";
 
 const rootReducer = combineReducers({
@@ -26,7 +26,7 @@ const rootReducer = combineReducers({
   runTime: logRunTimeSlice,
   price: priceSlice,
   tiers: tiersSlice,
-  repoAccess: repositoryAccessSlice,
+  repoAccess: repoAccessSlice,
   reportUpload: reportUploadSlice,
 });
 

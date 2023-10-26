@@ -4,8 +4,6 @@ import utc from "dayjs/plugin/utc";
 import tz from "dayjs/plugin/timezone";
 import { useNavigate } from "react-router";
 
-import { fetchData } from "api/api";
-
 import { Container, Box, Button, IconButton, Typography, Snackbar, Alert, AlertTitle } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';

@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@mui/material";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchSession } from "store/slices/auth.slice";
+import { fetchActiveSubscription } from "store/slices/auth.slice";
 import { fetchProfile } from "store/slices/profile.slice";
 
 import AppLayout from './components/AppLayout';
@@ -18,7 +18,7 @@ export default () => {
   const { hasAnActiveSubscription, isSessionFetched } = useAppSelector((state) => state.auth);
   const { profile } = useAppSelector((state) => state.profile);
 
-  useEffect(() => { dispatch(fetchSession({})); }, []);
+  useEffect(() => { dispatch(fetchActiveSubscription({})); }, []);
 
   useEffect(() => {
     if (hasAnActiveSubscription) dispatch(fetchProfile({}));

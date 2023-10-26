@@ -1,22 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchData } from "api/api";
+import { fetch } from "api";
 
 const initialState = {
   loading: false,
-  msg: null,
 };
 
-export const deleteTestHistoryData = createAsyncThunk(
-  "deleteAttraction",
-  async (payload: any, { rejectWithValue }) => {
-    try {
-      const response = await fetchData.delete(payload.url);
-      return response.data;
-    } catch (e: any) {
-      return rejectWithValue(e.response.data);
-    }
+export const deleteTestHistoryData = createAsyncThunk("deleteTestHistoryData", async (payload: { url: string }, thunkApi) => {
+  try {
+    const response = await fetch(thunkApi, { method: 'DELETE', url: payload.url });
+    return response.data;
+  } catch (e: any) {
+    return thunkApi.rejectWithValue(e.response.data);
   }
-);
+});
 
 const deleteTestHistoryDataSlice = createSlice({
   name: "deleteTestHistoryData",
