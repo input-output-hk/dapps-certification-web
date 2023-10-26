@@ -13,7 +13,7 @@ export const clearPersistentStates = () => {
 
 export const RepoField = {
   label: 'GitHub Repository',
-  placeholder: 'URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash).',
+  tooltip: 'URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash).',
   name: 'repoURL',
   type: FieldType.GitHubRepository,
   required: true,

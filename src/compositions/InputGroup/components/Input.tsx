@@ -21,7 +21,7 @@ const Input = (props: InputProps) => (
     multiline={props.field.textArea}
     rows={props.field.textArea ? 4 : undefined}
     error={props.getFieldState(props.field.name, props.formState).error !== undefined}
-    helperText={props.getFieldState(props.field.name, props.formState).error?.message}
+    helperText={props.getFieldState(props.field.name, props.formState).error?.message || props.field.tooltip}
     { ...props.register(props.field.name, { required: props.field.required }) }
     onBlur={props.onBlur ? props.onBlur : props.register(props.field.name, { required: props.field.required }).onBlur}
   >
