@@ -1,6 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { CircularProgress, Typography } from "@mui/material";
+import { CircularProgress, Typography, Fab } from "@mui/material";
+
+import ChatIcon from '@mui/icons-material/QuestionAnswer';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Session = lazy(() => import("../pages/session"));
 const Landing = lazy(() => import("../pages/landing"));
@@ -19,23 +22,45 @@ const Support = () => (
   <Typography><p>Contact us on your dedicated Slack channel for support or questions.</p></Typography>
 )
 
+const CustomGPT = () => {
+  const [show, setShow] = useState<boolean>(false);
+
+  const handleShow = () => {
+    document.getElementById('customgpt')!.className = show ? 'hidden' : '';
+    setShow(!show);
+  }
+
+  return (
+    <Fab
+      color="secondary"
+      onClick={handleShow}
+      sx={{position: 'fixed', right: '16px', bottom: '16px'}}
+    >
+      {show ? <CloseIcon /> : <ChatIcon />}
+    </Fab>
+  );
+}
+
 const App = () => {
   return (
-    <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
-      <Routes>
-        <Route path="/" element={<Session />}>
-          <Route index element={<Landing />} />
-          <Route path="home" element={<Home />} />
-          <Route path="testing" element={<Certification />} />
-          <Route path="history" element={<TestingHistory />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="support" element={<Support />} />
-          <Route path="documentation" element={<ComingSoon />} />
-          <Route path="audit-report-upload" element={<ReportUpload />} />
-          <Route path="/report/:uuid" element={<CertificationResult />} />
-        </Route>
-      </Routes>
-    </Suspense>
+    <>
+      <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
+        <Routes>
+          <Route path="/" element={<Session />}>
+            <Route index element={<Landing />} />
+            <Route path="home" element={<Home />} />
+            <Route path="testing" element={<Certification />} />
+            <Route path="history" element={<TestingHistory />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="support" element={<Support />} />
+            <Route path="documentation" element={<ComingSoon />} />
+            <Route path="audit-report-upload" element={<ReportUpload />} />
+            <Route path="/report/:uuid" element={<CertificationResult />} />
+          </Route>
+        </Routes>
+      </Suspense>
+      <CustomGPT />
+    </>
   );
 };
 
