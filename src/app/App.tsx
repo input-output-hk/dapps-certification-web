@@ -32,9 +32,8 @@ const CustomGPT = () => {
 
   return (
     <Fab
-      color="secondary"
-      onClick={handleShow}
-      sx={{position: 'fixed', right: '16px', bottom: '16px'}}
+      color="secondary" onClick={handleShow}
+      sx={{position: 'fixed', right: '16px', bottom: '16px', zIndex: 10000}}
     >
       {show ? <CloseIcon /> : <ChatIcon />}
     </Fab>
