@@ -1,6 +1,8 @@
 import React from "react";
 
-import { TextField, MenuItem } from "@mui/material";
+import { TextField, MenuItem, InputAdornment, Tooltip } from "@mui/material";
+
+import InfoIcon from "@mui/icons-material/Info";
 
 import { FieldType } from '../interface';
 
@@ -21,9 +23,19 @@ const Input = (props: InputProps) => (
     multiline={props.field.textArea}
     rows={props.field.textArea ? 4 : undefined}
     error={props.getFieldState(props.field.name, props.formState).error !== undefined}
-    helperText={props.getFieldState(props.field.name, props.formState).error?.message || props.field.tooltip}
+    helperText={props.getFieldState(props.field.name, props.formState).error?.message}
     { ...props.register(props.field.name, { required: props.field.required }) }
     onBlur={props.onBlur ? props.onBlur : props.register(props.field.name, { required: props.field.required }).onBlur}
+    InputProps={{
+      endAdornment: props.field.tooltip ? (
+        <InputAdornment position="end" className="relative w-[24px] h-[24px]">
+          <Tooltip title={props.field.tooltip} placement="left" arrow>
+            <div className="absolute w-full h-full top-0 left-0 cursor-default"/>
+          </Tooltip>
+          <InfoIcon />
+        </InputAdornment>
+      ) : undefined,
+    }}
   >
     {(props.field.options || []).map(option =>
       <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
