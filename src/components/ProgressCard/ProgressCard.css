@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .progress-bar {
+    height: 120px;
+    width: 120px;
+    transform: rotate(-90deg);
+  }
+
+  .progress-bar-track {
+    stroke-dasharray: 100 100;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease-in-out;
+  }
+
+  .progress-text {
+    transform: translateY(-50%);
+  }
+}

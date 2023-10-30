@@ -1,5 +1,7 @@
 import React, { FC } from "react";
 
+import "../../Timeline.css";
+
 export interface ITimelineItem {
   config: {
     status: string;
@@ -38,19 +40,19 @@ const TimelineItem: FC<ITimelineItem> = ({
     <li
       data-value={status}
       data-testid={status}
-      className={state === "running" ? "active" : ""}
+      className={`statusTimelineLi ${state === "running" ? "active" : ""}`}
     >
       <img
-        className={`image ${state==="running" ? "anim-rotate" : ""} ${status==="certifying" ? "certifying" : ""}`}
+        className={`statusTimelineImage ${state==="running" ? " anim-rotate" : ""} ${status==="certifying" ? "certifying" : ""}`}
         data-testid={state}
         src={getURLFor(state)}
         alt={state}
       />
       {/* {renderProgressPercentage()} */}
-      <span className="text" data-testid={text}>
+      <span className="statusTimelineText" data-testid={text}>
         {text}
       </span>
-      {(runTimeTaken && (state !== "running" && state !== "outline")) ? <span className="small-text" data-testid={`${text}-runTimeTaken`}>{runTimeTaken}</span> : null}
+      {(runTimeTaken && (state !== "running" && state !== "outline")) ? <span className="statusTimelineSmallText" data-testid={`${text}-runTimeTaken`}>{runTimeTaken}</span> : null}
     </li>
   );
 };

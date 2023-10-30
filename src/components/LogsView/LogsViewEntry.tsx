@@ -1,6 +1,6 @@
 import React, { FC, memo } from "react";
 
-import "./LogsView.scss";
+import "./LogsView.css";
 
 const LogsViewEntry: FC<{time: any, log: string}> = ({ time, log }) => {
     return (

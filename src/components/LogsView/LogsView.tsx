@@ -1,7 +1,7 @@
 import { useLogs } from "hooks/useLogs";
 import React, { FC, useState, useEffect, useRef } from "react";
 
-import "./LogsView.scss";
+import "./LogsView.css";
 import LogsViewEntry from "./LogsViewEntry";
 
 const LogsView: FC<{
@@ -53,10 +53,9 @@ const LogsView: FC<{
 
   return (
     <>
-      <div id="logContainer" className="w-full">
+      <div className="logContainer w-full">
         <span
-          id="viewLogsBtn"
-          className={`link ${showLogs ? "hidden" : ""}`}
+          className={`viewLogsBtn link ${showLogs ? "hidden" : ""}`}
           onClick={showLogView}
         >
           View logs
@@ -66,7 +65,7 @@ const LogsView: FC<{
           data-testid="log-information"
         >
           <div className="log-header">
-            <h5>Logs</h5>
+            <h5 className="h5">Logs</h5>
             <span className="minimize-btn text-right" onClick={hideLogView}>
               <i>-</i>
             </span>

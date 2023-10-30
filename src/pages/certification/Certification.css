@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .result-card {
+    @apply mb-[15px] p-[8px] overflow-auto border border-solid rounded-[5px];
+  }
+  .failure {
+    @apply border-lightRed bg-lightRed;
+  }
+  .error-title {
+    @apply text-darkRed;
+  }
+  .result-card span {
+    @apply block mb-[10px];
+  }
+  .result-card label {
+    @apply block mb-[10px] font-semibold text-darkGray;
+  }
+  .result-card .accordion-content label {
+    @apply font-medium;
+  }
+  .failing-testcase {
+    @apply ml-[10px];
+  }
+  .failure-output {
+    @apply mt-[20px] whitespace-pre;
+  }
+  .success {
+    @apply bg-lighterGreen border-lightGreen;
+  }
+  .accordion-title {
+    @apply cursor-pointer;
+  }
+  .accordion-content {
+    @apply mt-[20px];
+  }
+  .chart-container {
+    @apply flex flex-wrap;
+  }
+  .chart-wrapper {
+    @apply w-[33%];
+  }
+}

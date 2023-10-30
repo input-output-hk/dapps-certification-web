@@ -3,6 +3,8 @@ import { processTablesDataForChart, VisualizableDataKeys } from "../Certificatio
 import PieChart from "components/charts/PieChart/PieChart";
 import { formatToTitleCase } from "utils/utils";
 
+import '../Certification.css';
+
 const SuccessCard: React.FC<{
   resultObj: any;
   taskName: string;

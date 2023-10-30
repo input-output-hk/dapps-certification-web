@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import '../Certification.css';
+
 const FailedStatus: React.FC<{
   taskName: string;
   reason: string;

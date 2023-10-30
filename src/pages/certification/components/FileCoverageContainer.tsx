@@ -1,9 +1,5 @@
-import React, { useState } from "react";
-import Modal from "components/Modal/Modal";
+import React from "react";
 import parse from 'html-react-parser';
-import Tooltip from "@mui/material/Tooltip";
-import InfoIcon from '@mui/icons-material/Info';
-import IconButton from "@mui/material/IconButton";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 
 const FileCoverageContainer: React.FC<{
@@ -11,12 +7,6 @@ const FileCoverageContainer: React.FC<{
     githubLink: string;
     coverageFile?: string
 }> = ({ result, githubLink, coverageFile = '' }) => {
-    const [isOpen, setIsOpen] = useState("")
-    const onOpenModal = setIsOpen
-    const onCloseModal = () => {
-        setIsOpen("")
-    }
-
     const parseHTMLContents = (filename: string) => {
         const pattern = new RegExp("<h2(.*)>"+filename+"</h2>")
         const pre = coverageFile.split(pattern)
