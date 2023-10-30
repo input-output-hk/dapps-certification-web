@@ -1,7 +1,7 @@
 export interface IAuditorRunTestFormFields {
   repoURL: string;
   commit: string;
-  version: string;
+  version?: string | null;
   name: string;
-  subject: string;
+  subject?: string | null;
 }

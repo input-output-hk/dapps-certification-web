@@ -190,8 +190,8 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
             owner: username,
             repo: repoName,
             name: name,
-            version: version,
-            subject: subject,
+            version: version || null,
+            subject: subject || null,
             githubToken: accessToken || null,
           },
         }));
