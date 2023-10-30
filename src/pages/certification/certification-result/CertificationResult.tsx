@@ -4,24 +4,24 @@ import { useLocation } from "react-router-dom";
 
 import { fetchData } from "api/api";
 
+import { Snackbar, Alert, CircularProgress } from "@mui/material";
 import FileCoverageContainer from "../components/FileCoverageContainer";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
-import Toast from "components/Toast/Toast";
 import LogsView from "components/LogsView/LogsView";
-import Loader from "components/Loader/Loader";
 import { TIMELINE_CONFIG } from "compositions/Timeline/timeline.config";
 
 import {
   processFinishedJson,
   processTimeLineConfig,
-} from "components/TimelineItem/timeline.helper";
+} from "compositions/Timeline/components/TimelineItem/timeline.helper";
 
 import { ellipsizeString } from "../../../utils/utils";
-import "../Certification.scss";
 import DownloadResult from "../components/DownloadResult/DownloadResult";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 import FullReportTable from "./FullReportTable";
 import { calculateCurrentProgress, calculateExpectedProgress, CertificationTasks, getProgressCardInfo, ICertificationTask, isAnyTaskFailure, PlanObj } from "../Certification.helper";
+
+import "../Certification.css";
 
 const CertificationResult = () => {
   const param = useParams<{ uuid: string }>();
@@ -97,7 +97,7 @@ const CertificationResult = () => {
 
   // Show loader until data is fetched
   if (!resultData || !Object.keys(resultData).length) {
-    return <Loader />
+    return <CircularProgress color="secondary" size={50} />;
   }
 
   return (
@@ -134,10 +134,7 @@ const CertificationResult = () => {
           </>
         </div>
 
-        <div
-          id="certificationWrapper"
-          className="content-area-box shadow-lg bg-white px-5 py-4"
-        >
+        <div className="content-area-box shadow-lg bg-white px-5 py-4">
           <LogsView
             runId={param.uuid as string}
             endPolling={true}
@@ -149,7 +146,12 @@ const CertificationResult = () => {
         </div>
         
       </div>
-      {errorToast ? <Toast /> : null}
+
+      <Snackbar open={errorToast} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert severity="error" variant="filled">
+          Something wrong occurred. Please try again.
+        </Alert>
+      </Snackbar>
     </>
   );
 };

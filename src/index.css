@@ -57,17 +57,4 @@
     &:hover { @apply text-slate-highlightedDark border-slate-highlightedDark; }
   }
 
-}
-
-
-.text-center {
-  text-align: center;
-  text-align: -moz-center;
-  text-align: -webkit-center;
-}
-
-.disabled {
-  opacity: 0.5;
-  cursor: default;
-  pointer-events: none;
 } 

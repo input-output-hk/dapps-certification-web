@@ -1,0 +1,55 @@
+.statusTimeline {
+  margin-top: 50px;
+}
+
+.statusTimelineUl {
+  display: flex;
+  list-style-type: none;
+  justify-content: space-between;
+  padding: 0;
+  position: relative;
+}
+ .statusTimelineUl:before {
+    position: absolute;
+    content: " ";
+    background-color: #c7d9f6;
+    height: 2px;
+    top: 2px;
+    bottom: 26px;
+    left: 30px;
+    right: 0;
+    width: calc(100% - 80px);
+    margin-bottom: 20px;
+}
+
+.statusTimelineLi {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-flow: column;
+  row-gap: 10px;
+}
+
+.statusTimelineImage {
+  background-color: #fff;
+  width: 25px;
+  padding: 5px;
+  border-radius: 16px;
+  margin-top: -10px;
+}
+
+.statusTimelineText {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.statusTimelineSmallText {
+  font-size: small;
+}
+
+.statusTimelineProgressPercentage {
+  color: #FACC14;
+  position: absolute;
+  top: 2px;
+  font-weight: bold;
+}

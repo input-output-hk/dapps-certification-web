@@ -1,11 +1,11 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  // important: '#root',
+  important: '#root',
   theme: {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#ffffff",
+          DEFAULT: "#ffffff"
         },
         secondary: {
           DEFAULT: "#43425d",
@@ -46,7 +46,14 @@ module.exports = {
         },
         transparent: 'transparent',
         tableHeader: '#F5F6FA',
-        tableHeaderText: '#A3A6B4'
+        tableHeaderText: '#A3A6B4',
+        bodyTextGray: '#878e9e',
+        darkBgTextColor: '#f2dede',
+        lightRed: '#f2dede',
+        darkRed: '#a94442',
+        darkGray: '#5a5a5a',
+        lighterGreen: '#dff0d8',
+        lightGreen: '#e2eee2',
       },
       backgroundImage: {
         landing: 'url(assets/images/landing-background.png)',
