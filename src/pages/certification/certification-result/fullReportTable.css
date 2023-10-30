@@ -1,6 +1,9 @@
-.task-details {
-    padding: 20px ;
-    overflow: auto;
-    max-width: calc(100vw - 457px);
-    max-height: 500px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .task-details {
+    @apply p-[20px] overflow-auto max-w-[calc(100vw-457px)] max-h-[500px];
+  }
 }

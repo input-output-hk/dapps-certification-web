@@ -67,8 +67,8 @@ export const renderCharts = (data?: any) => {
 }
 
 
-const FailedTaskDetails = (dataObj: any) => {
-    return (<div className="">
+const FailedTaskDetails = (dataObj: any, multiple?: boolean) => {
+    return (<div className={`${multiple ? "" : "task-details bg-red-background border-red-background"}`}>
         <span className="font-neutral-900 text-red-title block mb-10"><i>{dataObj.reason}</i></span>
         <div className="whitespace-pre">
             <span>Failing TestCase(s):</span>
@@ -112,8 +112,8 @@ export const generateCollapsibleContent = (row: any) => {
                 return dataObj.map((entry: any, index: number) => {
                     if (typeof entry !== 'string' && entry.resultOutcome.tag === 'Failure') {
                         return (<div className="task-details bg-red-background border-red-background">
-                            <span className="font-neutral-900 text-red-title block mb-10"><i>{dataObj.resultShortDescription}</i></span>
-                            <div>{dataObj.resultDescription}</div>
+                            <span className="font-neutral-900 text-red-title block mb-10"><i>{entry.resultShortDescription}</i></span>
+                            <div className="whitespace-pre">{entry.resultDescription}</div>
                         </div>)
                     }
                 })
@@ -121,13 +121,13 @@ export const generateCollapsibleContent = (row: any) => {
         } 
         else if (key === "_certRes_DLTests") {
             return dataObj.map((entry: any, index: number) => {
-                return (<div className={`task-details ${status === "failure" ? "bg-red-background border-red-background" : ""}`}>
+                return (<div className={`task-details ${entry[1].tag.toLowerCase() === "failure" ? "bg-red-background border-red-background" : ""}`}>
                     {status === "success" && (<span className="font-neutral-900 block mb-10"><i>OK, passed {dataObj.length}/{dataObj.length} tests</i></span>)}
                     <div key={index}>
                         <label className={`font-neutral-900 ${status === "failure" ? "text-red-title block mb-10" : ""}`}>
                             Test: {formatToTitleCase(entry[0])}
                         </label>
-                        {status === "success" ? SuccessTaskChart(entry[1]) : FailedTaskDetails(entry[1])}
+                        {entry[1].tag.toLowerCase() === "success" ? SuccessTaskChart(entry[1]) : FailedTaskDetails(entry[1], true)}
                     </div>
                 </div>)
             })

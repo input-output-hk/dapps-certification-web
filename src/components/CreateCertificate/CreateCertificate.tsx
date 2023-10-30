@@ -3,16 +3,13 @@ import { useDispatch } from "react-redux";
 import { BigNum } from "@emurgo/cardano-serialization-lib-browser";
 import { fetchData } from "api/api";
 
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, Snackbar, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import { useAppSelector } from "store/store";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
 
-import Modal from "components/Modal/Modal";
 import CertificationMetadataForm from "components/CertificationMetadataForm";
-
-import "./CreateCertificate.scss";
 
 export interface Run {
     certificationPrice: number;
@@ -173,30 +170,30 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const TransactionModal = () => {
         if (!transactionId) return null;
         return (
-            <Modal open={openModal} title="Certification Successful" onCloseModal={onCloseModal}>
-                <span>
-                    View your certification broadcasted on-chain&nbsp;
-                    <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${transactionId}`}>here</a>!
-                </span>
-            </Modal>
+            <Dialog open={openModal} onClose={onCloseModal}>
+                <DialogTitle>Certification Successful</DialogTitle>
+                <DialogContent>
+                    <span>
+                        View your certification broadcasted on-chain&nbsp;
+                        <a target="_blank" rel="noreferrer" href={`https://preprod.cardanoscan.io/transaction/${transactionId}`}>here</a>!
+                    </span>
+                </DialogContent>
+            </Dialog>
         );
     }
     
     const MetadataModal = () => {
         return (
-            <Modal
-                open={openMetadataModal}
-                title="Certification Metadata"
-                className="certification-metadata"
-                onCloseModal={onCloseMetadataForm}
-                fullWidth
-            >
-                <CertificationMetadataForm
-                    uuid={uuid}
-                    isReviewCertification={true}
-                    onClose={onCloseMetadataForm}
-                />
-            </Modal>
+            <Dialog open={openMetadataModal} onClose={onCloseMetadataForm} fullWidth maxWidth="md">
+                <DialogTitle>Certification Metadata</DialogTitle>
+                <DialogContent dividers>
+                    <CertificationMetadataForm
+                        uuid={uuid}
+                        isReviewCertification={true}
+                        onClose={onCloseMetadataForm}
+                    />
+                </DialogContent>
+            </Dialog>
         );
     }
     

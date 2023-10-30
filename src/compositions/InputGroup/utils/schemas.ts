@@ -20,8 +20,8 @@ export const Hash = yup.string()
   });
 
 export const CommitHash = yup.string()
-  .min(7, 'The field value must be at least 7 characters of the commit hash')
-  .max(40, 'The field value must has more than 40 characters')
+  .min(7, 'The field value must have atleast 7 characters of the commit hash')
+  .max(40, 'The field value has more than 40 characters. Please enter a valid commit hash')
   .matches(/^[a-f0-9]{7,40}$/, {
     message: 'The field value must be a valid commit hash',
     excludeEmptyString: true
@@ -77,7 +77,7 @@ export const GitHubUserName = yup.string()
 
 export const GitHubRepository = yup.string()
   .matches(/^https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+(?:\/)?$/, {
-    message: 'The field value must be a valid GitHub repository URL',
+    message: 'URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash).',
     excludeEmptyString: true 
   });
 

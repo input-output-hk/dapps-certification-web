@@ -25,6 +25,7 @@ export interface Field {
   type: FieldType;
   label?: string;
   placeholder?: string;
+  tooltip?: string;
   required?: boolean;
   textArea?: boolean;
   options?: {
@@ -51,4 +52,5 @@ export interface InputProps<T extends FieldValues = any> {
   getFieldState: UseFormGetFieldState<T>;
   noGutter?: boolean;
   disabled?: boolean;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }

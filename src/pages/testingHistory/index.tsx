@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 
 import { fetchData } from "api/api";
 
-import { Container, Box, Button, IconButton, Typography } from "@mui/material";
+import { Container, Box, Button, IconButton, Typography, Snackbar, Alert, AlertTitle } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
@@ -15,8 +15,7 @@ import { useAppDispatch } from "store/store";
 import { deleteTestHistoryData } from "./slices/deleteTestHistory.slice";
 
 import TableComponent from "components/Table/Table";
-import Toast from "components/Toast/Toast";
-import { processFinishedJson } from "components/TimelineItem/timeline.helper";
+import { processFinishedJson } from "compositions/Timeline/components/TimelineItem/timeline.helper";
 import { isAnyTaskFailure } from "pages/certification/Certification.helper";
 import { Run } from 'components/CreateCertificate/CreateCertificate';
 import { exportObjectToJsonFile } from "utils/utils";
@@ -398,11 +397,12 @@ const TestHistory = () => {
         />
       </Box>
 
-      {(errorToast && errorToast.display) ? (
-        ((errorToast.message && errorToast.statusText) ? 
-        <Toast message={errorToast.message} title={errorToast.statusText}/> :
-        <Toast />))
-      : null}
+      <Snackbar open={errorToast.display} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert severity="error" variant="filled">
+          <AlertTitle>{errorToast.statusText}</AlertTitle>
+          {errorToast.message || 'Something wrong occurred. Please try again.'}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

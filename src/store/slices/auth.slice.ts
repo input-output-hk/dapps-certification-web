@@ -160,6 +160,7 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
 
 export const logout = createAsyncThunk('logout', async (payload: {}, { dispatch }) => {
   localStorage.clear();
+  return;
 });
 
 export const authSlice = createSlice({
@@ -221,10 +222,20 @@ export const authSlice = createSlice({
 
       // LOGOUT
       .addCase(logout.fulfilled, (state) => {
-        state = {
-          ...initialState,
-          isSessionFetched: true
-        };
+        state.isSessionFetched = true;
+        state.isConnected = false;
+        state.hasAnActiveSubscription = false;
+        state.features = [];
+        state.networkId = null;
+        state.wallet = null;
+        state.walletName = null;
+        state.walletAddress = null;
+        state.stakeAddress = null;
+        state.errorMessage = null;
+        state.errorRetry = false;
+        state.loading = false;
+        state.listeningWalletChanges = false;
+        state.resetWalletChanges = false;
       })
 
       // START LISTEN WALLET CHANGES
