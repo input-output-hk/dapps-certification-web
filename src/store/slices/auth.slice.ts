@@ -146,7 +146,6 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
       }
 
       if (forceLogout) {
-        await dispatch(logout({}));
         isListening = false;
         return true;
       } else {
@@ -172,6 +171,13 @@ export const authSlice = createSlice({
         ...state,
         listeningWalletChanges: false
       };
+    },
+    restartListenWalletChanges: (state) => {
+      return {
+        ...state,
+        listeningWalletChanges: true, 
+        resetWalletChanges: false
+      }
     }
   },
   extraReducers: (builder) => {
@@ -254,6 +260,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { stopListenWalletChanges } = authSlice.actions;
+export const { stopListenWalletChanges, restartListenWalletChanges } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Box } from "@mui/material";
 
@@ -8,7 +8,7 @@ import RegisterSection from "./components/RegisterSection";
 import RegisterModal from "./components/RegisterModal";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchSession, startListenWalletChanges, stopListenWalletChanges } from "store/slices/auth.slice";
+import { fetchSession } from "store/slices/auth.slice";
 import { register, clear } from "store/slices/register.slice";
 import type { Tier } from "./slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
@@ -17,7 +17,7 @@ import "./index.css";
 
 export default function LandingPage() {
   const dispatch = useAppDispatch();
-  const { isConnected, resetWalletChanges } = useAppSelector((state) => state.auth);
+  const { isConnected, wallet } = useAppSelector((state) => state.auth);
   const { transactionId, processing, success } = useAppSelector((state) => state.register);
 
   const [step, setStep] = useState<string>('connect');
@@ -26,20 +26,15 @@ export default function LandingPage() {
   useEffect(() => {
     if (isConnected && step === 'connect') {
       setStep('subscription');
-      dispatch(startListenWalletChanges({}));
-    }
-  }, [isConnected]);
-
-  useEffect(() => {
-    if (resetWalletChanges) {
+    } else if (!isConnected && !wallet) {
       setStep('connect');
       setSelectedTier(null);
     }
-  }, [resetWalletChanges]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, wallet]);
 
   const handleRegistration = (form: RegisterForm) => {
     dispatch(register({ form, tierId: selectedTier!.id }));
-    dispatch(stopListenWalletChanges());
   };
 
   const handleContinue = () => {

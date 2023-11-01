@@ -1,9 +1,12 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { CircularProgress, Typography, Fab } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "store/store";
 
 import ChatIcon from '@mui/icons-material/QuestionAnswer';
 import CloseIcon from '@mui/icons-material/Close';
+import { startListenWalletChanges, stopListenWalletChanges } from "store/slices/auth.slice";
+import ReconnectWallet from "components/ReconnectWallet/ReconnectWallet";
 
 const Session = lazy(() => import("../pages/session"));
 const Landing = lazy(() => import("../pages/landing"));
@@ -41,6 +44,18 @@ const CustomGPT = () => {
 }
 
 const App = () => {
+  const dispatch = useAppDispatch();
+  const { isConnected, wallet } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isConnected && wallet) {
+      dispatch(startListenWalletChanges({}));
+    } else if (!isConnected || !wallet) {
+      dispatch(stopListenWalletChanges());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, wallet])
+
   return (
     <>
       <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
@@ -59,6 +74,7 @@ const App = () => {
         </Routes>
       </Suspense>
       <CustomGPT />
+      <ReconnectWallet />
     </>
   );
 };
