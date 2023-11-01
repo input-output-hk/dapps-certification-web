@@ -28,6 +28,7 @@ export default function LandingPage() {
       setStep('subscription');
       dispatch(startListenWalletChanges({}));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected]);
 
   useEffect(() => {

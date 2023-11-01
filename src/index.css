@@ -14,9 +14,9 @@
 
   a, .link {
     @apply cursor-pointer text-blue-active no-underline;
-    &:hover, &:focus {
-      @apply text-blue-activeDark underline;
-    }
+  }
+  a:hover, .link:hover, a:focus, .link:focus {
+    @apply text-blue-activeDark underline;
   }
 
   .button {
@@ -29,33 +29,34 @@
 
   .button-contained-main {
     @apply normal-case bg-slate-main text-white;
-    &:hover { @apply bg-slate-mainDark; }
   }
+  .button-contained-main:hover { @apply bg-slate-mainDark; }
 
   .button-contained-active {
     @apply normal-case bg-blue-active text-white;
-    &:hover { @apply bg-blue-activeDark; }
   }
+  .button-contained-active:hover { @apply bg-blue-activeDark; }
 
   .button-contained-highlighted {
     @apply normal-case bg-slate-highlighted text-white;
-    &:hover { @apply bg-slate-highlightedDark; }
   }
+  .button-contained-highlighted:hover { @apply bg-slate-highlightedDark; }
 
   .button-outlined-main {
     @apply normal-case text-slate-main border-slate-main;
-    &:hover { @apply text-slate-mainDark border-slate-mainDark; }
   }
+  .button-outlined-main:hover { @apply text-slate-mainDark border-slate-mainDark; }
 
   .button-outlined-active {
     @apply normal-case text-blue-active border-blue-active;
-    &:hover { @apply text-blue-activeDark border-blue-activeDark; }
   }
+  .button-outlined-active:hover { @apply text-blue-activeDark border-blue-activeDark; }
+
 
   .button-outlined-highlighted {
     @apply normal-case text-slate-highlighted border-slate-highlighted;
-    &:hover { @apply text-slate-highlightedDark border-slate-highlightedDark; }
   }
+  .button-outlined-highlighted:hover { @apply text-slate-highlightedDark border-slate-highlightedDark; }
 
 }
 

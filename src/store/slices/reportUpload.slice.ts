@@ -62,7 +62,7 @@ export const sendReport = createAsyncThunk("sendReport", async (payload: { reque
       const profileRes = await fetchData.put('/profile/current', payload.profile);
       profileHasAddress = !!profileRes.data.address;
     }
-    if (payload.profile && profileHasAddress || !payload.profile) {
+    if ((payload.profile && profileHasAddress) || !payload.profile) {
       const response = await fetchData.post(payload.uuid ? `/run/${payload.uuid}/certificate` : '/auditor/reports', payload.request);
       if (response.status !== 200) throw { response };
       return {
