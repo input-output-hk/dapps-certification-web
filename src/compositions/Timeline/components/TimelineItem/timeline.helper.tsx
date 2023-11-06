@@ -1,4 +1,4 @@
-import { CertificationTasks, getPlannedCertificationTaskCount } from "pages/certification/Certification.helper";
+import { CertificationTasks } from "pages/certification/Certification.helper";
 
 export const setManyStatus = (
   index: number,

@@ -91,6 +91,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       setInitialized(true);
       checkRepoAccess(form.getValues().repoURL);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialized, form.getValues().repoURL]);
 
   useEffect(() => { 
