@@ -7,12 +7,13 @@ import profileSlice from "./slices/profile.slice";
 import walletConnectionSlice from "./slices/walletConnection.slice";
 import walletTransactionSlice from "./slices/walletTransaction.slice";
 import certificationReducer from "pages/certification/slices/certification.slice";
-import deleteTestHistorySlice from "pages/testingHistory/slices/deleteTestHistory.slice";
+import testingHistorySlice from "pages/testingHistory/slices/testingHistory.slice";
 import logRunTimeSlice from "pages/certification/slices/logRunTime.slice";
 import priceSlice from "pages/landing/slices/price.slice";
 import tiersSlice from "pages/landing/slices/tiers.slice";
 import repoAccessSlice from "./slices/repoAccess.slice";
 import reportUploadSlice from "./slices/reportUpload.slice";
+import certificateSlice from "./slices/certificate.slice";
 
 const rootReducer = combineReducers({
   auth: authSlice,
@@ -22,12 +23,13 @@ const rootReducer = combineReducers({
   walletConnection: walletConnectionSlice,
   walletTransaction: walletTransactionSlice,
   certification: certificationReducer,
-  deleteTestHistory: deleteTestHistorySlice,
+  testingHistory: testingHistorySlice,
   runTime: logRunTimeSlice,
   price: priceSlice,
   tiers: tiersSlice,
   repoAccess: repoAccessSlice,
   reportUpload: reportUploadSlice,
+  certificate: certificateSlice,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

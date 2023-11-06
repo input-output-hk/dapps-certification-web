@@ -1,20 +1,27 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { fetch } from "api";
 
-// Define a type for the slice state
 interface CertificationState {
   uuid: string;
   repoUrl: string;
 }
 
-// Define the initial state using that type
 const initialState: CertificationState = {
   uuid: "",
   repoUrl: ""
 };
 
+export const fetchCertification = createAsyncThunk("fetchCertification", async (payload: { uuid: string }, thunkApi) => {
+  try {
+    const response = await fetch<any>(thunkApi, { method: 'GET', url: `/run/${payload.uuid}` });
+    return response.data;
+  } catch (e: any) {
+    return thunkApi.rejectWithValue(e.response.data);
+  }
+});
+
 export const certificationSlice = createSlice({
   name: "certification",
-  // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
     setUuid: (state, action) => {

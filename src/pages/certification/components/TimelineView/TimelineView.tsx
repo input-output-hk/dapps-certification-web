@@ -5,10 +5,10 @@ import { useConfirm } from "material-ui-confirm";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 
-import { deleteTestHistoryData } from "pages/testingHistory/slices/deleteTestHistory.slice";
+import { fetchCertification } from "pages/certification/slices/certification.slice";
+import { deleteTestHistoryData } from "pages/testingHistory/slices/testingHistory.slice";
 
 import { useAppDispatch } from "store/store";
-import { fetchData } from "api/api";
 import { useDelayedApi } from "hooks/useDelayedApi";
 
 import Timeline from "compositions/Timeline/Timeline";
@@ -31,7 +31,6 @@ import ProgressCard from "components/ProgressCard/ProgressCard";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import DownloadResult from "../DownloadResult/DownloadResult";
 import FileCoverageContainer from "../FileCoverageContainer";
-import { clearPersistentStates } from "../AuditorRunTestForm/utils";
 import StatusIcon from "components/StatusIcon/StatusIcon";
 
 
@@ -145,7 +144,8 @@ const TimelineView: React.FC<{
   const triggerFetchRunStatus = async () => {
     let config = timelineConfig;
     try {
-      const res = await fetchData.get("/run/" + uuid);
+      const response: any = await dispatch(fetchCertification({ uuid }));
+      const res = { data: response as any };
       const status = res.data.status;
       const state = res.data.hasOwnProperty("state") ? res.data.state : "";
       setRunStatus(status);

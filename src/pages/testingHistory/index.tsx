@@ -9,78 +9,33 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 import { useConfirm } from "material-ui-confirm";
-import { useAppDispatch } from "store/store";
-import { deleteTestHistoryData } from "./slices/deleteTestHistory.slice";
+import { useAppDispatch, useAppSelector } from "store/store";
+import { fetchHistory, updateRowStatus, deleteTestHistoryData, fetchCertificate } from "./slices/testingHistory.slice";
 
 import TableComponent from "components/Table/Table";
-import { processFinishedJson } from "compositions/Timeline/components/TimelineItem/timeline.helper";
-import { isAnyTaskFailure } from "pages/certification/Certification.helper";
-import { Run } from 'components/CreateCertificate/CreateCertificate';
-import { exportObjectToJsonFile } from "utils/utils";
 
 import "./index.css";
 
-interface ICampaignCertificate {
-  runId: string;
-  transactionId: string;
-  createdAt: string;
-}
-
-interface IRunCertifications {
-  [key: string]: ICampaignCertificate
-}
-
-interface IRunReportData {
-  id: string;
-  raw: any; // finished result JSON
-}
-interface IRunReport {
-  [key: string]: IRunReportData
-}
-
-dayjs.extend(utc)
-dayjs.extend(tz)
+dayjs.extend(utc);
+dayjs.extend(tz);
 
 const TestHistory = () => {
-  const [data, setData] = useState<Array<Run>>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [runningSpinner, setRunningSpinner] = useState("");
-  const [highlightLabelFor, setHighlightLabelFor] = useState("");
-  const [skipPageReset, setSkipPageReset] = useState(false);
-  const [errorToast, setErrorToast] = useState<{display: boolean; statusText?: string; message?: string;}>({display: false});
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
-
-  const certificationData: IRunCertifications = {};
-  const reportData: IRunReport = {};
-  const timeZone = dayjs.tz.guess()
   const navigate = useNavigate();
+  const timeZone = dayjs.tz.guess();
+
+  const { history, certificates, loading } = useAppSelector(state => state.testingHistory);
+  const [skipPageReset, setSkipPageReset] = useState(false);
+  const [errorToast, setErrorToast] = useState<{display: boolean; statusText?: string; message?: string;}>({display: false});
 
   useEffect(() => {
-    fetchTableData();
+    dispatch(fetchHistory({}));
   }, []);
 
   useEffect(() => {
     setSkipPageReset(false);
-  }, [data]);
-
-  const setCertificationData = (runId: string, response: ICampaignCertificate) => {
-    certificationData[runId] = response;
-  }
-
-  const getCertificationData = (runId: string): ICampaignCertificate | null => {
-    return certificationData[runId] ? certificationData[runId] : null
-  }
-
-  const setReportData = (runId: string, type: 'id' | 'raw', response: any) => {
-    const data: any = { id: null, raw: null}
-    data[type] = response;
-    reportData[runId] = data;
-  }
-
-  const getReportData = (runId: string) => {
-    return reportData[runId] ? reportData[runId] : null
-  }
+  }, [history]);
 
   const handleError = (error: any) => {
     if (error.response) {
@@ -90,67 +45,14 @@ const TestHistory = () => {
     }
     const timeout = setTimeout(() => { clearTimeout(timeout); setErrorToast({display: false}) }, 3000)
   }
-  const updateMyData = (rowIndex: any, columnID: any, value: any) => {
-    setSkipPageReset(true); // turn on flag to not reset the page
-    setData((old) =>
-      old.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...old[rowIndex],
-            [columnID]: value,
-          };
-        }
-        return row;
-      })
-    );
-  };
 
-  const RunStatusCell = ({
-    value,
-    row,
-    column: { id },
-    updateMyData, // This is a custom function that we supplied to our table instance
-  }: any) => {
+  const RunStatusCell = ({ value, row, column: { id } }: any) => {
     const { index, original } = row;
     const triggerApi = async (e: any) => {
-      setRunningSpinner(original.runId)
-      const res: any = await fetchData.get("/run/" + original.runId).catch(handleError);
-      /** For mock */
-      // const res = await fetchData.get("static/data/certifying.json")
-      
-      if (res) {
-        setErrorToast({display: false})
-        const status = res.data.status;
-        const state = res.data.hasOwnProperty("state") ? res.data.state : "";
-        let response: string = 'queued';
-        // show failed if either states failed or unitTest/certTasks failed
-        if (state === 'failed') {
-          response = 'failed'
-        } else {
-          if (status === 'finished') {
-            const isArrayResult = Array.isArray(res.data.result)
-            const resultJson = isArrayResult ? res.data.result[0] : res.data.result;
-            const isUnitTestSuccess = processFinishedJson(resultJson);
-            const isComplete = isUnitTestSuccess && !isAnyTaskFailure(resultJson);
-            response = isComplete ? 'succeeded' : 'failed';
-          } else {
-            // do nothing; retain response='queued'
-          }
-        } 
-        setRunningSpinner(prevValue => {
-          if (prevValue !== "") {
-            // show a highlight over the label
-            setHighlightLabelFor(prevValue)
-            const timeout = setTimeout(() => { clearTimeout(timeout); setHighlightLabelFor("") }, 1500)
-          }
-          return ""
-        })
-        updateMyData(index, id, response);
-      } else {
-        setRunningSpinner("")
-      }
+      setSkipPageReset(true);
+      dispatch(updateRowStatus({ index, runId: original.runId }));
     };
-    const runId = original.runId; // get the run id
+    const runId = original.runId;
     if (value === "certified") {
       return <span>CERTIFIED</span>;
     } else if (value === "succeeded") {
@@ -177,58 +79,21 @@ const TestHistory = () => {
     }
   };
 
-  const openReport = (reportData: IRunReportData | null) => {
-    if (reportData?.id) {
-      const url = `ipfs://${reportData.id}/`
-      window.open(url, "_blank");
-    } else if (reportData?.raw) {
-      exportObjectToJsonFile(reportData.raw, "Testing Report.json");      
-    }
-  }
-  const viewReport = async (runId: string) => {
-    const reportData: IRunReportData | null = getReportData(runId)
-    if (!reportData) {
-      fetchData.get("/run/" + runId + "/details").catch(handleError).then((response:any) => {
-        setErrorToast({display: false})
-        if (response.data.reportContentId && response.data.runStatus === "certified") {
-          setReportData(runId, 'id', response.data.reportContentId)
-          openReport(getReportData(runId))
-        } else {
-          // assuming campaign finished, but not certified; fetch report from result
-          fetchData.get("/run/" + runId).catch(handleError).then((res:any) => {
-            if (res.data.status === 'finished' && res.data.hasOwnProperty("result")) {
-              const resultJson = Array.isArray(res.data.result) ? res.data.result[0] : res.data.result
-              setReportData(runId, 'raw', resultJson)
-              openReport(getReportData(runId))
-            }
-          })
-        }
-      })
-    } else {
-      openReport(reportData)
-    }
-  }
-
   const viewCertificate = async (runId: string) => {
-    const certData = getCertificationData(runId)
-    if (!certData) {
-      const response: any = await fetchData.get("/run/" + runId + "/certificate").catch(handleError);
-      /** For mock */
-      // const response = await fetchData.get("static/data/certicate.json");
-      if (response) {
-        setErrorToast({display: false})
-        setCertificationData(runId, response.data);
-        openCertificate(response.data);
-      }
+    const certificate = certificates.get(runId);
+    if (certificate) {
+      openCertificate(certificate.transactionId);
     } else {
-      openCertificate(certData);
+      await dispatch(fetchCertificate({ runId }));
+      const certificate = certificates.get(runId);
+      if (certificate) {
+        openCertificate(certificate.transactionId);
+      }
     }
   };
 
-  const openCertificate = (data: any) => {
-    const { transactionId } = data;
-    let url = `https://preprod.cardanoscan.io/transaction/${transactionId}`;
-    window.open(url, "_blank");
+  const openCertificate = (transactionId: string) => {
+    window.open(`https://preprod.cardanoscan.io/transaction/${transactionId}`, '_blank');
   };
 
   const formatRepoUrl = (repoUrl: string) => {
@@ -297,21 +162,26 @@ const TestHistory = () => {
       disableSortBy: true,
       accessor: "viewReport",
       Cell: (props: any) => {
-        const notCertified: boolean = props.row.original.runStatus === "succeeded" || props.row.original.runStatus === "ready-for-certification"
+        const notCertified: boolean = props.row.original.runStatus === "succeeded" || props.row.original.runStatus === "ready-for-certification";
         if (notCertified || props.row.original.runStatus === "certified") {
           return (
             <Button
               variant="text"
               size="small"
               className="text-main"
-              onClick={() => {
-                navigate("/report/" + props.row.original.runId, {state: { repo: formatRepoUrl(props.row.original.repoUrl), commitHash: props.row.original.commitHash, certifiable: notCertified }});
-              }}
+              onClick={() => navigate(
+                `/report/${props.row.original.runId}`,
+                { state: {
+                  repo: formatRepoUrl(props.row.original.repoUrl),
+                  commitHash: props.row.original.commitHash,
+                  certifiable: notCertified
+                }}
+              )}
             >
               Link
             </Button>
           );
-            }
+        }
       },
     },
     {
@@ -359,21 +229,11 @@ const TestHistory = () => {
     []
   );
 
-  const fetchTableData = async () => {
-    const result = await fetchData.get("/run")
-    setLoading(false);
-    /** For mock */
-    // const result = await fetchData.get("static/data/history.json");
-    if (result.data.length) {
-      setData(result.data);
-    }
-  };
-
   const onDelete = (runId: string) => {
-    confirm({ title: "", description: "Are you sure want to remove this run campaign from logs!" })
+    confirm({ title: '', description: 'Are you sure want to remove this run campaign from logs!' })
       .then(async () => {
-        await dispatch(deleteTestHistoryData({ url: "/run/" + runId + "?delete=true" }));
-        fetchTableData()
+        await dispatch(deleteTestHistoryData({ url: `/run/${runId}?delete=true` }));
+        dispatch(fetchHistory({}));
       })
       .catch(() => { });
   };
@@ -386,10 +246,9 @@ const TestHistory = () => {
 
       <Box>
         <TableComponent
-          dataSet={data}
+          dataSet={history}
           columns={columns}
-          showColViz={true} 
-          updateMyData={updateMyData}
+          showColViz={true}
           skipPageReset={skipPageReset}
           loading={loading}
         />

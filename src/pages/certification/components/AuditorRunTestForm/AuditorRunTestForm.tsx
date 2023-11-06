@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchData, postData } from "api/api";
 
 import { Button, Snackbar, Alert, Box } from "@mui/material";
 
 import InputGroup from "compositions/InputGroup";
 import Input from "compositions/InputGroup/components/Input";
-import { LocalStorageKeys } from "constants/constants";
 import RepoAccessStatus from "components/RepoAccessStatus/RepoAccessStatus";
 import { getErrorMessage } from "utils/utils";
 
@@ -16,15 +14,9 @@ import { resolver, RepoField, CommitField, NameField, VersionField, SubjectField
 import { clearRepoUrl, setRepoUrl } from "../../slices/certification.slice";
 import { auditorRunTestFormSchema } from "./auditorRunTestForm.schema";
 import { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
-import {
-  clearAccessStatus,
-  clearAccessToken,
-  getUserAccessToken,
-  verifyRepoAccess,
-} from "store/slices/repositoryAccess.slice";
+import { clearAccessStatus, getUserAccessToken, verifyRepoAccess } from "store/slices/repoAccess.slice";
 import { useConfirm } from "material-ui-confirm";
 import { useSearchParams } from "react-router-dom";
-import useLocalStorage from "hooks/useLocalStorage";
 import { updateProfile } from "store/slices/profile.slice";
 
 interface IAuditorRunTestForm {

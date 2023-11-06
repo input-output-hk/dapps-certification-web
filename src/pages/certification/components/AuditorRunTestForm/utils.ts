@@ -1,15 +1,9 @@
-import { FieldType } from "compositions/InputGroup/interface";
-import { buildFormResolver } from "compositions/InputGroup/utils";
-import { LocalStorageKeys } from "constants/constants";
-
 import { Resolver } from "react-hook-form";
 
-import type { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
+import { FieldType } from "compositions/InputGroup/interface";
+import { buildFormResolver } from "compositions/InputGroup/utils";
 
-export const clearPersistentStates = () => {
-  localStorage.removeItem(LocalStorageKeys.certificationFormData);
-  localStorage.removeItem(LocalStorageKeys.certificationUuid);
-};
+import type { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
 
 export const RepoField = {
   label: 'GitHub Repository',

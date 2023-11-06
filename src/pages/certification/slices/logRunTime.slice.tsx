@@ -36,9 +36,9 @@ export const runTimeSlice = createSlice({
       state.runState = payload.runState;
     },
     setStates: (state, {payload}) => {
-        state.startTime = payload.startTime;
-        state.endTime = payload.endTime;
-        state.runState = payload.runState;
+      state.startTime = payload.startTime;
+      state.endTime = payload.endTime;
+      state.runState = payload.runState;
     },
     setEnded: (state, {payload}) => {
         state.ended = payload
