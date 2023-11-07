@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Button } from "@mui/material";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchTiers } from "../slices/tiers.slice";
-import type { Tier } from "../slices/tiers.slice";
+import { fetchTiers } from "store/slices/tiers.slice";
+import type { Tier } from "store/slices/tiers.slice";
 
 import "../index.css";
 

@@ -5,8 +5,8 @@ import { useConfirm } from "material-ui-confirm";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 
-import { fetchCertification } from "pages/certification/slices/certification.slice";
-import { deleteTestHistoryData } from "pages/testingHistory/slices/testingHistory.slice";
+// import { fetchCertification } from "store/slices/certification.slice";
+import { deleteTestHistoryData } from "store/slices/testingHistory.slice";
 
 import { useAppDispatch } from "store/store";
 import { useDelayedApi } from "hooks/useDelayedApi";
@@ -144,8 +144,8 @@ const TimelineView: React.FC<{
   const triggerFetchRunStatus = async () => {
     let config = timelineConfig;
     try {
-      const response: any = await dispatch(fetchCertification({ uuid }));
-      const res = { data: response as any };
+      // const response: any = await dispatch(fetchCertification({ uuid }));
+      const res = { data: {} as any };
       const status = res.data.status;
       const state = res.data.hasOwnProperty("state") ? res.data.state : "";
       setRunStatus(status);
@@ -167,12 +167,12 @@ const TimelineView: React.FC<{
         setUnitTestSuccess(unitTestResult);
         setHasFailedTasks(isAnyTaskFailure(resultData))
         // navigate to result page
-        clearPersistentStates();
+        // clearPersistentStates();
         // navigate("/report/" + uuid, { state: { repoUrl: githubLink, certifiable: true } });
       }
       if (state === "failed" || status === "finished") {
         // setSubmitting(false);
-        clearPersistentStates();
+        // clearPersistentStates();
         setApiFetching(false);
       }
       setTimelineConfig(config);

@@ -6,14 +6,14 @@ import registerSlice from "./slices/register.slice";
 import profileSlice from "./slices/profile.slice";
 import walletConnectionSlice from "./slices/walletConnection.slice";
 import walletTransactionSlice from "./slices/walletTransaction.slice";
-import certificationReducer from "pages/certification/slices/certification.slice";
-import testingHistorySlice from "pages/testingHistory/slices/testingHistory.slice";
-import logRunTimeSlice from "pages/certification/slices/logRunTime.slice";
-import priceSlice from "pages/landing/slices/price.slice";
-import tiersSlice from "pages/landing/slices/tiers.slice";
-import repoAccessSlice from "./slices/repoAccess.slice";
+import testingHistorySlice from "./slices/testingHistory.slice";
+import logRunTimeSlice from "./slices/logRunTime.slice";
+import priceSlice from "./slices/price.slice";
+import tiersSlice from "./slices/tiers.slice";
+import repositoryAccessSlice from "./slices/repositoryAccess.slice";
 import reportUploadSlice from "./slices/reportUpload.slice";
 import certificateSlice from "./slices/certificate.slice";
+import testingSlice from "./slices/testing.slice";
 
 const rootReducer = combineReducers({
   auth: authSlice,
@@ -22,14 +22,14 @@ const rootReducer = combineReducers({
   profile: profileSlice,
   walletConnection: walletConnectionSlice,
   walletTransaction: walletTransactionSlice,
-  certification: certificationReducer,
   testingHistory: testingHistorySlice,
   runTime: logRunTimeSlice,
   price: priceSlice,
   tiers: tiersSlice,
-  repoAccess: repoAccessSlice,
+  repositoryAccess: repositoryAccessSlice,
   reportUpload: reportUploadSlice,
   certificate: certificateSlice,
+  testing: testingSlice,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

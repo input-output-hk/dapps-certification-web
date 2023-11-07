@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "store/store";
 import { fetchActiveSubscription } from "store/slices/auth.slice";
 import { startListenWalletChanges, stopListenWalletChanges } from "store/slices/walletConnection.slice";
 import { register, clear } from "store/slices/register.slice";
-import type { Tier } from "./slices/tiers.slice";
+import type { Tier } from "store/slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
 
 import "./index.css";

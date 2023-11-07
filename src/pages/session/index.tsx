@@ -18,7 +18,7 @@ export default () => {
   const { hasAnActiveSubscription, isSessionFetched } = useAppSelector((state) => state.auth);
   const { profile } = useAppSelector((state) => state.profile);
 
-  useEffect(() => { dispatch(fetchActiveSubscription({})); }, []);
+  useEffect(() => { dispatch(fetchActiveSubscription({})) }, []);
 
   useEffect(() => {
     if (hasAnActiveSubscription) dispatch(fetchProfile({}));

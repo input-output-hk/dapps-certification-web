@@ -3,18 +3,18 @@ import { Resolver } from "react-hook-form";
 import { FieldType } from "compositions/InputGroup/interface";
 import { buildFormResolver } from "compositions/InputGroup/utils";
 
-import type { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
+import type { TestingForm } from "store/slices/testing.slice";
 
 export const RepoField = {
   label: 'GitHub Repository',
-  name: 'repoURL',
+  name: 'repoUrl',
   type: FieldType.GitHubRepository,
   required: true,
 };
 
 export const CommitField = {
   label: 'Commit Hash',
-  name: 'commit',
+  name: 'commitHash',
   type: FieldType.CommitHash,
   required: true,
 };
@@ -33,14 +33,6 @@ export const VersionField = {
   required: true,
 };
 
-export const SubjectField = {
-  label: 'DApp Subject',
-  name: 'subject',
-  type: FieldType.Subject,
-  required: true,
-  textArea: true,
-};
-
-export const resolver: Resolver<IAuditorRunTestFormFields> = buildFormResolver<IAuditorRunTestFormFields>([
-  RepoField, CommitField, NameField, VersionField, SubjectField
+export const resolver: Resolver<TestingForm> = buildFormResolver<TestingForm>([
+  RepoField, CommitField, NameField, VersionField
 ]);
