@@ -1,4 +1,14 @@
-import { CertificationTasks, getPlannedCertificationTaskCount } from "pages/certification/Certification.helper";
+import {
+  CertificationTasks,
+  getProgressCardInfo,
+  ICertificationTask,
+  IFinishedTestingTaskDetails,
+  isTaskSuccess,
+  PlanObj
+} from "pages/certification/Certification.helper";
+
+const PROGRESS_PASS = 100;
+const PROGRESS_FAIL = -1;
 
 export const setManyStatus = (
   index: number,
@@ -48,11 +58,11 @@ export const processFinishedJson = (result: { [x: string]: any }): boolean => {
 };
 
 export const processTimeLineConfig = (
+  res: { data: { progress: { [x: string]: string | any[] }; plan: any; status: string; state?: string; } },
   config: any[],
-  state: any,
-  status: string,
-  res: { data: { progress: { [x: string]: string | any[] }; plan: any } }
 ) => {
+  const status = res.data.status;
+  const state = res.data.hasOwnProperty('state') ? res.data.state : '';
   return config.map((item, index) => {
     if (item.status === status) {
       const currentState =
@@ -63,4 +73,68 @@ export const processTimeLineConfig = (
     // Set the previously executed states as passed
     return setManyStatus(index, config, item, status, "passed");
   });
+}
+
+export const getPlannedTestingTasks = (res: any, _plannedTestingTasks: PlanObj[]): PlanObj[] => {
+  const plannedTestingTasks = JSON.parse(JSON.stringify(_plannedTestingTasks));
+  const status = res.data.status;
+  const state = res.data.hasOwnProperty('state') ? res.data.state : '';
+  if (status === "certifying" && state === "running") {
+    const resPlan = res.data.plan;
+    const resProgress = res.data.progress;
+    if (!plannedTestingTasks.length && resPlan.length) {
+      return (
+        resPlan.map((item: { index: number; name: string }) => {
+          const TaskConfig: ICertificationTask | undefined = CertificationTasks.find((task) => task.name === item.name)
+          if (!TaskConfig) {
+            return null;
+          }
+          return {
+            key: TaskConfig.key,
+            name: item.name,
+            label: TaskConfig.label,
+            discarded: 0,
+            progress: 0,
+          };
+        })
+      );
+    } else if (plannedTestingTasks.length && resProgress) {
+      return (
+        plannedTestingTasks.map((item: PlanObj) => {
+          const currentTask = resProgress["current-task"];
+          if (currentTask && item.name === currentTask["name"]) {
+            const currentProgressStats = resProgress["qc-progress"];
+            item.discarded = currentProgressStats["discarded"];
+            item.progress = currentProgressStats["expected"] ? Math.trunc(
+              ((currentProgressStats["successes"] + currentProgressStats["failures"]) / 
+                // currentProgressStats["expected"]) * 100
+                (currentProgressStats["expected"] - currentProgressStats["discarded"])) * 100
+            ) : "On Going";
+          }
+          const isInFinished = resProgress["finished-tasks"].find((task: IFinishedTestingTaskDetails) => task.task.name === item.name)
+          if (isInFinished) {
+            item.discarded = isInFinished["qc-result"].discarded
+            item.progress = isInFinished.succeeded ? PROGRESS_PASS : PROGRESS_FAIL
+          }
+          return item
+        })
+      )
+    }
+  } else if (status === 'finished') {
+    const isArrayResult = Array.isArray(res.data.result);
+    const resultJson = isArrayResult
+      ? res.data.result[0]
+      : res.data.result;
+    return (
+      plannedTestingTasks.map((item: PlanObj) => {
+        if (isTaskSuccess(resultJson[item.key], item.key)) {
+          item.progress = PROGRESS_PASS
+        } else {
+          item.progress = PROGRESS_FAIL;
+        }
+        return {...item, ...getProgressCardInfo(resultJson[item.key], item)}
+      })
+    )
+  }
+  return [];
 }

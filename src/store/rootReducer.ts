@@ -14,6 +14,7 @@ import repositoryAccessSlice from "./slices/repositoryAccess.slice";
 import reportUploadSlice from "./slices/reportUpload.slice";
 import certificateSlice from "./slices/certificate.slice";
 import testingSlice from "./slices/testing.slice";
+import certificationResultSlice from "./slices/certificationResult.slice";
 
 const rootReducer = combineReducers({
   auth: authSlice,
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   reportUpload: reportUploadSlice,
   certificate: certificateSlice,
   testing: testingSlice,
+  certificationResult: certificationResultSlice
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

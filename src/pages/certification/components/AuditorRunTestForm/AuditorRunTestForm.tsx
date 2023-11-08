@@ -10,18 +10,14 @@ import Input from "compositions/InputGroup/components/Input";
 import RepoAccessStatus from "components/RepoAccessStatus/RepoAccessStatus";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { updateForm, fetchCertification } from "store/slices/testing.slice";
+import { updateForm, createTestRun } from "store/slices/testing.slice";
 import { clearAccessStatus, verifyRepoAccess, verifyRepoAccessWithAccessToken, fetchClientId } from "store/slices/repositoryAccess.slice";
-import { removeNullsDeep } from "utils/utils";
-import { resolver, RepoField, CommitField, NameField, VersionField } from "./utils";
+import { resolver, RepoField, CommitField, NameField, VersionField, SubjectField } from "./utils";
+import { removeNullsDeep, removeEmptyStringsDeep } from "utils/utils";
 
 import type { TestingForm } from "store/slices/testing.slice";
 
-interface Props {
-  disable: boolean;
-}
-
-const AuditorRunTestForm: React.FC<Props> = ({ disable }) => {
+const AuditorRunTestForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
 
@@ -32,7 +28,7 @@ const AuditorRunTestForm: React.FC<Props> = ({ disable }) => {
   const { showConfirmConnection, accessStatus, verifying, clientId } = useAppSelector((state) => state.repositoryAccess);
   
   const { profile } = useAppSelector((state) => state.profile);
-  const { form: formValues, loadingUuid } = useAppSelector((state) => state.testing);
+  const { form: formValues, creating, uuid } = useAppSelector((state) => state.testing);
   const { dapp } = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
   const defaultValues = formValues ? removeNullsDeep(JSON.parse(JSON.stringify(formValues))) : (dapp ? {
     repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
@@ -41,7 +37,7 @@ const AuditorRunTestForm: React.FC<Props> = ({ disable }) => {
   const form = useForm<TestingForm>({ resolver, defaultValues, mode: 'all' });
 
   useEffect(() => {
-    const subscription = form.watch(value => dispatch(updateForm(value)));
+    const subscription = form.watch(value => dispatch(updateForm(removeEmptyStringsDeep(value))));
     return () => subscription.unsubscribe();
   }, [form.watch]);
   
@@ -64,6 +60,12 @@ const AuditorRunTestForm: React.FC<Props> = ({ disable }) => {
   useEffect(() => {
     if (showConfirmConnection) confirmConnectModal();
   }, [showConfirmConnection]);
+
+  useEffect(() => {
+    if (formValues === null) {
+      form.reset();
+    }
+  }, [formValues]);
 
   const handleRepoFieldBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (event.target.value !== form.getValues().repoUrl) {
@@ -113,7 +115,7 @@ const AuditorRunTestForm: React.FC<Props> = ({ disable }) => {
   };
 
   const formHandler = (formData: TestingForm) => {
-    dispatch(fetchCertification({}));
+    dispatch(createTestRun({}));
   };
 
   return (
@@ -123,12 +125,12 @@ const AuditorRunTestForm: React.FC<Props> = ({ disable }) => {
           type="submit" 
           variant="contained" size="large"
           className="button block py-3 px-14 mt-10 mb-20 mx-auto w-[200px]"
-          disabled={!form.formState.isValid || loadingUuid || disable || accessStatus !== "accessible" || verifying}
+          disabled={!form.formState.isValid || creating || uuid !== null || accessStatus !== "accessible" || verifying}
         >
           Test
         </Button>
 
-        <div className={disable || verifying ? "disabled" : ""}>
+        <div className={uuid !== null || verifying ? "disabled" : ""}>
           <div className="relative input-wrapper">
             <Input
               noGutter={true}
@@ -136,10 +138,10 @@ const AuditorRunTestForm: React.FC<Props> = ({ disable }) => {
               formState={form.formState}
               register={form.register}
               getFieldState={form.getFieldState}
-              disabled={loadingUuid || verifying}
+              disabled={creating || verifying}
               onBlur={handleRepoFieldBlur}
             />
-            {(accessStatus && !disable) ? (
+            {(accessStatus && uuid === null) ? (
               <div className="absolute right-[-32px] top-[22px]">
                 <RepoAccessStatus status={accessStatus} classes={showConfirmConnection ? "cursor-pointer" : ""} onClick={() => {showConfirmConnection && confirmConnectModal()}} />
               </div>
@@ -147,11 +149,11 @@ const AuditorRunTestForm: React.FC<Props> = ({ disable }) => {
           </div>
           <Box className="mx-[-1rem]">
             <InputGroup
-              fields={[CommitField, NameField, VersionField]}
+              fields={[CommitField, NameField, VersionField, SubjectField]}
               formState={form.formState}
               register={form.register}
               getFieldState={form.getFieldState}
-              disabled={loadingUuid}
+              disabled={creating}
             />
           </Box>
         </div>

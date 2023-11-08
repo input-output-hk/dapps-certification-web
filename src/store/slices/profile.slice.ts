@@ -16,6 +16,7 @@ export interface UserProfile {
     owner: string;
     repo: string;
     version?: string;
+    subject?: string;
     githubToken?: string;
   } | null;
 }

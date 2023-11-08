@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import React from "react";
 import { Button, CircularProgress } from "@mui/material";
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 import { ellipsizeString } from "utils/utils";
 import { useAppDispatch, useAppSelector } from "store/store";
-import { resetForm } from "store/slices/testing.slice";
+import { resetForm, resetForRetest, createTestRun } from "store/slices/testing.slice";
 
 import AuditorRunTestForm from "./components/AuditorRunTestForm/AuditorRunTestForm";
 import TimelineView from "./components/TimelineView/TimelineView";
@@ -14,29 +14,19 @@ import './Certification.css';
 
 const Certification = () => {
 	const dispatch = useAppDispatch();
-	const { uuid, loadingUuid, form } = useAppSelector((state) => state.testing);
-	const [runEnded, setRunEnded] = useState(false);
+	const { uuid, creating, runEnded } = useAppSelector((state) => state.testing);
 
-	useEffect(() => { dispatch(resetForm()) }, []);
-
-	const resetStates = (ended: boolean = false) => {
-		setRunEnded(ended);
+	const handleRetest = async () => {
+		await dispatch(resetForRetest());
+		await dispatch(createTestRun({}));
 	}
 
-	const onTestRunAbort = () => {
-		
+	const handleReset = () => {
+		dispatch(resetForm());
 	}
 
-	const onRunEnd = () => {
-		setRunEnded(true);
-	}
-
-	const triggerRetest = () => {
-		
-	}
-
-	const triggerNewTest = () => {
-		
+	const handleAbort = () => {
+		dispatch(resetForm());
 	}
 
 	return (
@@ -52,14 +42,14 @@ const Certification = () => {
 						<Button
 							type="button"
 							variant="contained" size="small"
-							onClick={triggerRetest}
+							onClick={handleRetest}
 							className="button text-sm min-w-[150px]"
 							startIcon={<RestartAltIcon />}
 						>Test again</Button>
 						<Button
 							type="button"
 							variant="contained" size="small"
-							onClick={triggerNewTest}
+							onClick={handleReset}
 							className="button text-sm min-w-[150px]"
 							startIcon={<LeaderboardIcon />}
 						>New test</Button>
@@ -68,21 +58,14 @@ const Certification = () => {
 			</div>
 			<div className="content-area-box shadow-lg bg-white px-5 xs:px-7 xs:py-4 flex flex-col tab:flex-row tab:px-5">
 				<div className="sm:w-full tab:w-1/2 px-0 mb-6 tab:px-22 tab:mb-0">
-					<AuditorRunTestForm disable={uuid !== null} />
+					<AuditorRunTestForm />
 				</div>
 				<div className="sm:w-full tab:w-1/2 px-22 min-h-[150px] tab:px-22 tab:mb-0">
 					{uuid ? (
-						<TimelineView
-							uuid={uuid}
-							repo={form?.repoUrl || ''}
-							commitHash={form?.commitHash || ''}
-							runEnded={onRunEnd}
-							onAbort={onTestRunAbort}
-							triggerFormReset={onTestRunAbort}
-						/>
+						<TimelineView onAbort={handleAbort} />
 					) : (
 						<div className="w-full text-center text-xl text-neutral-300 font-medium pt-48">
-							{loadingUuid ? <CircularProgress color="secondary" size={50} /> : <span>Fill the testing form</span>}
+							{creating ? <CircularProgress color="secondary" size={50} /> : <span>Fill the testing form</span>}
 						</div>
 					)}
 				</div>

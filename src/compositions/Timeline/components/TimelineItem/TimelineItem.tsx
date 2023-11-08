@@ -24,7 +24,7 @@ const TimelineItem: FC<ITimelineItem> = ({
   const getURLFor = (state: string = "outline") => {
     if (hasFailedTasks && state === "passed" && status === "finished") {
       state += '-error' // load gray check
-    } else if (!unitTestSuccess && (status === "finished" || status === 'certifying')) {
+    } else if (!unitTestSuccess && (status === "finished" || status === "certifying")) {
       state = 'failed'
     }
     return "/images/" + state + ".svg";

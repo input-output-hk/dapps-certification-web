@@ -1,5 +1,7 @@
 import React, { FC, useState, useEffect, useRef } from "react";
 
+import { useLogs } from 'hooks/useLogs';
+
 import "./LogsView.css";
 import LogsViewEntry from "./LogsViewEntry";
 
@@ -20,7 +22,6 @@ const LogsView: FC<{
   const bottomRef = useRef<HTMLDivElement>(null);
   const logContentRef = useRef<HTMLDivElement>(null);
   const lastLog = useRef<any>(null);
-  const logs = [] as any[];
 
   const showLogView = () => {
     setShowLogs(true);
@@ -34,18 +35,20 @@ const LogsView: FC<{
     setShowLogs(false);
   };
 
-  // const { logInfo: logs } = useLogs(runId, oneTime || endPolling, !oneTime);
+  const { logInfo: logs } = useLogs(runId, oneTime || endPolling, !oneTime);
 
-  // useEffect(() => {
-  //   if (endPolling && latestTestingProgress) {
-  //     lastLog.current = logs[logs.length - 2]
-  //     if (lastLog.current?.Source.indexOf('run-certify') !== -1) {
-  //       // is 2nd last entry in logs when Source has run-certify
-  //       latestTestingProgress(JSON.parse(lastLog.current.Text));
-  //     }
-  //   }
-  //   bottomRef.current?.scrollIntoView({ behavior: "smooth" }); // scroll to bottom
-  // }, [logs, endPolling, latestTestingProgress]);
+  useEffect(() => {
+    if (endPolling && latestTestingProgress) {
+      lastLog.current = logs[logs.length - 2]
+      if (lastLog.current?.Source.indexOf('run-certify') !== -1) {
+        // is 2nd last entry in logs when Source has run-certify
+        if (lastLog.current) {
+          latestTestingProgress(JSON.parse(lastLog.current.Text));
+        }
+      }
+    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" }); // scroll to bottom
+  }, [logs, endPolling, latestTestingProgress]);
 
   useEffect(() => {
     open && showLogView();

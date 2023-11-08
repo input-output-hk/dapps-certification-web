@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { formatTimeToReadable } from "utils/utils";
+import { fetch } from "api";
 
 interface RunTimeState {
   startTime: string;
@@ -12,6 +13,7 @@ interface RunTimeState {
     runState: string;
   }
 }
+
 const initialState: RunTimeState = {
   startTime: "",
   endTime: "",
@@ -22,6 +24,16 @@ const initialState: RunTimeState = {
     runState: ""
   }
 };
+
+export const fetchLogs = createAsyncThunk("fetchLogs", async (payload: { uuid: string, queryAfter: string }, thunkApi) => {
+  try {
+    const response = await fetch<any>(thunkApi, { method: 'GET', url: `/run/${payload.uuid}/logs${payload.queryAfter}` });
+    return response.data;
+  } catch (e: any) {
+    return thunkApi.rejectWithValue(e.response.data);
+  }
+});
+
 export const runTimeSlice = createSlice({
   name: "runTime",
   initialState,

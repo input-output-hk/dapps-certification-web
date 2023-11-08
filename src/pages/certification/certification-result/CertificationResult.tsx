@@ -13,15 +13,18 @@ import {
   processTimeLineConfig,
 } from "compositions/Timeline/components/TimelineItem/timeline.helper";
 
+import { useAppDispatch } from "store/store";
 import { ellipsizeString } from "../../../utils/utils";
 import DownloadResult from "../components/DownloadResult/DownloadResult";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 import FullReportTable from "./FullReportTable";
 import { calculateCurrentProgress, calculateExpectedProgress, CertificationTasks, getProgressCardInfo, ICertificationTask, isAnyTaskFailure, PlanObj } from "../Certification.helper";
+import { fetchCertificationResult } from "store/slices/certificationResult.slice";
 
 import "../Certification.css";
 
 const CertificationResult = () => {
+  const dispatch = useAppDispatch();
   const param = useParams<{ uuid: string }>();
   const { state } = useLocation();
   const [coverageFile, setCoverageFile] = useState("");
@@ -32,55 +35,55 @@ const CertificationResult = () => {
 
   const testTaskProgress = useRef<PlanObj[]>([])
 
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const res = await fetchData.get("/run/" + param.uuid);
-  //       const runStatus = res.data.status;
-  //       const runState = res.data.hasOwnProperty("state") ? res.data.state : "";
-  //       setTimelineConfig(
-  //         processTimeLineConfig(timelineConfig, runState, runStatus, res)
-  //       );
-  //       if (runStatus === "finished") {
-  //         const isArrayResult = Array.isArray(res.data.result);
-  //         const resultJson = isArrayResult
-  //           ? res.data.result[0]
-  //           : res.data.result;
-  //         if (isArrayResult) {
-  //           setCoverageFile(res.data.result[1]);
-  //         }
-  //         const unitTestResult = processFinishedJson(resultJson);
-  //         setUnitTestSuccess(unitTestResult);
-  //         setResultData(resultJson);
-  //         const resultTaskKeys = Object.keys(resultJson)
-  //         resultTaskKeys.forEach((key: any) => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const response: any = await dispatch(fetchCertificationResult({ uuid: param.uuid! }));
+        const res = { data: response.payload };
+        const runStatus = res.data.status;
+        setTimelineConfig(
+          processTimeLineConfig(res, timelineConfig)
+        );
+        if (runStatus === "finished") {
+          const isArrayResult = Array.isArray(res.data.result);
+          const resultJson = isArrayResult
+            ? res.data.result[0]
+            : res.data.result;
+          if (isArrayResult) {
+            setCoverageFile(res.data.result[1]);
+          }
+          const unitTestResult = processFinishedJson(resultJson);
+          setUnitTestSuccess(unitTestResult);
+          setResultData(resultJson);
+          const resultTaskKeys = Object.keys(resultJson)
+          resultTaskKeys.forEach((key: any) => {
             
-  //           const TaskConfig: ICertificationTask | undefined = CertificationTasks.find((task) => task.key === key)
-  //           if (!TaskConfig || !resultJson[key]) {
-  //             // do nothing
-  //           } else {
-  //             const taskEntry = {
-  //               key: TaskConfig.key,
-  //               name: TaskConfig.name,
-  //               label: TaskConfig.label,
-  //               discarded: 0,
-  //               progress: 0
-  //             }
+            const TaskConfig: ICertificationTask | undefined = CertificationTasks.find((task) => task.key === key)
+            if (!TaskConfig || !resultJson[key]) {
+              // do nothing
+            } else {
+              const taskEntry = {
+                key: TaskConfig.key,
+                name: TaskConfig.name,
+                label: TaskConfig.label,
+                discarded: 0,
+                progress: 0
+              }
 
-  //             testTaskProgress.current.push({
-  //               ...taskEntry,
-  //               ...getProgressCardInfo(resultJson[key], taskEntry)
-  //             })
-  //           }
-  //         })
-  //       }
-  //     } catch (error) {
-  //       handleErrorScenario();
-  //       console.error('Failed:', error);
-  //     }
-  //   })();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [param.uuid]);
+              testTaskProgress.current.push({
+                ...taskEntry,
+                ...getProgressCardInfo(resultJson[key], taskEntry)
+              })
+            }
+          })
+        }
+      } catch (error) {
+        handleErrorScenario();
+        console.error('Failed:', error);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [param.uuid]);
 
   const handleErrorScenario = useCallback(() => {
     // show an api error toast

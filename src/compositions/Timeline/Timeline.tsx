@@ -13,7 +13,8 @@ const Timeline = (props: any) => {
     <div className="statusTimeline" data-testid="statusTimeline">
       <ul className="statusTimelineUl">
         {statusConfig.map(
-          (config: any, index: React.Key | null | undefined) => {
+          (_config: any, index: React.Key | null | undefined) => {
+            const config = JSON.parse(JSON.stringify(_config));
             if (buildInfo.runState === config.status) {
               config.runTimeTaken = buildInfo.runTime
             }

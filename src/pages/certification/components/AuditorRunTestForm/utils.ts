@@ -33,6 +33,14 @@ export const VersionField = {
   required: true,
 };
 
+export const SubjectField = {
+  label: 'DApp Subject',
+  name: 'subject',
+  type: FieldType.Subject,
+  required: false,
+  textArea: true,
+};
+
 export const resolver: Resolver<TestingForm> = buildFormResolver<TestingForm>([
-  RepoField, CommitField, NameField, VersionField
+  RepoField, CommitField, NameField, VersionField, SubjectField
 ]);
