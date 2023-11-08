@@ -2,8 +2,6 @@
   "name": "react-web",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://excuse.ro:443/",
-  "homepage": "http://localhost:3000/",
   "dependencies": {
     "@emurgo/cardano-serialization-lib-browser": "^11.2.1",
     "@hookform/resolvers": "^2.9.7",
@@ -35,7 +33,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "build:production": "REACT_APP_ENV=production yarn build",
+    "build:production": "REACT_APP_ENV=production npm run build",
     "react-test": "react-app-rewired test",
     "test": "jest --config=jest.config.js --coverage",
     "eject": "react-app-rewired eject"

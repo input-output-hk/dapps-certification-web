@@ -14,9 +14,9 @@
 
   a, .link {
     @apply cursor-pointer text-blue-active no-underline;
-    &:hover, &:focus {
-      @apply text-blue-activeDark underline;
-    }
+  }
+  a:hover, .link:hover, a:focus, .link:focus {
+    @apply text-blue-activeDark underline;
   }
 
   .button {
@@ -29,32 +29,67 @@
 
   .button-contained-main {
     @apply normal-case bg-slate-main text-white;
-    &:hover { @apply bg-slate-mainDark; }
   }
+  .button-contained-main:hover { @apply bg-slate-mainDark; }
 
   .button-contained-active {
     @apply normal-case bg-blue-active text-white;
-    &:hover { @apply bg-blue-activeDark; }
   }
+  .button-contained-active:hover { @apply bg-blue-activeDark; }
 
   .button-contained-highlighted {
     @apply normal-case bg-slate-highlighted text-white;
-    &:hover { @apply bg-slate-highlightedDark; }
   }
+  .button-contained-highlighted:hover { @apply bg-slate-highlightedDark; }
 
   .button-outlined-main {
     @apply normal-case text-slate-main border-slate-main;
-    &:hover { @apply text-slate-mainDark border-slate-mainDark; }
   }
+  .button-outlined-main:hover { @apply text-slate-mainDark border-slate-mainDark; }
 
   .button-outlined-active {
     @apply normal-case text-blue-active border-blue-active;
-    &:hover { @apply text-blue-activeDark border-blue-activeDark; }
   }
+  .button-outlined-active:hover { @apply text-blue-activeDark border-blue-activeDark; }
+
 
   .button-outlined-highlighted {
     @apply normal-case text-slate-highlighted border-slate-highlighted;
-    &:hover { @apply text-slate-highlightedDark border-slate-highlightedDark; }
   }
+  .button-outlined-highlighted:hover { @apply text-slate-highlightedDark border-slate-highlightedDark; }
 
-} 
+}
+
+.text-center {
+  text-align: center;
+  text-align: -moz-center;
+  text-align: -webkit-center;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+#customgpt {
+  position: fixed;
+  width: 400px;
+  height: 500px;
+  bottom: 88px;
+  right: 16px;
+  border-radius: 6px;
+  overflow: hidden;
+  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  z-index: 10000;
+}
+
+#customgpt.hidden {
+  display: none;
+}
+
+#customgpt .cgptcb-chat-box-header {
+  display: none !important;
+}

@@ -8,19 +8,19 @@
   justify-content: space-between;
   padding: 0;
   position: relative;
+}
 
-  &:before {
-    position: absolute;
-    content: " ";
-    background-color: #c7d9f6;
-    height: 2px;
-    top: 2px;
-    bottom: 26px;
-    left: 30px;
-    right: 0;
-    width: calc(100% - 80px);
-    margin-bottom: 20px;
-  }
+.statusTimelineUl:before {
+  position: absolute;
+  content: " ";
+  background-color: #c7d9f6;
+  height: 2px;
+  top: 2px;
+  bottom: 26px;
+  left: 30px;
+  right: 0;
+  width: calc(100% - 80px);
+  margin-bottom: 20px;
 }
 
 .statusTimelineLi {

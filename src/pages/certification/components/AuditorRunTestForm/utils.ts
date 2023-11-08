@@ -30,7 +30,7 @@ export const VersionField = {
   label: 'DApp Version',
   name: 'version',
   type: FieldType.Text,
-  required: true,
+  required: false,
 };
 
 export const SubjectField = {

@@ -10,7 +10,7 @@ import AppLayout from './components/AppLayout';
 
 import "./index.css";
 
-export default () => {
+const Session = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,6 +22,7 @@ export default () => {
 
   useEffect(() => {
     if (hasAnActiveSubscription) dispatch(fetchProfile({}));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAnActiveSubscription]);
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export default () => {
     if (location.pathname !== '/' && isSessionFetched && !hasAnActiveSubscription) {
       navigate('/');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAnActiveSubscription, isSessionFetched, location.pathname]);
 
   // If the session is being fetched or if the user has an active subscription and the profile is being fetched, a loading will be displayed
@@ -44,3 +46,5 @@ export default () => {
 
   return hasAnActiveSubscription ? <AppLayout /> : <Outlet />;
 }
+
+export default Session;

@@ -12,7 +12,7 @@ import "../index.css";
 const AppBar = () => {
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
-  const { walletAddress } = useAppSelector((state) => state.session);
+  const { walletAddress } = useAppSelector(state => state.walletConnection);
 
   const getProfileAddress = () => {
     return walletAddress ? `${walletAddress.slice(0,4)}...${walletAddress.slice(-4)}` : '...';
