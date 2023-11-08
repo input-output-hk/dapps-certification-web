@@ -58,19 +58,21 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   const { profile } = useAppSelector((state) => state.profile);
   const { showConfirmConnection, accessStatus, accessToken, verifying } = useAppSelector((state) => state.repoAccess);
 
-  const form = useForm<IAuditorRunTestFormFields>({
+  const form = useForm<any>({
     resolver, mode: 'all',
     defaultValues: profile && profile.dapp ? {
-      repoURL: profile.dapp.owner && profile.dapp.repo ? `https://github.com/${profile.dapp.owner}/${profile.dapp.repo}` : undefined,
+      repoURL: profile.dapp.owner && profile.dapp.repo ? `https://github.com/${profile.dapp.owner}/${profile.dapp.repo}` : null,
       name: profile.dapp.name, 
       version: profile.dapp.version,
       subject: profile.dapp.subject,
-    } : undefined
+    } : null
   });
 
   const handleRepoFieldBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (event.target.value !== form.getValues().repoURL) {
+    if (event.target.value !== form.getValues().repoURL || event.target.value !== repoUrl) {
       checkRepoAccess(event.target.value);
+    } else if (!event.target.value) {
+      dispatch(clearAccessStatus())
     }
     form.setValue('repoURL', event.target.value);
   }
@@ -91,7 +93,7 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
       setInitialized(true);
       checkRepoAccess(form.getValues().repoURL);
     }
-  }, [initialized, form.getValues().repoURL]);
+  }, [form.getValues().repoURL]);
 
   useEffect(() => { 
     if (forceValidate) {
@@ -277,22 +279,28 @@ const AuditorRunTestForm: React.FC<IAuditorRunTestForm> = ({
   // New Test: Clear certification form
   useEffect(() => {
     if (clearForm) {
-      form.reset();
       dispatch(clearRepoUrl());
+      const empty = {
+        repoURL: null,
+        commit: null,
+        name: null,
+        version: null,
+        subject: null
+      }
+      form.reset(empty);
+      dispatch(clearAccessStatus())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clearForm]);
 
   // Test again: Retain repo url in certification form
   useEffect(() => {
-    if (testAgain)
+    if (testAgain) {
       form.reset({
-        repoURL: repoUrl,
-        commit: "",
-        name: "",
-        subject: "",
-        version: "",
+        ...form.getValues(),
+        commit: ""
       });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testAgain]);
 
