@@ -115,6 +115,8 @@ export const generateCollapsibleContent = (row: any) => {
                             <span className="font-neutral-900 text-red-title block mb-10"><i>{entry.resultShortDescription}</i></span>
                             <div className="whitespace-pre">{entry.resultDescription}</div>
                         </div>)
+                    } else {
+                        return null
                     }
                 })
             }
