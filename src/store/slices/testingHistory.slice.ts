@@ -31,7 +31,7 @@ export const fetchHistory = createAsyncThunk("fetchHistory", async (payload: {},
   }
 });
 
-export const updateRowStatus = createAsyncThunk("updateRowStatus", async (payload: { index: number, runId: string }, thunkApi) => {
+export const getRowStatus = createAsyncThunk("getRowStatus", async (payload: { index: number, runId: string }, thunkApi) => {
   try {
     const response = await fetch<any>(thunkApi, { method: 'GET', url: `/run/${payload.runId}` });
     const state = response.data.hasOwnProperty("state") ? response.data.state : "";
@@ -90,7 +90,7 @@ const testingHistorySlice = createSlice({
         state.loading = false;
         state.history = [];
       })
-      .addCase(updateRowStatus.fulfilled, (state, actions) => {
+      .addCase(getRowStatus.fulfilled, (state, actions) => {
         state.history = state.history.map(
           (row, index) => index !== actions.payload.index ? row : ({
             ...row, runStatus: actions.payload.status as any
