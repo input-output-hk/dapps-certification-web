@@ -33,9 +33,7 @@ export const fetchClientId = createAsyncThunk("fetchClientId", async (payload: {
 
 export const verifyRepoAccess = createAsyncThunk('verifyRepoAccess', async (payload: { owner: string, repo: string }, thunkApi) => {
   try {
-    const accessToken = (thunkApi.getState() as RootState).session.accessToken;
-    const headers = (accessToken ? { 'Authorization': accessToken } : {}) as AxiosRequestHeaders;
-    const response = await fetch<any>(thunkApi, { method: 'GET', url: `/repo/${payload.owner}/${payload.repo}`, headers }, false);
+    const response = await fetch<any>(thunkApi, { method: 'GET', url: `/repo/${payload.owner}/${payload.repo}` }, { useSession: false, useAccessToken: true });
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);
