@@ -36,7 +36,7 @@ const Session = () => {
   }, [hasAnActiveSubscription, isSessionFetched, location.pathname]);
 
   // If the session is being fetched or if the user has an active subscription and the profile is being fetched, a loading will be displayed
-  if (!isSessionFetched || (hasAnActiveSubscription && profile === null)) {
+  if (!isSessionFetched || (isSessionFetched && hasAnActiveSubscription && profile === null) || (!hasAnActiveSubscription && location.pathname !== '/')) {
     return (
       <Box className="w-screen h-screen flex items-center justify-center bg-slate-app">
         <CircularProgress color="secondary" size={100} />

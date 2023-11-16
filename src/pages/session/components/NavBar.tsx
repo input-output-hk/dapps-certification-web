@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, Chip } from "@mui/material";
 
 import HomeIcon from '@mui/icons-material/HomeOutlined';
 import TestingIcon from '@mui/icons-material/BarChartOutlined';
@@ -11,11 +11,15 @@ import UserProfileIcon from '@mui/icons-material/PersonOutlined';
 import SupportIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import DocumentationIcon from '@mui/icons-material/SupportOutlined';
 
+import { useAppSelector } from "store/store";
+
 import "../index.css";
 
 const NavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { runStatus, runState } = useAppSelector(state => state.testing);
 
   const getItemClassName = (pathname: string) => location.pathname !== pathname ? 'nav-bar-item' : 'nav-bar-item-active';
   const getIconClassName = (pathname: string) => location.pathname !== pathname ? 'nav-bar-icon' : 'nav-bar-icon-active';
@@ -36,7 +40,11 @@ const NavBar = () => {
         </MenuItem>
         <MenuItem className={getItemClassName('/testing')} onClick={() => navigate('/testing')}>
           <ListItemIcon><TestingIcon className={getIconClassName('/testing')} /></ListItemIcon>
-          <ListItemText className="text-white font-medium">Testing</ListItemText>
+          <ListItemText className="text-white font-medium">
+            Testing
+            { runState === 'running' && <Chip label="Running" color="primary" size="small" className="float-right" /> }
+            { runStatus === 'finished' && <Chip label="Finished" color="success" size="small" className="float-right" /> }
+          </ListItemText>
         </MenuItem>
         <MenuItem className={getItemClassName('/history')} onClick={() => navigate('/history')}>
           <ListItemIcon><TestingHistoryIcon className={getIconClassName('/history')} /></ListItemIcon>
