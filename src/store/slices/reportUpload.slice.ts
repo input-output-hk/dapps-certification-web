@@ -60,16 +60,26 @@ const initialState: ReportUploadState = {
   uuid: null,
 };
 
-export const sendReport = createAsyncThunk("sendReport", async (payload: { request: ReportUploadRequest, uuid?: string }, thunkApi) => {
+export const sendReport = createAsyncThunk("sendReport", async (payload: { request: ReportUploadRequest, uuid?: string, profile?: UserProfile }, thunkApi) => {
   try {
-    const response = await fetch<SendReportResponse>(thunkApi, { method: 'POST', url: payload.uuid ? `/run/${payload.uuid}/certificate` : '/auditor/reports', data: payload.request });
-    if (response.status !== 200) throw { response };
-    return {
-      onchain: response.data.onchain,
-      offchain: response.data.offchain,
-      subject: payload.request.subject,
-      uuid: payload.uuid || null
-    };
+    let profileHasAddress = false;
+    if (payload.profile) {
+      const profileRes = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: '/profile/current', data: payload.profile });
+      profileHasAddress = !!profileRes.data.address;
+    }
+
+    if (payload.profile && profileHasAddress || !payload.profile) {
+      const response = await fetch<SendReportResponse>(thunkApi, { method: 'POST', url: payload.uuid ? `/run/${payload.uuid}/certificate` : '/auditor/reports', data: payload.request });
+      if (response.status !== 200) throw { response };
+      return {
+        onchain: response.data.onchain,
+        offchain: response.data.offchain,
+        subject: payload.request.subject,
+        uuid: payload.uuid || null
+      };
+    }
+
+    return null;
   } catch (error: any) {
     let errorMessage = 'Something went wrong. Please try again.';
     if (error?.response?.data) {
