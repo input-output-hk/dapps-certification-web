@@ -78,11 +78,7 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
       }
     }));
     await thunkApi.dispatch(clearAccessToken({}));
-
-    const response = await fetch<string>(thunkApi, {
-      method: 'POST', url: '/run', data: form.commitHash,
-      headers: {'Content-type': 'text/plain;charset=utf-8'}
-    });
+    const response = await fetch<string>(thunkApi, { method: 'POST', url: '/run', data: form.commitHash }, { useSession: true, useTextPlainClient: true });
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);

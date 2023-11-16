@@ -68,7 +68,11 @@ const CertificationMetadataForm = (props: Props) => {
         ...(!props.isReviewCertification ? {certificationLevel: parseInt(certificationLevel)} : {}),
         ...(!props.isReviewCertification ? {report: report.map(report => report.value)} : {}),
         ...(!props.isReviewCertification ? {subject: subject} : {})
-      }
+      },
+      profile: props.isReviewCertification ? { 
+        ...profile, 
+        dapp: subject ? { ...profile?.dapp, subject } : (profile ? profile.dapp : null)
+      } as any : null
     }));
   }
 

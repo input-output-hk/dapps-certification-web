@@ -10,7 +10,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 
 import { useConfirm } from "material-ui-confirm";
 import { useAppDispatch } from "store/store";
-import { fetchHistory, updateRowStatus, deleteTestHistoryData, fetchCertificate } from "store/slices/testingHistory.slice";
+import { fetchHistory, getRowStatus, deleteTestHistoryData, fetchCertificate } from "store/slices/testingHistory.slice";
 
 import TableComponent from "components/Table/Table";
 
@@ -40,7 +40,7 @@ const AppTable = (props: Props) => {
     const { original } = row;
     const triggerApi = async (e: any) => {
       setSkipPageReset(true);
-      dispatch(updateRowStatus({ runId: original.runId }));
+      dispatch(getRowStatus({ runId: original.runId }));
     };
     const runId = original.runId;
     if (value === "certified") {

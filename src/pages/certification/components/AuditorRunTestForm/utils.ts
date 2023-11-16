@@ -7,6 +7,7 @@ import type { TestingForm } from "store/slices/testing.slice";
 
 export const RepoField = {
   label: 'GitHub Repository',
+  tooltip: 'URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash).',
   name: 'repoUrl',
   type: FieldType.GitHubRepository,
   required: true,
