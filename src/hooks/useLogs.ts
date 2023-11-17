@@ -35,6 +35,7 @@ export const useLogs = (
     useEffect(()=>{
         setLogInfo([])
         dispatch(setEnded(0))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[uuid])
 
     const captureRunTime = (sTime: string, eTime: string, state: string) => {

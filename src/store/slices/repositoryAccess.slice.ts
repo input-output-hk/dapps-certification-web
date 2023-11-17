@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRepoAccess, postExternal, fetchData } from "api/api";
+import { getRepoAccess, fetchData } from "api/api";
 import { AxiosResponse } from "axios";
 import { LocalStorageKeys } from "constants/constants";
 

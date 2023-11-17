@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, CircularProgress } from "@mui/material";
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import CommitIcon from '@mui/icons-material/Commit';
 
 import { ellipsizeString } from "utils/utils";
 
@@ -13,8 +13,10 @@ import useLocalStorage from "hooks/useLocalStorage";
 import { IAuditorRunTestFormFields } from "./components/AuditorRunTestForm/auditorRunTestForm.interface";
 
 import './Certification.css';
+import { useAppSelector } from "store/store";
 
 const Certification = () => {
+    const {features} = useAppSelector((state) => state.auth)
     const [lsFormData] = useLocalStorage(LocalStorageKeys.certificationFormData, "");
     const [lsUuid] = useLocalStorage(LocalStorageKeys.certificationUuid, "");
     const [disableForm, setDisableForm] = useState(false);
@@ -104,20 +106,24 @@ const Certification = () => {
                 </h2>
                 {runEnded && (
                     <div className="flex gap-x-4">
-                        <Button
-                            type="button"
-                            variant="contained" size="small"
-                            onClick={triggerRetest}
-                            className="button text-sm min-w-[150px]"
-                            startIcon={<RestartAltIcon />}
-                        >Test again</Button>
-                        <Button
-                            type="button"
-                            variant="contained" size="small"
-                            onClick={triggerNewTest}
-                            className="button text-sm min-w-[150px]"
-                            startIcon={<LeaderboardIcon />}
-                        >New test</Button>
+                        {features.includes('l2-upload-report') && features.includes('l1-run') ? (
+                            <Button
+                                type="button"
+                                variant="contained" size="small"
+                                onClick={triggerRetest}
+                                className="button text-sm min-w-[150px]"
+                                startIcon={<CommitIcon />}
+                            >Test another commit</Button>
+                        ) : null}
+                         {features.includes('l2-upload-report') ? (
+                            <Button
+                                type="button"
+                                variant="contained" size="small"
+                                onClick={triggerNewTest}
+                                className="button text-sm min-w-[150px]"
+                                startIcon={<LeaderboardIcon />}
+                            >Test another DApp</Button>
+                        ): null}
                     </div>
                 )}
             </div>

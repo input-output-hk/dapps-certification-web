@@ -6,7 +6,9 @@
   .logContainer {
     margin: 10px;
     text-align: end;
-    @media (max-width: 1199px) {
+  }
+  @media (max-width: 1199px) {
+    .logContainer {
       position: relative;
     }
   }

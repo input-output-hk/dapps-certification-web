@@ -17,7 +17,10 @@ const SubscriptionSection = (props: Props) => {
   const { tiers } = useAppSelector((state) => state.tiers);
   const [tierId, setTierId] = useState<string|null>(null);
 
-  useEffect(() => { dispatch(fetchTiers({})); }, []);
+  useEffect(() => { 
+    dispatch(fetchTiers({})); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSelect = (tier: Tier) => {
     setTierId(tier.id);
