@@ -1,27 +1,21 @@
-import { FieldType } from "compositions/InputGroup/interface";
-import { buildFormResolver } from "compositions/InputGroup/utils";
-import { LocalStorageKeys } from "constants/constants";
-
 import { Resolver } from "react-hook-form";
 
-import type { IAuditorRunTestFormFields } from "./auditorRunTestForm.interface";
+import { FieldType } from "compositions/InputGroup/interface";
+import { buildFormResolver } from "compositions/InputGroup/utils";
 
-export const clearPersistentStates = () => {
-  localStorage.removeItem(LocalStorageKeys.certificationFormData);
-  localStorage.removeItem(LocalStorageKeys.certificationUuid);
-};
+import type { TestingForm } from "store/slices/testing.slice";
 
 export const RepoField = {
   label: 'GitHub Repository',
   tooltip: 'URL entered should be in the format - https://github.com/<username>/<repository> (with an optional trailing backslash).',
-  name: 'repoURL',
+  name: 'repoUrl',
   type: FieldType.GitHubRepository,
   required: true,
 };
 
 export const CommitField = {
   label: 'Commit Hash',
-  name: 'commit',
+  name: 'commitHash',
   type: FieldType.CommitHash,
   required: true,
 };
@@ -48,6 +42,6 @@ export const SubjectField = {
   textArea: true,
 };
 
-export const resolver: Resolver<IAuditorRunTestFormFields> = buildFormResolver<IAuditorRunTestFormFields>([
+export const resolver: Resolver<TestingForm> = buildFormResolver<TestingForm>([
   RepoField, CommitField, NameField, VersionField, SubjectField
 ]);

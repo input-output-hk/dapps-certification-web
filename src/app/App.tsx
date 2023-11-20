@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "store/store";
 
 import ChatIcon from '@mui/icons-material/QuestionAnswer';
 import CloseIcon from '@mui/icons-material/Close';
-import { startListenWalletChanges, stopListenWalletChanges } from "store/slices/auth.slice";
+import { startListenWalletChanges, stopListenWalletChanges } from "store/slices/walletConnection.slice";
 import ReconnectWallet from "components/ReconnectWallet/ReconnectWallet";
 
 const Session = lazy(() => import("../pages/session"));
@@ -45,16 +45,16 @@ const CustomGPT = () => {
 
 const App = () => {
   const dispatch = useAppDispatch();
-  const { isConnected, wallet } = useAppSelector((state) => state.auth);
+  const { wallet } = useAppSelector((state) => state.walletConnection);
 
   useEffect(() => {
-    if (isConnected && wallet) {
+    if (wallet) {
       dispatch(startListenWalletChanges({}));
-    } else if (!isConnected || !wallet) {
+    } else if (!wallet) {
       dispatch(stopListenWalletChanges());
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, wallet])
+  }, [wallet])
 
   return (
     <>

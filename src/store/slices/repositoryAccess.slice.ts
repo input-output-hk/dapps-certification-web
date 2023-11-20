@@ -1,57 +1,55 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRepoAccess, fetchData } from "api/api";
-import { AxiosResponse } from "axios";
-import { LocalStorageKeys } from "constants/constants";
+import { AxiosRequestHeaders } from "axios";
+import { fetch } from "api";
+
+import { setAccessToken } from "./session.slice";
+
+import type { RootState } from "../rootReducer";
 
 interface RepoAccessState {
   verifying: boolean;
   accessible: boolean;
   showConfirmConnection: boolean;
-  accessToken: string;
-  accessStatus: string;
+  accessStatus: string | null;
+  clientId: string | null;
 }
+
 const initialState: RepoAccessState = {
   verifying: false,
   accessible: false,
   showConfirmConnection: false,
-  accessToken: "",
-  accessStatus: "",
+  accessStatus: null,
+  clientId: null,
 };
 
-export const verifyRepoAccess = createAsyncThunk(
-  "verifyRepoAccess",
-  async (payload: any, { rejectWithValue }) => {
-    try {
-      const response = await getRepoAccess.get(
-        "/repo/" + payload.owner + "/" + payload.repo
-      );
-      return response.data;
-    } catch (e: any) {
-      return rejectWithValue(e.response.data);
-    }
+export const fetchClientId = createAsyncThunk("fetchClientId", async (payload: {}, thunkApi) => {
+  try {
+    const response = await fetch<string>(thunkApi, { method: 'GET', url: '/github/client-id' });
+    return response.data;
+  } catch (e: any) {
+    return thunkApi.rejectWithValue(e.response.data);
   }
-);
+});
 
-export const getUserAccessToken = createAsyncThunk(
-  "getUserAccessToken",
-  async (payload: any) =>
-    fetchData.post<any, AxiosResponse<{ access_token: string }>, any>(
-      `/github/access-token/${payload.code}`
-    )
-);
+export const verifyRepoAccess = createAsyncThunk('verifyRepoAccess', async (payload: { owner: string, repo: string }, thunkApi) => {
+  try {
+    const response = await fetch<any>(thunkApi, { method: 'GET', url: `/repo/${payload.owner}/${payload.repo}` }, { useSession: false, useAccessToken: true });
+    return response.data;
+  } catch (e: any) {
+    return thunkApi.rejectWithValue(e.response.data);
+  }
+});
 
-export const repoAccessSlice = createSlice({
-  name: "repoAccess",
+export const verifyRepoAccessWithAccessToken = createAsyncThunk('verifyRepoAccessWithAccessToken', async (payload: { code: string, owner: string, repo: string }, thunkApi) => {
+  const response = await fetch<{ access_token: string }>(thunkApi, { method: 'POST', url: `/github/access-token/${payload.code}` });
+  await thunkApi.dispatch(setAccessToken({ accessToken: response.data.access_token }));
+  await thunkApi.dispatch(verifyRepoAccess({ owner: payload.owner, repo: payload.repo }));
+});
+
+export const repositoryAccessSlice = createSlice({
+  name: "repositoryAccess",
   initialState,
   reducers: {
-    clearStates: () => {
-      localStorage.removeItem(LocalStorageKeys.accessToken);
-      return initialState;
-    },
-    clearAccessToken: (state) => {
-      state.accessToken = "";
-      return state;
-    },
     hideConfirmConnection: (state) => {
       state.showConfirmConnection = false;
       return state;
@@ -62,46 +60,35 @@ export const repoAccessSlice = createSlice({
     },
     clearAccessStatus: (state) => {
       state.accessible = false;
-      state.accessStatus = "";
+      state.accessStatus = null;
       return state
     }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(verifyRepoAccess.rejected, (state, actions) => {
-        state.verifying = false;
-        state.accessible = false;
-        state.showConfirmConnection = true;
-        state.accessStatus = "notAccessible";
-      })
-      .addCase(verifyRepoAccess.pending, (state, actions) => {
+      .addCase(verifyRepoAccess.pending, (state) => {
         state.verifying = true;
         state.accessStatus = "verifying";
         state.showConfirmConnection = false;
       })
-      .addCase(verifyRepoAccess.fulfilled, (state, actions) => {
+      .addCase(verifyRepoAccess.fulfilled, (state) => {
         state.accessible = true;
         state.verifying = false;
         state.accessStatus = "accessible";
         state.showConfirmConnection = false;
       })
-      .addCase(getUserAccessToken.rejected, (state, actions) => {
-        state.accessToken = "";
+      .addCase(verifyRepoAccess.rejected, (state) => {
+        state.verifying = false;
+        state.accessible = false;
+        state.showConfirmConnection = true;
+        state.accessStatus = "notAccessible";
       })
-      .addCase(getUserAccessToken.pending, (state, actions) => {})
-      .addCase(getUserAccessToken.fulfilled, (state, actions) => {
-        const token: string = actions.payload?.data.access_token;
-        localStorage.setItem(LocalStorageKeys.accessToken, token);
-        state.accessToken = token;
-      });
+      .addCase(fetchClientId.fulfilled, (state, actions) => {
+        state.clientId = actions.payload;
+      })
   },
 });
-export const {
-  clearStates,
-  clearAccessToken,
-  hideConfirmConnection,
-  setRepoAccessible,
-  clearAccessStatus
-} = repoAccessSlice.actions;
 
-export default repoAccessSlice.reducer;
+export const { hideConfirmConnection, setRepoAccessible, clearAccessStatus } = repositoryAccessSlice.actions;
+
+export default repositoryAccessSlice.reducer;

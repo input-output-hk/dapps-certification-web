@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@mui/material";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchSession } from "store/slices/auth.slice";
+import { fetchActiveSubscription } from "store/slices/auth.slice";
 import { fetchProfile } from "store/slices/profile.slice";
 
 import AppLayout from './components/AppLayout';
@@ -18,10 +18,7 @@ const Session = () => {
   const { hasAnActiveSubscription, isSessionFetched } = useAppSelector((state) => state.auth);
   const { profile } = useAppSelector((state) => state.profile);
 
-  useEffect(() => { 
-    dispatch(fetchSession({})); 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => { dispatch(fetchActiveSubscription({})) }, []);
 
   useEffect(() => {
     if (hasAnActiveSubscription) dispatch(fetchProfile({}));
@@ -39,7 +36,7 @@ const Session = () => {
   }, [hasAnActiveSubscription, isSessionFetched, location.pathname]);
 
   // If the session is being fetched or if the user has an active subscription and the profile is being fetched, a loading will be displayed
-  if (!isSessionFetched || (hasAnActiveSubscription && profile === null)) {
+  if (!isSessionFetched || (isSessionFetched && hasAnActiveSubscription && profile === null) || (!hasAnActiveSubscription && location.pathname !== '/')) {
     return (
       <Box className="w-screen h-screen flex items-center justify-center bg-slate-app">
         <CircularProgress color="secondary" size={100} />

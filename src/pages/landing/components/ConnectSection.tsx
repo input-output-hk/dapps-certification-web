@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { connectWallet } from "store/slices/auth.slice";
+import { connectWallet } from "store/slices/walletConnection.slice";
 
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, IconButton, CircularProgress, Snackbar, Alert } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -18,7 +18,7 @@ const CardanoNS = window.cardano;
 
 const ConnectSection = () => {
   const dispatch = useAppDispatch();
-  const { loading, errorMessage, errorRetry, activeWallets } = useAppSelector(state => state.auth);
+  const { loading, errorMessage, errorRetry, activeWallets } = useAppSelector(state => state.walletConnection);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
   const [walletName, setWalletName] = useState<string|null>(null);

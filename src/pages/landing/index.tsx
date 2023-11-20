@@ -8,30 +8,30 @@ import RegisterSection from "./components/RegisterSection";
 import RegisterModal from "./components/RegisterModal";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchSession } from "store/slices/auth.slice";
+import { fetchActiveSubscription } from "store/slices/auth.slice";
 import { register, clear } from "store/slices/register.slice";
-import type { Tier } from "./slices/tiers.slice";
+import type { Tier } from "store/slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
 
 import "./index.css";
 
 export default function LandingPage() {
   const dispatch = useAppDispatch();
-  const { isConnected, wallet } = useAppSelector((state) => state.auth);
+  const { wallet } = useAppSelector((state) => state.walletConnection);
   const { transactionId, processing, success } = useAppSelector((state) => state.register);
 
   const [step, setStep] = useState<string>('connect');
   const [selectedTier, setSelectedTier] = useState<Tier|null>(null);
 
   useEffect(() => {
-    if (isConnected && step === 'connect') {
+    if (wallet !== null && step === 'connect') {
       setStep('subscription');
-    } else if (!isConnected && !wallet) {
+    } else if (!wallet) {
       setStep('connect');
       setSelectedTier(null);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, wallet]);
+  }, [wallet]);
 
   const handleRegistration = (form: RegisterForm) => {
     dispatch(register({ form, tierId: selectedTier!.id }));
@@ -39,7 +39,7 @@ export default function LandingPage() {
 
   const handleContinue = () => {
     if (success) {
-      dispatch(fetchSession({}));
+      dispatch(fetchActiveSubscription({}));
       dispatch(clear());
     }
   };

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { BigNum } from "@emurgo/cardano-serialization-lib-browser";
-import { fetchData } from "api/api";
 
 import { Alert, Snackbar, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import LoadingButton from '@mui/lab/LoadingButton';
+import CertificationMetadataForm from "components/CertificationMetadataForm";
 
 import { useAppSelector } from "store/store";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
-
-import CertificationMetadataForm from "components/CertificationMetadataForm";
+import { fetchDetails, submitCertificate  } from "store/slices/certificate.slice";
 
 export interface Run {
     certificationPrice: number;
@@ -30,7 +29,7 @@ export interface Run {
     syncedAt: string;
 }
 
-interface Certificate {
+export interface Certificate {
     createdAt: string;
     runId: string;
     transactionId: string;
@@ -38,40 +37,28 @@ interface Certificate {
 
 const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     const dispatch = useDispatch();
-    const { walletAddress: address, wallet, features } = useAppSelector((state) => state.auth);
+    const { features } = useAppSelector((state) => state.auth);
+    const { walletAddress } = useAppSelector((state) => state.session);
+    const { wallet } = useAppSelector((state) => state.walletConnection);
     const { profile } = useAppSelector((state) => state.profile);
+    const { certificationPrice, performTransaction, transactionId } = useAppSelector((state) => state.certificate);
+
     const [ certifying, setCertifying ] = useState(false);
     const [ certified, setCertified ] = useState(false);
-    const [ transactionId, setTransactionId ] = useState("")
-    const [ showError, setShowError ] = useState("");
+    const [ showError, setShowError ] = useState('');
     const [ openModal, setOpenModal ] = useState(false);
     const [ openMetadataModal, setOpenMetadataModal ] = useState(false);
     const [ disableCertify, setDisableCertify ] = useState(false);
-    const [certificationPrice, setCertificationPrice] = useState(0);
-    const [performTransaction, setPerformTransaction] = useState(true);
 
-    // to run only once initially
+    useEffect(() => { dispatch(fetchDetails({ uuid })) }, []);
+
     useEffect(() => {
-        Promise.all([
-            fetchData.get("/profile/current/balance"),
-            fetchData.get("/run/" + uuid + "/details")
-        ])
-            .then(([balanceResponse, runDetailsResponse]) => {
-                const availableProfileBalance: number = balanceResponse.data;
-                const runDetails: Run = runDetailsResponse.data;
-                setCertificationPrice(runDetails.certificationPrice);
-                setPerformTransaction(
-                    availableProfileBalance >= 0 &&
-                        availableProfileBalance - runDetails.certificationPrice < 0
-                        ? true
-                        : false
-                );
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        if (transactionId !== null) {
+            setOpenModal(true);
+            setCertifying(false);
+            setCertified(true);
+        }
+    }, [transactionId]);
 
     const onCloseModal = () => { setOpenModal(false) }
 
@@ -80,76 +67,47 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     }
 
     const onCloseMetadataForm = () => {
-        setMetadataModalStatus(false)
+        setMetadataModalStatus(false);
+    }
+
+    const triggerSubmitCertificate = (txnId?: string) => {
+        setCertifying(true);
+        dispatch(submitCertificate({ uuid, transactionId: txnId }));
     }
 
     const handleError = (errorObj: any) => {
-        let errorMsg = ''
+        let errorMsg = '';
         if (typeof errorObj === 'string') {
-            errorMsg = errorObj + ' Please try again.'
+            errorMsg = errorObj + ' Please try again.';
         } else if (errorObj?.info) {
-            errorMsg = errorObj.info + ' Please try again.'
+            errorMsg = errorObj.info + ' Please try again.';
         } else if (errorObj?.response?.message) {
-            errorMsg = errorObj?.response.message + ' Please try again.'
+            errorMsg = errorObj?.response.message + ' Please try again.';
         } else if (errorObj?.response?.data) {
-            errorMsg = errorObj.response.statusText + ' - ' + errorObj.response.data
+            errorMsg = errorObj.response.statusText + ' - ' + errorObj.response.data;
         }
         setShowError(errorMsg.length > 50 ? 'Something wrong occurred. Please try again later.' : errorMsg);
-        const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000)
+        const timeout = setTimeout(() => { clearTimeout(timeout); setShowError("") }, 5000);
         setCertifying(false);
         if (errorObj?.response?.status === 403) {
-            setDisableCertify(true)
+            setDisableCertify(true);
         }
-    }
-
-    const certificationBroadcasted = (data: Certificate) => {
-        console.log('broadcasted tnx data ', data);
-        setTransactionId(data.transactionId)
-        setOpenModal(true)
-        setCertifying(false)
-        setCertified(true)
-    }
-
-    const fetchRunDetails = async (txnId?: string) => {
-        fetchData.get('/run/' + uuid + '/details').then(response => {
-            const details: Run = response.data
-            if (details?.runStatus === 'ready-for-certification') {
-                const timeout = setTimeout(async () => {
-                    clearTimeout(timeout)
-                    fetchRunDetails()
-                }, 1000)
-            } else if (details?.runStatus === 'certified') {
-                fetchData.get('/run/' + uuid + '/certificate' + (txnId ? '?transactionid=' + txnId : ''))
-                    .catch(handleError)
-                    .then((response: any) => {
-                        certificationBroadcasted(response.data)
-                    })
-            }
-        })
-    }
-
-    const triggerSubmitCertificate = async (txnId?: string) => {
-        fetchData.post('/run/' + uuid + '/certificate' + (txnId ? '?transactionid=' + txnId : ''))
-            .catch(handleError)
-            .then(() => {
-                fetchRunDetails(txnId)
-            })
     }
 
     const triggerGetCertificate = async () => {
         setCertifying(true);
-        setShowError("")
+        setShowError("");
         if (performTransaction) {
             const response = await dispatch(
-                payFromWallet({ fee: BigNum.from_str(certificationPrice.toString()), wallet, address, payer: profile?.address })
+                payFromWallet({ fee: BigNum.from_str(certificationPrice!.toString()), wallet, walletAddress, payer: profile?.address })
             );
             if (response.payload) {
-                triggerSubmitCertificate(response.payload)
+                triggerSubmitCertificate(response.payload);
             } else if (response?.error?.message) {
                 handleError(response.error.message);
             }
         } else {
-            triggerSubmitCertificate()
+            triggerSubmitCertificate();
         }
     }
     
@@ -216,7 +174,7 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
                     <MetadataModal />
                 </>
             }
-        
+    
             <Snackbar
                 open={showError ? true : false}
                 autoHideDuration={5000}
@@ -224,8 +182,8 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert
-                severity="error" variant="filled"
-                onClose={() => setShowError("")}
+                    severity="error" variant="filled"
+                    onClose={() => setShowError("")}
                 >
                     {showError}
                 </Alert>

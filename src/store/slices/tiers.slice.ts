@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchData } from "api/api";
+import { fetch } from "api";
 
 interface TierFeature {
   name: string;
@@ -22,12 +22,12 @@ const initialState: TiersState = {
   tiers: []
 };
 
-export const fetchTiers = createAsyncThunk("fetchTiers", async (payload: any, { rejectWithValue }) => {
+export const fetchTiers = createAsyncThunk("fetchTiers", async (payload: any, thunkApi) => {
   try {
-    const response = await fetchData.get('/tiers');
+    const response = await fetch<Tier[]>(thunkApi, { method: 'GET', url: '/tiers' });
     return response.data;
   } catch (e: any) {
-    return rejectWithValue(e.response.data);
+    return thunkApi.rejectWithValue(e.response.data);
   }
 });
 

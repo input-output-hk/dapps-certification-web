@@ -1,23 +1,23 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchData } from "api/api";
+import { fetch } from "api";
 
 export interface UserProfile {
-  address?: string;
-  email?: string;
-  fullName?: string;
-  companyName?: string;
-  contactEmail?: string;
-  linkedin?: string | null;
-  twitter?: string | null;
-  website?: string | null;
-  dapp?: {
+  address: string;
+  email: string;
+  fullName: string;
+  companyName: string;
+  contactEmail: string;
+  linkedin: string | null;
+  twitter: string | null;
+  website: string | null;
+  dapp: {
     name: string;
     owner: string;
     repo: string;
-    version?: string | null;
-    githubToken?: string | null;
-    subject?: string | null;
+    version?: string;
+    subject?: string;
+    githubToken?: string;
   } | null;
 }
 
@@ -37,7 +37,7 @@ const initialState: ProfileState = {
 
 export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {}, thunkApi) => {
   try {
-    const response = await fetchData.get('/profile/current');
+    const response = await fetch<UserProfile>(thunkApi, { method: 'GET', url: '/profile/current' });
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {
@@ -47,7 +47,7 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {},
 
 export const updateProfile = createAsyncThunk('updateProfile', async (data: UserProfile, thunkApi) => {
   try {
-    const response = await fetchData.put('/profile/current', data);
+    const response = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: '/profile/current', data });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -72,7 +72,6 @@ export const profileSlice = createSlice({
       .addCase(fetchProfile.rejected, (state) => {
         state.profile = null;
       })
-
       // UPDATE PROFILE
       .addCase(updateProfile.pending, (state) => {
         state.errorMessage = null;
@@ -90,5 +89,7 @@ export const profileSlice = createSlice({
       })
   },
 });
+
+export const { clearProfile } = profileSlice.actions;
 
 export default profileSlice.reducer;

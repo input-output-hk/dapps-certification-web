@@ -2,8 +2,6 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
-import { fetchData } from "api/api";
-
 import { Snackbar, Alert, CircularProgress } from "@mui/material";
 import FileCoverageContainer from "../components/FileCoverageContainer";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
@@ -15,15 +13,20 @@ import {
   processTimeLineConfig,
 } from "compositions/Timeline/components/TimelineItem/timeline.helper";
 
+import { useAppDispatch } from "store/store";
 import { ellipsizeString } from "../../../utils/utils";
 import DownloadResult from "../components/DownloadResult/DownloadResult";
 import ProgressCard from "components/ProgressCard/ProgressCard";
 import FullReportTable from "./FullReportTable";
 import { calculateCurrentProgress, calculateExpectedProgress, CertificationTasks, getProgressCardInfo, ICertificationTask, isAnyTaskFailure, PlanObj } from "../Certification.helper";
+import { fetchCertificationResult } from "store/slices/certificationResult.slice";
+
+import "../Certification.css";
 
 import "../Certification.css";
 
 const CertificationResult = () => {
+  const dispatch = useAppDispatch();
   const param = useParams<{ uuid: string }>();
   const { state } = useLocation();
   const [coverageFile, setCoverageFile] = useState("");
@@ -37,11 +40,11 @@ const CertificationResult = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetchData.get("/run/" + param.uuid);
+        const response: any = await dispatch(fetchCertificationResult({ uuid: param.uuid! }));
+        const res = { data: response.payload };
         const runStatus = res.data.status;
-        const runState = res.data.hasOwnProperty("state") ? res.data.state : "";
         setTimelineConfig(
-          processTimeLineConfig(timelineConfig, runState, runStatus, res)
+          processTimeLineConfig(res, timelineConfig)
         );
         if (runStatus === "finished") {
           const isArrayResult = Array.isArray(res.data.result);
