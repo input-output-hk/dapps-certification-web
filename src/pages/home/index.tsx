@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 import { Container, Paper, Box, Typography, CircularProgress, Button, Grid } from "@mui/material";
 import SuccessIcon from "@mui/icons-material/Check";
@@ -50,8 +50,8 @@ const ProgressWidget = (props: { title?: string, subtitle?: string, value?: numb
 );
 
 const IconWidget = (props: { title?: string, subtitle?: string, color?: string, icon?: any }) => (
-  <Paper elevation={0} className="rounded-none flex flex-row pt-5 pb-4 px-6 border border-solid border-slate-200">
-    <Box className="flex-1 flex flex-col text-left justify-center mt-[-1em]">
+  <Paper elevation={0} className="rounded-none pt-5 pb-4 px-6 border border-solid border-slate-200">
+    <Box className="text-left">
       <Typography className="font-normal text-secondary text-md mb-2 capitalize">
         { props.subtitle }
       </Typography>
@@ -59,7 +59,7 @@ const IconWidget = (props: { title?: string, subtitle?: string, color?: string, 
         { props.title }
       </Typography>
     </Box>
-    <Box className="flex-0 relative" sx={{ color: props.color || 'transparent' }}>
+    <Box className="mt-6 text-center relative" sx={{ color: props.color || 'transparent' }}>
       <CircularProgress color="inherit" variant="determinate" size={100} thickness={4} value={100}/>
       <Box className="absolute top-0 left-0 w-full flex items-center justify-center">
         <props.icon className="mt-[26px] text-5xl" color="inherit" />
@@ -86,7 +86,7 @@ const ButtonWidget = (props: { title?: string, subtitle?: string, button?: strin
   </Paper>
 );
 
-const TestingHistoryWidget = (props: { history: Run[], loading: boolean }) => {
+const TestingHistory = (props: { history: Run[], loading: boolean }) => {
   
   const formatRepoUrl = (repoUrl: string) => {
     let pieces = repoUrl.split('github:')[1].split('/')
@@ -116,27 +116,49 @@ const TestingHistoryWidget = (props: { history: Run[], loading: boolean }) => {
   }
 
   return (
-    <Grid item xs={12}>
-      <Paper elevation={0} className="p-4 rounded-none border border-solid border-slate-200">
-        <Typography className="text-center font-bold text-main text-2xl mb-4">
-          Testing History
-        </Typography>
-        <Grid container spacing={2}>
-          {props.history.slice(0, 3).map(run => (
-            <Grid item md={12} lg={4} key={run.runId}>
-              <IconWidget
-                title={formatRepoUrl(run.repoUrl)}
-                subtitle={run.runStatus.replace('-', ' ')}
-                color={getColorByStatus(run.runStatus)}
-                icon={getIconByStatus(run.runStatus)}
-              />
-            </Grid>
-          ))}
+    <Grid container spacing={2}>
+      {props.history.slice(0, 3).map(run => (
+        <Grid item md={12} lg={4} key={run.runId}>
+          <IconWidget
+            title={formatRepoUrl(run.repoUrl)}
+            subtitle={run.runStatus.replace('-', ' ')}
+            color={getColorByStatus(run.runStatus)}
+            icon={getIconByStatus(run.runStatus)}
+          />
         </Grid>
-      </Paper>
+      ))}
     </Grid>
   );
 };
+
+const Dashboard = (props: { navigate: NavigateFunction }) => (
+  <Grid container spacing={2}>
+    <Grid item xs={12} sm={12} md={12} lg={4}>
+      <ButtonWidget
+        title="Testing"
+        subtitle="Test your Dapp using Plutus Testing Tool"
+        button="Test here"
+        action={() => props.navigate('/testing')}
+      />
+    </Grid>
+    <Grid item xs={12} sm={12} md={12} lg={4}>
+      <ButtonWidget
+        title="Generate a certificate metadata"
+        subtitle="Generate a CIP-96 compliant certificate for your audits"
+        button="Generate here"
+        action={() => props.navigate('/audit-report-upload')}
+      />
+    </Grid>
+    <Grid item xs={12} sm={12} md={12} lg={4}>
+      <ButtonWidget
+        title="Documentation"
+        subtitle="Access the documentation"
+        button="Read here"
+        action={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}
+      />
+    </Grid>
+  </Grid>
+);
 
 const Home = () => {
   const navigate = useNavigate();
@@ -151,36 +173,17 @@ const Home = () => {
       <Typography className="text-center font-bold tracking-[.2em] text-main text-4xl mb-12">
         Plutus Testing Tool
       </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={12} lg={4}>
-          <ButtonWidget
-            title="Testing"
-            subtitle="Test your Dapp using Plutus Testing Tool"
-            button="Test here"
-            action={() => navigate('/testing')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={4}>
-          <ButtonWidget
-            title="Generate a certificate metadata"
-            subtitle="Generate a CIP-96 compliant certificate for your audits"
-            button="Generate here"
-            action={() => navigate('/audit-report-upload')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={4}>
-          <ButtonWidget
-            title="Documentation"
-            subtitle="Access the documentation"
-            button="Read here"
-            action={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}
-          />
-        </Grid>
-        <TestingHistoryWidget
-          history={history}
-          loading={loading}
-        />
-      </Grid>
+      { loading && (
+        <Box className="mt-[100px] flex items-center justify-center">
+          <CircularProgress color="secondary" size={100} />
+        </Box>
+      )}
+      { !loading && history.length === 0 && (
+        <Dashboard navigate={navigate} />
+      )}
+      { !loading && history.length > 0 && (
+        <TestingHistory history={history} loading={loading} />
+      )}
     </Container>
   );
 };
