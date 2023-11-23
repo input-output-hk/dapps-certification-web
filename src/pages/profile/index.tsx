@@ -27,7 +27,7 @@ const Profile = () => {
   const { profile, loading, success, errorMessage } = useAppSelector(state => state.profile);
   
   const defaultValues = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
-  const { register, handleSubmit, reset, clearErrors, formState, getFieldState } = useForm<UserProfile>({ defaultValues, resolver, mode: 'onBlur' });
+  const { register, handleSubmit, reset, clearErrors, formState, getFieldState, getValues } = useForm<UserProfile>({ defaultValues, resolver, mode: 'onBlur' });
 
   useEffect(() => {
     if (submitted) {
@@ -67,6 +67,7 @@ const Profile = () => {
                 formState={formState}
                 register={register}
                 getFieldState={getFieldState}
+                getValues={getValues}
                 standalone={true}
                 disabled={!isEditing||loading}
               />

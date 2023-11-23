@@ -35,7 +35,7 @@ const CertificationMetadataForm = (props: Props) => {
   const { loading, success, errorMessage, onchain, offchain, subject, uuid } = useAppSelector((state) => state.reportUpload);
 
   const defaultValues = getDefaultValues(removeNullsDeep(JSON.parse(JSON.stringify(profile))));
-  const { control, register, handleSubmit, getFieldState, formState, watch } = useForm<ReportForm>({
+  const { control, register, handleSubmit, getFieldState, getValues, formState, watch } = useForm<ReportForm>({
     defaultValues, resolver: getResolver(props.isReviewCertification, !!hasSubject), mode: 'onBlur'
   });
   const { fields: scriptFields, append: appendScript, remove: removeScript } = useFieldArray({ name: 'scripts', control });
@@ -94,6 +94,7 @@ const CertificationMetadataForm = (props: Props) => {
               formState={formState}
               register={register}
               getFieldState={getFieldState}
+              getValues={getValues}
               standalone={props.standalone}
             />
             <Box className="mt-4">
@@ -103,6 +104,7 @@ const CertificationMetadataForm = (props: Props) => {
                 formState={formState}
                 register={register}
                 getFieldState={getFieldState}
+                getValues={getValues}
                 standalone={props.standalone}
               />
             </Box>
@@ -112,6 +114,7 @@ const CertificationMetadataForm = (props: Props) => {
                   formState={formState}
                   register={register}
                   getFieldState={getFieldState}
+                  getValues={getValues}
                   reportFields={reportFields}
                   appendReport={appendReport}
                   removeReport={removeReport}
@@ -126,6 +129,7 @@ const CertificationMetadataForm = (props: Props) => {
               formState={formState}
               register={register}
               getFieldState={getFieldState}
+              getValues={getValues}
               scriptFields={scriptFields}
               appendScript={appendScript}
               removeScript={removeScript}

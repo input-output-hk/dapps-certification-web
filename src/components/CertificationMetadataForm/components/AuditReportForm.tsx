@@ -8,7 +8,7 @@ import Input from "compositions/InputGroup/components/Input";
 import Container from "compositions/InputGroup/components/Container";
 import { getReportField } from "../utils";
 
-import type { FormState, UseFormRegister, UseFormGetFieldState, FieldArrayWithId, UseFieldArrayAppend, UseFieldArrayRemove } from "react-hook-form";
+import type { FormState, UseFormRegister, UseFormGetFieldState, UseFormGetValues, FieldArrayWithId, UseFieldArrayAppend, UseFieldArrayRemove } from "react-hook-form";
 import type { ReportForm } from "../interface";
 
 import "../index.css";
@@ -17,6 +17,7 @@ interface Props {
   formState: FormState<ReportForm>;
   register: UseFormRegister<ReportForm>;
   getFieldState: UseFormGetFieldState<ReportForm>;
+  getValues: UseFormGetValues<ReportForm>;
   reportFields: FieldArrayWithId<ReportForm, "report", "id">[];
   appendReport: UseFieldArrayAppend<ReportForm, "report">;
   removeReport: UseFieldArrayRemove;
@@ -45,6 +46,7 @@ const AuditReportForm = (props: Props) => {
             formState={props.formState}
             register={props.register}
             getFieldState={props.getFieldState}
+            getValues={props.getValues}
           />
           <Box className="ml-4 flex-0 pt-2">
             <IconButton

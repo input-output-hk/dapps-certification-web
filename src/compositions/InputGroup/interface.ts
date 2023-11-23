@@ -1,4 +1,4 @@
-import type { UseFormRegister, UseFormGetFieldState, FormState, FieldValues } from "react-hook-form";
+import type { UseFormRegister, UseFormGetFieldState, UseFormGetValues, FormState, FieldValues } from "react-hook-form";
 
 export enum FieldType {
   Text,
@@ -41,6 +41,7 @@ export interface InputGroupProps<T extends FieldValues = any> {
   formState: FormState<T>;
   register: UseFormRegister<T>;
   getFieldState: UseFormGetFieldState<T>;
+  getValues: UseFormGetValues<T>;
   standalone?: boolean;
   disabled?: boolean;
 }
@@ -50,6 +51,7 @@ export interface InputProps<T extends FieldValues = any> {
   formState: FormState<T>;
   register: UseFormRegister<T>;
   getFieldState: UseFormGetFieldState<T>;
+  getValues: UseFormGetValues<T>;
   noGutter?: boolean;
   disabled?: boolean;
   onBlur?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;

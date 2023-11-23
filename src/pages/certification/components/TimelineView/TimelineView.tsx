@@ -175,7 +175,7 @@ const TimelineView: React.FC<Props> = ({ onAbort }) => {
                 <div className="flex justify-around flex-wrap gap-[8px]">
                   {runStatus === "finished" && (<>
                     <FileCoverageContainer
-                      githubLink={form!.repoUrl}
+                      githubLink={form!.repoUrl!}
                       result={resultData}
                       coverageFile={coverageFile}
                     />
