@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { Container, Box, Typography, Button, TextField, Snackbar, Alert } from "@mui/material";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { fetchPrice } from "../slices/price.slice";
-import type { Tier } from "../slices/tiers.slice";
+import { fetchPrice } from "store/slices/price.slice";
+import type { Tier } from "store/slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
 
 import "../index.css";

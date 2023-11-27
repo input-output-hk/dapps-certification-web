@@ -7,11 +7,6 @@
     margin: 10px;
     text-align: end;
   }
-  @media (max-width: 1199px) {
-    .logContainer {
-      position: relative;
-    }
-  }
   .viewLogsBtn {
     margin-right: 1rem;
   }
@@ -50,5 +45,11 @@
   }
   .log-time {
     margin-right: 15px;
+  }
+}
+
+@media (max-width: 1199px) {
+  .logContainer {
+    position: relative;
   }
 }

@@ -12,15 +12,8 @@ const Timeline = (props: any) => {
   return (
     <div className="statusTimeline" data-testid="statusTimeline">
       <ul className="statusTimelineUl">
-        {statusConfig.map(
-          (config: any, index: React.Key | null | undefined) => {
-            if (buildInfo.runState === config.status) {
-              config.runTimeTaken = buildInfo.runTime
-            }
-            return (
-            <TimelineItem key={index} config={config} unitTestSuccess={unitTestSuccess} hasFailedTasks={hasFailedTasks}/>
-            )
-          }
+        {statusConfig.map((config: any, index: number) =>
+          <TimelineItem key={index} config={config} unitTestSuccess={unitTestSuccess} hasFailedTasks={hasFailedTasks} buildInfo={buildInfo} />
         )}
       </ul>
     </div>

@@ -12,19 +12,24 @@ export interface ITimelineItem {
   }
   unitTestSuccess?: boolean,
   hasFailedTasks?: boolean
+  buildInfo: {
+    runTime: string;
+    runState: string;
+  }
 }
 
 const TimelineItem: FC<ITimelineItem> = ({
   unitTestSuccess,
-  config: { status, text, state, progress, runTimeTaken },
-  hasFailedTasks
+  config: { status, text, state, runTimeTaken: configRunTimeTaken },
+  hasFailedTasks,
+  buildInfo: { runState, runTime }
 }) => {
 
   // TBD - useCallback to cache
   const getURLFor = (state: string = "outline") => {
     if (hasFailedTasks && state === "passed" && status === "finished") {
       state += '-error' // load gray check
-    } else if (!unitTestSuccess && (status === "finished" || status === 'certifying')) {
+    } else if (!unitTestSuccess && (status === "finished" || status === "certifying")) {
       state = 'failed'
     }
     return "/images/" + state + ".svg";
@@ -35,6 +40,11 @@ const TimelineItem: FC<ITimelineItem> = ({
   //     return <span className="progress-percentage">{progress}%</span>
   //   }
   // };
+
+  let runTimeTaken = configRunTimeTaken;
+  if (runState === status) {
+    runTimeTaken = runTime;
+  }
 
   return (
     <li

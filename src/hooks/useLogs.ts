@@ -3,9 +3,8 @@ import { useAppSelector } from "store/store";
 import { useDispatch } from "react-redux";
 import { useDelayedApi } from "hooks/useDelayedApi";
 
-import { fetchData } from "api/api";
-import { Log } from '../pages/certification/Certification.helper'
-import { setStates, setEnded, setBuildInfo } from "pages/certification/slices/logRunTime.slice";
+import { setStates, setEnded, setBuildInfo, fetchLogs } from "store/slices/logRunTime.slice";
+import { Log } from "../pages/certification/Certification.helper";
 
 const TIME_OFFSET = 1000;
 
@@ -106,12 +105,10 @@ export const useLogs = (
         }
         try {
             const queryAfter = lastLogTimestamp ? '?after=' + encodeURIComponent(lastLogTimestamp) : '';
-            const res: any = await fetchData.get("/run/" + uuid + "/logs" + queryAfter);
-            /** For mock */
-            // const res: any = await fetchData.get("static/data/build-logs.json")
-            if(res.data.length) {
-                await computeTimeForRunState(res.data)
-                setLogInfo((prev)=> prev.concat(res.data))
+            const res: any = await dispatch(fetchLogs({ uuid, queryAfter }));
+            if (res.payload.length) {
+                await computeTimeForRunState(res.payload)
+                setLogInfo((prev)=> prev.concat(res.payload))
             } else if (fetchApi) {
                 // capture whatever is the last stored state
                 dispatch(setBuildInfo())

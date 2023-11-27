@@ -24,6 +24,7 @@ const InputGroup = (props: InputGroupProps) => {
           formState={props.formState}
           register={props.register}
           getFieldState={props.getFieldState}
+          getValues={props.getValues}
           disabled={props.disabled}
         />
       ))}

@@ -9,7 +9,12 @@ describe("renders the TimelineItem component", () => {
       state: "running",
     };
 
-    render(<TimelineItem config={mockData} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
     expect(screen.getByTestId(mockData.status)).toBeInTheDocument();
     expect(screen.getByTestId(mockData.text)).toBeInTheDocument();
     expect(screen.getByTestId(mockData.state)).toBeInTheDocument();
@@ -22,7 +27,12 @@ describe("renders the TimelineItem component", () => {
       state: "running",
     };
 
-    render(<TimelineItem config={mockData} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
     const wrapper = screen.getByTestId(mockData.status);
     const img = screen.getByTestId(mockData.state);
     expect(wrapper).toHaveClass("active");
@@ -36,7 +46,12 @@ describe("renders the TimelineItem component", () => {
       state: "outline",
     };
 
-    render(<TimelineItem config={mockData} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
     const wrapper = screen.getByTestId(mockData.status);
     const img = screen.getByTestId(mockData.state);
     expect(wrapper).not.toHaveClass("active");
@@ -50,7 +65,12 @@ describe("renders the TimelineItem component", () => {
       state: "running",
     };
 
-    render(<TimelineItem config={mockData} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
     const wrapper = screen.getByTestId(mockData.state);
     expect(wrapper).toHaveClass("image anim-rotate certifying");
   });
@@ -62,7 +82,12 @@ describe("renders the TimelineItem component", () => {
       state: "running",
     };
 
-    render(<TimelineItem config={mockData} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
     const wrapper = screen.getByTestId(mockData.state);
     expect(wrapper).not.toHaveClass("certifying");
   });
@@ -75,7 +100,12 @@ describe("renders the TimelineItem component", () => {
       runTimeTaken: "12s",
     };
 
-    render(<TimelineItem config={mockData} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
     const wrapper = screen.queryByTestId(`${mockData.text}-runTimeTaken`);
     expect(wrapper).toBeInTheDocument();
   });
@@ -86,7 +116,11 @@ describe("renders the TimelineItem component", () => {
       text: "Queued",
       state: "running",
     };
-    render(<TimelineItem config={mockData} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
     const wrapper = screen.queryByTestId(`${mockData.text}-runTimeTaken`);
     expect(wrapper).not.toBeInTheDocument();
   });
@@ -103,7 +137,7 @@ describe("renders the TimelineItem component", () => {
   //     state: "",
   //   };
 
-  //   await render(<TimelineItem config={mockData} />);
+  //   await render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
   //   const wrapper = screen.queryByTestId(mockData.state);
   //   expect(wrapper).toHaveAttribute("src", "images/outline.svg");
   // });
@@ -115,7 +149,12 @@ describe("renders the TimelineItem component", () => {
       state: "passed",
     };
 
-    render(<TimelineItem config={mockData} hasFailedTasks={true} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} hasFailedTasks={true} />);
     const wrapper = screen.queryByTestId(mockData.state);
     expect(wrapper).toHaveAttribute("src", "images/passed-error.svg");
   });
@@ -127,7 +166,11 @@ describe("renders the TimelineItem component", () => {
       state: "running",
       progress: 66,
     };
-    render(<TimelineItem config={mockData} />);
+    const buildInfo = {
+      runTime: '10s',
+      runState: 'queued'
+    };
+    render(<TimelineItem config={mockData} buildInfo={buildInfo} />);
     expect(screen.queryByText("66%")).toBeInTheDocument();
   });
 });

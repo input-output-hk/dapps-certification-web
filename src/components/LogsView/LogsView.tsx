@@ -1,5 +1,6 @@
-import { useLogs } from "hooks/useLogs";
 import React, { FC, useState, useEffect, useRef } from "react";
+
+import { useLogs } from 'hooks/useLogs';
 
 import "./LogsView.css";
 import LogsViewEntry from "./LogsViewEntry";
@@ -41,7 +42,9 @@ const LogsView: FC<{
       lastLog.current = logs[logs.length - 2]
       if (lastLog.current?.Source.indexOf('run-certify') !== -1) {
         // is 2nd last entry in logs when Source has run-certify
-        latestTestingProgress(JSON.parse(lastLog.current.Text));
+        if (lastLog.current) {
+          latestTestingProgress(JSON.parse(lastLog.current.Text));
+        }
       }
     }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" }); // scroll to bottom
