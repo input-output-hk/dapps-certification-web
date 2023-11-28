@@ -2,12 +2,11 @@ import { Action, configureStore } from "@reduxjs/toolkit";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import { ThunkAction } from "redux-thunk";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import rootReducer, { RootState } from "./rootReducer";
 
 const persistConfig = {
   key: 'root',
-  storage: storage,
+  storage: require('redux-persist-indexeddb-storage').default('redux'),
   whitelist: ['session', 'profile', 'walletConnection', 'testing'],
 };
 

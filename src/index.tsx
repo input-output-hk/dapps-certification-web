@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
-import { StyledEngineProvider, ThemeProvider, CssBaseline } from "@mui/material";
+import { StyledEngineProvider, ThemeProvider, CssBaseline, Box, CircularProgress } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { ConfirmProvider } from "material-ui-confirm";
 
@@ -49,6 +49,12 @@ export const theme = createTheme({
   },
 });
 
+const Loading = () => (
+  <Box className="w-screen h-screen flex items-center justify-center bg-slate-app">
+    <CircularProgress color="secondary" size={100} />
+  </Box>
+);
+
 root.render(
   <BrowserRouter basename={process.env.PUBLIC_URL}>
     <StyledEngineProvider injectFirst>
@@ -56,7 +62,7 @@ root.render(
         <CssBaseline />
         <ConfirmProvider>
           <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
+            <PersistGate loading={<Loading />} persistor={persistor}>
               <App />
             </PersistGate>
           </Provider>
