@@ -113,7 +113,6 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
   if (!hasAnActiveSubscription) {
     let isListening = true;
     while (isListening) {
-      console.log('loop');
       try {
         let forceLogout = false;
         const { networkId } = (getState() as RootState).session;
