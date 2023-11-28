@@ -9,7 +9,7 @@ import Container from "compositions/InputGroup/components/Container";
 import ReportScriptFormConfirmModal from "./ReportScriptFormConfirmModal";
 import { getScriptFields, getScriptContractFields } from "../utils";
 
-import type { FormState, UseFormRegister, UseFormGetFieldState, FieldArrayWithId, UseFieldArrayAppend, UseFieldArrayRemove, UseFormWatch } from "react-hook-form";
+import type { FormState, UseFormRegister, UseFormGetFieldState, UseFormGetValues, FieldArrayWithId, UseFieldArrayAppend, UseFieldArrayRemove, UseFormWatch } from "react-hook-form";
 import type { ReportForm, ReportFormScript } from "../interface";
 
 import "../index.css";
@@ -19,6 +19,7 @@ interface Props {
   formState: FormState<ReportForm>;
   register: UseFormRegister<ReportForm>;
   getFieldState: UseFormGetFieldState<ReportForm>;
+  getValues: UseFormGetValues<ReportForm>;
   scriptFields: FieldArrayWithId<ReportForm, "scripts", "id">[];
   appendScript: UseFieldArrayAppend<ReportForm, "scripts">;
   removeScript: UseFieldArrayRemove;
@@ -30,6 +31,7 @@ interface InstanceProps {
   formState: FormState<ReportForm>;
   register: UseFormRegister<ReportForm>;
   getFieldState: UseFormGetFieldState<ReportForm>;
+  getValues: UseFormGetValues<ReportForm>;
   onRemove: () => void;
 }
 
@@ -54,6 +56,7 @@ const ReportScriptFormInstance = (props: InstanceProps) => (
         formState={props.formState}
         register={props.register}
         getFieldState={props.getFieldState}
+        getValues={props.getValues}
       />
     </Box>
     <Typography variant="subtitle2" className="text-main mt-2">
@@ -67,6 +70,7 @@ const ReportScriptFormInstance = (props: InstanceProps) => (
             formState={props.formState}
             register={props.register}
             getFieldState={props.getFieldState}
+            getValues={props.getValues}
           />
         </Box>
       </Grid>
@@ -77,6 +81,7 @@ const ReportScriptFormInstance = (props: InstanceProps) => (
             formState={props.formState}
             register={props.register}
             getFieldState={props.getFieldState}
+            getValues={props.getValues}
           />
         </Box>
       </Grid>
@@ -120,6 +125,7 @@ const ReportScriptForm = (props: Props) => {
             formState={props.formState}
             register={props.register}
             getFieldState={props.getFieldState}
+            getValues={props.getValues}
             onRemove={() => onRemove(index)}
           />
         ))}

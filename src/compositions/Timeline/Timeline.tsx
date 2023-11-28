@@ -7,12 +7,13 @@ import "./Timeline.css";
 
 const Timeline = (props: any) => {
   const { statusConfig, unitTestSuccess, hasFailedTasks } = props;
-
+  const { buildInfo } = useAppSelector((state) => state.runTime);
+  
   return (
     <div className="statusTimeline" data-testid="statusTimeline">
       <ul className="statusTimelineUl">
         {statusConfig.map((config: any, index: number) =>
-          <TimelineItem key={index} config={config} unitTestSuccess={unitTestSuccess} hasFailedTasks={hasFailedTasks}/>
+          <TimelineItem key={index} config={config} unitTestSuccess={unitTestSuccess} hasFailedTasks={hasFailedTasks} buildInfo={buildInfo} />
         )}
       </ul>
     </div>

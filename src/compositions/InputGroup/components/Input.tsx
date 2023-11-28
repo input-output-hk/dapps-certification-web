@@ -36,6 +36,7 @@ const Input = (props: InputProps) => (
         </InputAdornment>
       ) : undefined,
     }}
+    InputLabelProps={{ shrink: props.getValues(props.field.name) !== undefined && props.getValues(props.field.name) !== '' }}
   >
     {(props.field.options || []).map(option =>
       <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>

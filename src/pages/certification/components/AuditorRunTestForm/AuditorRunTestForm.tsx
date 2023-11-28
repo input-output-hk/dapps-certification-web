@@ -28,47 +28,79 @@ const AuditorRunTestForm: React.FC = () => {
   const { showConfirmConnection, accessStatus, verifying, clientId } = useAppSelector((state) => state.repositoryAccess);
   
   const { profile } = useAppSelector((state) => state.profile);
-  const { form: formValues, creating, uuid } = useAppSelector((state) => state.testing);
+  const { form: formValues, creating, uuid, resetForm } = useAppSelector((state) => state.testing);
   const { dapp } = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
   const defaultValues = formValues ? removeNullsDeep(JSON.parse(JSON.stringify(formValues))) : (dapp ? {
-    repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : null,
-    name: dapp.name, version: dapp.version,
-  } : null);
+    repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
+    name: dapp.name,
+    version: dapp.version,
+    subject: dapp.subject,
+  } : undefined);
   const form = useForm<TestingForm>({ resolver, defaultValues, mode: 'all' });
 
   useEffect(() => {
     const subscription = form.watch(value => dispatch(updateForm(removeEmptyStringsDeep(value))));
     return () => subscription.unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.watch]);
   
   useEffect(() => {
     if (githubAccessCode) {
-      const [, , , owner, repo] = form.getValues().repoUrl.split('/');
+      const [, , , owner, repo] = form.getValues().repoUrl!.split('/');
       dispatch(verifyRepoAccessWithAccessToken({ code: githubAccessCode, owner, repo }));
       searchParams.delete('code');
       setSearchParams(searchParams);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (form.getValues().repoUrl && !initialized) {
       setInitialized(true);
-      checkRepoAccess(form.getValues().repoUrl);
+      checkRepoAccess(form.getValues().repoUrl!);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialized, form.getValues().repoUrl]);
 
   useEffect(() => {
     if (showConfirmConnection) confirmConnectModal();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showConfirmConnection]);
 
   useEffect(() => {
     if (formValues === null) {
-      form.reset();
+      if (!dapp) {
+        form.setValue('name', undefined);
+        form.setValue('version', undefined);
+        form.setValue('subject', undefined);
+        form.setValue('repoUrl', undefined);
+      } else {
+        form.setValue('name', dapp.name);
+        form.setValue('version', dapp.version);
+        form.setValue('subject', dapp.subject);
+        form.setValue('repoUrl', dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined);
+      }
+      form.setValue('commitHash', undefined);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
+  useEffect(() => {
+    if (resetForm === 'dapp') {
+      form.setValue('name', undefined);
+      form.setValue('version', undefined);
+      form.setValue('subject', undefined);
+      form.setValue('repoUrl', undefined);
+      form.setValue('commitHash', undefined);
+    }
+    if (resetForm === 'commit') {
+      form.setValue('commitHash', undefined);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetForm]);
+
   const handleRepoFieldBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (event.target.value !== form.getValues().repoUrl || event.target.value !== repoUrl) {
+    if (event.target.value !== form.getValues().repoUrl) {
       checkRepoAccess(event.target.value);
     } else if (!event.target.value) {
       dispatch(clearAccessStatus())
@@ -140,6 +172,7 @@ const AuditorRunTestForm: React.FC = () => {
               formState={form.formState}
               register={form.register}
               getFieldState={form.getFieldState}
+              getValues={form.getValues}
               disabled={creating || verifying}
               onBlur={handleRepoFieldBlur}
             />
@@ -155,6 +188,7 @@ const AuditorRunTestForm: React.FC = () => {
               formState={form.formState}
               register={form.register}
               getFieldState={form.getFieldState}
+              getValues={form.getValues}
               disabled={creating}
             />
           </Box>

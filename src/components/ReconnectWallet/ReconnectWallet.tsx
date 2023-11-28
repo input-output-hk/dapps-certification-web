@@ -5,7 +5,7 @@ import { logout } from "store/slices/auth.slice";
 
 const ReconnectWallet = () => {
     const dispatch = useAppDispatch();
-    const { resetWalletChanges } = useAppSelector((state) => state.auth);
+    const { resetWalletChanges } = useAppSelector((state) => state.walletConnection);
 
     const onCloseModal = () => {
         dispatch(logout({}))

@@ -3,9 +3,3 @@
 @tailwind utilities;
 
 @layer components {}
-
-@media (max-width: 1199px) {
-    #homeContentWrapper {
-        flex-flow: column;
-    }
-}

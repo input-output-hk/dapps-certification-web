@@ -12,10 +12,10 @@ import type { RootState } from "store/rootReducer";
 import type { PlanObj } from "pages/certification/Certification.helper";
 
 export interface TestingForm {
-  repoUrl: string;
-  commitHash: string;
-  name: string;
-  version: string;
+  repoUrl?: string;
+  commitHash?: string;
+  name?: string;
+  version?: string;
   subject?: string;
 }
 
@@ -43,6 +43,7 @@ interface TestingState {
   hasFailedTasks: boolean;
   refetchMin: number;
   shouldFetchRunStatus: boolean;
+  resetForm: string | null;
 }
 
 const initialState: TestingState = {
@@ -61,18 +62,19 @@ const initialState: TestingState = {
   hasFailedTasks: false,
   refetchMin: 5,
   shouldFetchRunStatus: false,
+  resetForm: null
 };
 
 export const createTestRun = createAsyncThunk("createTestRun", async (payload: {}, thunkApi) => {
   try {
     const form = (thunkApi.getState() as RootState).testing.form!;
-    const [, , , owner, repo] = form.repoUrl.split('/');
+    const [, , , owner, repo] = form.repoUrl!.split('/');
     const profile = (thunkApi.getState() as RootState).profile.profile!;
     const githubToken = (thunkApi.getState() as RootState).session.accessToken || undefined;
     await thunkApi.dispatch(updateProfile({
       ...profile, dapp: {
         ...profile.dapp,
-        name: form.name,
+        name: form.name!,
         subject: form.subject,
         owner, repo, githubToken
       }
@@ -113,6 +115,11 @@ export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload:
       newHasFailedTasks = isAnyTaskFailure(resultData);
     }
 
+    if (state === 'failed') {
+      runEnded = true;
+      fetching = false;
+    }
+
     return {
       shouldFetchRunStatus: state === 'running' || state === 'passed',
       timelineConfig: newTimelineConfig,
@@ -139,11 +146,16 @@ export const testingSlice = createSlice({
   reducers: {
     resetForm: () => initialState,
     updateForm: (state, actions) => ({
-      ...state, form: actions.payload
+      ...state,
+      form: actions.payload
     }),
-    resetForRetest: (state) => ({
+    resetDApp: (state) => ({
       ...initialState,
-      form: state.form
+      resetForm: 'dapp'
+    }),
+    resetCommit: (state) => ({
+      ...initialState,
+      resetForm: 'commit'
     })
   },
   extraReducers: (builder) => {
@@ -152,6 +164,7 @@ export const testingSlice = createSlice({
       .addCase(createTestRun.pending, (state) => {
         state.uuid = null;
         state.creating = true;
+        state.resetForm = null;
       })
       .addCase(createTestRun.fulfilled, (state, actions) => {
         state.uuid = actions.payload;
@@ -197,6 +210,6 @@ export const testingSlice = createSlice({
   },
 });
 
-export const { updateForm, resetForm, resetForRetest } = testingSlice.actions;
+export const { updateForm, resetForm, resetDApp, resetCommit } = testingSlice.actions;
 
 export default testingSlice.reducer;
