@@ -109,32 +109,40 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
 });
 
 export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', async (payload: any, { dispatch, getState }) => {
-  let isListening = true;
-  while (isListening) {
-    try {
-      let forceLogout = false;
-      const { networkId } = (getState() as RootState).session;
-      const { wallet, stakeAddress } = (getState() as RootState).walletConnection;
-      
-      if (wallet !== null && stakeAddress !== null) {
-        const newStakeAddress = (await getAddresses(wallet))[1];
-        forceLogout = newStakeAddress !== stakeAddress;
-      }
+  const { hasAnActiveSubscription } = (getState() as RootState).auth;
+  if (!hasAnActiveSubscription) {
+    let isListening = true;
+    while (isListening) {
+      console.log('loop');
+      try {
+        let forceLogout = false;
+        const { networkId } = (getState() as RootState).session;
+        const { wallet, stakeAddress } = (getState() as RootState).walletConnection;
+        
+        if (wallet !== null && stakeAddress !== null) {
+          const newStakeAddress = (await getAddresses(wallet))[1];
+          forceLogout = newStakeAddress !== stakeAddress;
+        }
 
-      if (!forceLogout && wallet !== null && networkId !== null) {
-        const newNetworkId = await wallet.getNetworkId();
-        forceLogout = newNetworkId !== networkId;
-      }
+        if (!forceLogout && wallet !== null && networkId !== null) {
+          const newNetworkId = await wallet.getNetworkId();
+          forceLogout = newNetworkId !== networkId;
+        }
 
-      if (forceLogout) {
+        if (forceLogout) {
+          await dispatch(logout({}));
+          isListening = false;
+          return true;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          isListening = (getState() as RootState).walletConnection.listeningWalletChanges;
+        }
+      } catch (error) {
         await dispatch(logout({}));
         isListening = false;
         return true;
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        isListening = (getState() as RootState).walletConnection.listeningWalletChanges;
       }
-    } catch (error) {}
+    }
   }
   return false;
 });
