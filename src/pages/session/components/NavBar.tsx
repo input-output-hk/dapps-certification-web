@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, Chip } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, Chip, Divider } from "@mui/material";
 
 import HomeIcon from '@mui/icons-material/HomeOutlined';
 import TestingIcon from '@mui/icons-material/BarChartOutlined';
@@ -10,6 +10,7 @@ import ReportUploadIcon from '@mui/icons-material/ReceiptOutlined';
 import UserProfileIcon from '@mui/icons-material/PersonOutlined';
 import SupportIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import DocumentationIcon from '@mui/icons-material/SupportOutlined';
+import MetricsIcon from '@mui/icons-material/TimelineOutlined';
 
 import { useAppSelector } from "store/store";
 
@@ -65,6 +66,15 @@ const NavBar = () => {
         <MenuItem className="nav-bar-item" onClick={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}>
           <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
           <ListItemText className="text-white font-medium">Documentation</ListItemText>
+        </MenuItem>
+        <Divider className="border-slate-textLight" />
+        <MenuItem className={getItemClassName('/metrics')} onClick={() => navigate('/metrics')}>
+          <ListItemIcon><MetricsIcon className={getIconClassName('/metrics')} /></ListItemIcon>
+          <ListItemText className="text-white font-medium">Metrics</ListItemText>
+        </MenuItem>
+        <MenuItem className="nav-bar-item" onClick={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}>
+          <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
+          <ListItemText className="text-white font-medium">Support Commands</ListItemText>
         </MenuItem>
       </MenuList>
     </Box>
