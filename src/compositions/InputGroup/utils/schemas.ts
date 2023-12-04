@@ -7,7 +7,7 @@ export const Email = yup.string()
 
 export const Subject = yup.string()
   .max(64, 'The field value must be up to 64 characters')
-  .matches(/^[A-Za-z0-9_]{0,64}$/, {
+  .matches(/^[A-Za-z0-9_ ]{0,64}$/, {
     message: 'The field value can only contains alphabetical and numeric characters',
     excludeEmptyString: true
   });
