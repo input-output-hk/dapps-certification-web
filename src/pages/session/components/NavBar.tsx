@@ -20,6 +20,7 @@ const NavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { role } = useAppSelector(state => state.session);
   const { runStatus, runState } = useAppSelector(state => state.testing);
 
   const getItemClassName = (pathname: string) => location.pathname !== pathname ? 'nav-bar-item' : 'nav-bar-item-active';
@@ -67,15 +68,15 @@ const NavBar = () => {
           <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
           <ListItemText className="text-white font-medium">Documentation</ListItemText>
         </MenuItem>
-        <Divider className="border-slate-textLight" />
-        <MenuItem className={getItemClassName('/metrics')} onClick={() => navigate('/metrics')}>
-          <ListItemIcon><MetricsIcon className={getIconClassName('/metrics')} /></ListItemIcon>
-          <ListItemText className="text-white font-medium">Metrics</ListItemText>
-        </MenuItem>
-        <MenuItem className="nav-bar-item" onClick={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}>
-          <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
-          <ListItemText className="text-white font-medium">Support Commands</ListItemText>
-        </MenuItem>
+        {role === null && (
+          <>
+            <Divider className="border-slate-textLight" />
+            <MenuItem className={getItemClassName('/metrics')} onClick={() => navigate('/metrics')}>
+              <ListItemIcon><MetricsIcon className={getIconClassName('/metrics')} /></ListItemIcon>
+              <ListItemText className="text-white font-medium">Metrics</ListItemText>
+            </MenuItem>
+          </>
+        )}
       </MenuList>
     </Box>
   );
