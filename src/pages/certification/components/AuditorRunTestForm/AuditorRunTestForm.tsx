@@ -23,6 +23,7 @@ const AuditorRunTestForm: React.FC = () => {
 
   const [initialized, setInitialized] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [repoUrl, setRepoUrl] = useState<string|null>(null);
   const githubAccessCode = searchParams.get('code');
 
   const { hasAnActiveSubscription } = useAppSelector((state) => state.auth);
@@ -95,11 +96,14 @@ const AuditorRunTestForm: React.FC = () => {
   }, [resetForm]);
 
   const handleRepoFieldBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (event.target.value) {
-      checkRepoAccess(event.target.value);
+    if (event.target.value && event.target.value.length > 0) {
+      if (event.target.value !== repoUrl) {
+        checkRepoAccess(event.target.value);
+      }
     } else {
       dispatch(clearAccessStatus());
     }
+    setRepoUrl(event.target.value);
   }
 
   const checkRepoAccess = (urlValue: string) => {
@@ -134,14 +138,12 @@ const AuditorRunTestForm: React.FC = () => {
   };
 
   const privateRepoDisclaimer = () => {
-    if (hasAnActiveSubscription) {
-      confirm({
-        title: "Private Repository Access Disclaimer",
-        description:
-          "Auditors need to obtain consent from their customers and acquire the necessary permissions to fork their private Github repositories in order to test the decentralized application (dApp) using the Plutus Testing Tool, created by Input Output Global, Inc (IOG). The Plutus Testing Tool is available on an “AS IS” and “AS AVAILABLE” basis, without any representation or warranties of any kind. IOG is not responsible for the actions, omissions, or accuracy of any third party for any loss or damage of any sort resulting from the forking of repositories and testing of dApps using the Plutus Testing Tool.",
-        confirmationText: "Agree",
-      }).then(connectToGithub).catch(err => {});
-    }
+    confirm({
+      title: "Private Repository Access Disclaimer",
+      description:
+        "Auditors need to obtain consent from their customers and acquire the necessary permissions to fork their private Github repositories in order to test the decentralized application (dApp) using the Plutus Testing Tool, created by Input Output Global, Inc (IOG). The Plutus Testing Tool is available on an “AS IS” and “AS AVAILABLE” basis, without any representation or warranties of any kind. IOG is not responsible for the actions, omissions, or accuracy of any third party for any loss or damage of any sort resulting from the forking of repositories and testing of dApps using the Plutus Testing Tool.",
+      confirmationText: "Agree",
+    }).then(connectToGithub).catch(err => {});
   };
 
   const formHandler = (formData: TestingForm) => {
