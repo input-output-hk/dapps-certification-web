@@ -144,6 +144,7 @@ export const testingSlice = createSlice({
   name: "testing",
   initialState,
   reducers: {
+    clearTesting: () => initialState,
     resetForm: () => initialState,
     updateForm: (state, actions) => ({
       ...state,
@@ -156,7 +157,7 @@ export const testingSlice = createSlice({
     resetCommit: (state) => ({
       ...initialState,
       resetForm: 'commit'
-    })
+    }),
   },
   extraReducers: (builder) => {
     builder
@@ -210,6 +211,6 @@ export const testingSlice = createSlice({
   },
 });
 
-export const { updateForm, resetForm, resetDApp, resetCommit } = testingSlice.actions;
+export const { clearTesting, updateForm, resetForm, resetDApp, resetCommit } = testingSlice.actions;
 
 export default testingSlice.reducer;

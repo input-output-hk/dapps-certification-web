@@ -3,6 +3,7 @@ import { fetch } from "api";
 import { clearSession } from "./session.slice";
 import { clearProfile } from "./profile.slice";
 import { clearWallet } from "./walletConnection.slice";
+import { clearTesting } from "./testing.slice";
 
 interface AuthState {
   isSessionFetched: boolean;
@@ -27,6 +28,7 @@ export const fetchActiveSubscription = createAsyncThunk('fetchActiveSubscription
 });
 
 export const logout = createAsyncThunk('logout', async (payload: {}, { dispatch }) => {
+  dispatch(clearTesting());
   dispatch(clearProfile());
   dispatch(clearWallet());
   dispatch(clearSession());
