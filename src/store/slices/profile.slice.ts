@@ -20,6 +20,7 @@ export interface UserProfile {
     subject?: string;
     githubToken?: string;
   } | null;
+  role: string;
 }
 
 interface ProfileState {
@@ -39,6 +40,8 @@ interface ProfileState {
   subDetailsError: string | null;
   loadingHistory: boolean;
   runHistory: Run[];
+  impersonate: boolean;
+  retainId: any;
 }
 
 export interface IUpdateProfile {
@@ -76,12 +79,14 @@ const initialState: ProfileState = {
   subDetailsError: null,
   updateSuccess: false,
   loadingHistory: false,
-  runHistory: []
+  runHistory: [],
+  impersonate: false,
+  retainId: null
 };
 
 export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {}, thunkApi) => {
   try {
-    const response = await fetch<UserProfile>(thunkApi, { method: 'GET', url: '/profile/current' });
+    const response = await fetch<UserProfile>(thunkApi, { method: 'GET', url: `/profile/${payload || 'current'}` });
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {
@@ -89,9 +94,9 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {},
   }
 });
 
-export const updateProfile = createAsyncThunk('updateProfile', async (data: UserProfile, thunkApi) => {
+export const updateProfile = createAsyncThunk('updateProfile', async (payload: {data: UserProfile, profileId: any}, thunkApi) => {
   try {
-    const response = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: '/profile/current', data });
+    const response = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: `/profile/${payload.profileId || 'current'}`, data: payload.data });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -149,11 +154,11 @@ export const updateProfileDetails = createAsyncThunk('updateProfileDetails', asy
       url: `/profile/${id}/roles`,
       data: [data.role],
     });
-    if (response1.status !== 200) throw new Error();
+    if (response1.status >= 400) throw new Error();
 
     return {
       ...response.data,
-      role: response1.data[0] || "no-role",
+      role: data.role,
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -192,6 +197,10 @@ export const profileSlice = createSlice({
     },
     clearSuccess: (state) => {
       state.updateSuccess = false;
+    },
+    setImpersonate: (state, { payload }) => {
+      state.impersonate = payload.status;
+      state.retainId = payload.id;
     }
   },
   extraReducers: (builder) => {
@@ -297,6 +306,6 @@ export const profileSlice = createSlice({
   },
 });
 
-export const { clearProfile, setSelectedUser, clearSuccess } = profileSlice.actions;
+export const { clearProfile, setSelectedUser, clearSuccess, setImpersonate } = profileSlice.actions;
 
 export default profileSlice.reducer;

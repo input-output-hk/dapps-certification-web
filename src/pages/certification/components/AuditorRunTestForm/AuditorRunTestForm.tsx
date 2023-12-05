@@ -20,6 +20,7 @@ import type { TestingForm } from "store/slices/testing.slice";
 const AuditorRunTestForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
+  const { impersonate, retainId } = useAppSelector((state) => state.profile);
 
   const [initialized, setInitialized] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -143,7 +144,7 @@ const AuditorRunTestForm: React.FC = () => {
   };
 
   const formHandler = (formData: TestingForm) => {
-    dispatch(createTestRun({}));
+    dispatch(createTestRun(impersonate ? retainId : null));
   };
 
   return (

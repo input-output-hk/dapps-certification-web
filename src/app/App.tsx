@@ -2,8 +2,11 @@ import { lazy, Suspense, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { CircularProgress, Typography, Fab } from "@mui/material";
 
-import ChatIcon from '@mui/icons-material/QuestionAnswer';
-import CloseIcon from '@mui/icons-material/Close';
+import ChatIcon from "@mui/icons-material/QuestionAnswer";
+import CloseIcon from "@mui/icons-material/Close";
+import StopCircleIcon from "@mui/icons-material/StopCircle";
+import { useAppDispatch, useAppSelector } from "store/store";
+import { setImpersonate } from "store/slices/profile.slice";
 
 const Session = lazy(() => import("../pages/session"));
 const Landing = lazy(() => import("../pages/landing"));
@@ -40,9 +43,14 @@ const CustomGPT = () => {
       {show ? <CloseIcon /> : <ChatIcon />}
     </Fab>
   );
-}
+};
 
 const App = () => {
+  const { impersonate, selectedUser, retainId } = useAppSelector(
+    (state) => state.profile
+  );
+  const dispatch = useAppDispatch();
+
   return (
     <>
       <Suspense fallback={<CircularProgress color="secondary" size={100} />}>
@@ -63,6 +71,24 @@ const App = () => {
         </Routes>
       </Suspense>
       <CustomGPT />
+
+      {/* Impersonate banner */}
+      {impersonate ? (
+        <div className="inline-flex justify-between fixed top-0 left-0 w-full bg-[#000000bd] z-[10000] p-2 text-slate-300 text-center font-bold">
+          <span className="self-center">Impersonating: {selectedUser.fullName}</span>
+          <span
+            className="inline-flex items-center hover:cursor-pointer hover:underline"
+            title="Stop Impersonating"
+            onClick={async () => {
+              const impersonatedProfile = retainId;
+              await dispatch(setImpersonate({ status: false, id: null }));
+              window.location.pathname = `/support-commands/${impersonatedProfile}`;
+            }}
+          >
+            <StopCircleIcon className="text-red-300" fontSize="large" />
+          </span>
+        </div>
+      ) : null}
     </>
   );
 };

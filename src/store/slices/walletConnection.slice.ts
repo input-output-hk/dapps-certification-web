@@ -88,7 +88,7 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
       walletAddress: changeAddressBech32
     }));
 
-    await thunkApi.dispatch(fetchActiveSubscription({}));
+    await thunkApi.dispatch(fetchActiveSubscription(null));
     
     return { wallet, walletAddress: changeAddressBech32, stakeAddress: stakeAddrBech32 };
   } catch (error: any) {

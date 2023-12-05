@@ -45,7 +45,7 @@ export default function LandingPage() {
 
   const handleContinue = () => {
     if (success) {
-      dispatch(fetchActiveSubscription({}));
+      dispatch(fetchActiveSubscription(null));
       dispatch(clear());
     }
   };

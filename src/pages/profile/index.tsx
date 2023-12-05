@@ -24,11 +24,11 @@ const Profile = () => {
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
 
-  const { profile, loading, success, errorMessage } = useAppSelector(state => state.profile);
-  
+  const { profile, loading, success, errorMessage, impersonate, retainId} = useAppSelector(state => state.profile);
+
   const defaultValues = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
   const { register, handleSubmit, reset, clearErrors, formState, getFieldState, getValues } = useForm<UserProfile>({ defaultValues, resolver, mode: 'onBlur' });
-
+  
   useEffect(() => {
     if (submitted) {
       if (success || errorMessage !== null) {
@@ -41,7 +41,7 @@ const Profile = () => {
 
   const onSubmit = (form: UserProfile) => {
     setSubmitted(true);
-    dispatch(updateProfile(removeEmptyStringsDeep(JSON.parse(JSON.stringify(form)))));
+    dispatch(updateProfile({data: removeEmptyStringsDeep(JSON.parse(JSON.stringify(form))), profileId: impersonate ? retainId : null}));
   }
 
   const startEditing = () => {

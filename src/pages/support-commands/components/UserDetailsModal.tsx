@@ -19,14 +19,13 @@ interface Props {
   title: string;
   show: boolean;
   onClose: (data?: any) => void;
-  data: any;
 }
 
 const UserDetailsModal = (props: Props) => {
-  const { loadingDetails: loading } = useAppSelector((state) => state.profile);
+  const { loadingDetails: loading, selectedUser } = useAppSelector((state) => state.profile);
   const dispatch = useAppDispatch();
-  const defaultValues = props?.data
-    ? removeNullsDeep(JSON.parse(JSON.stringify(props.data)))
+  const defaultValues = selectedUser
+    ? removeNullsDeep(JSON.parse(JSON.stringify(selectedUser)))
     : null;
 
   const {
@@ -49,7 +48,7 @@ const UserDetailsModal = (props: Props) => {
   };
 
   const cleanup = () => {
-    reset();
+    reset(removeNullsDeep(JSON.parse(JSON.stringify(selectedUser))));
     clearErrors();
     props.onClose();
   };

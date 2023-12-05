@@ -10,7 +10,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 
 import { useConfirm } from "material-ui-confirm";
 import { useAppDispatch } from "store/store";
-import { fetchHistory, getRowStatus, deleteTestHistoryData, fetchCertificate } from "store/slices/testingHistory.slice";
+import { getRowStatus, deleteTestHistoryData, fetchCertificate } from "store/slices/testingHistory.slice";
 
 import TableComponent from "components/Table/Table";
 
@@ -35,7 +35,7 @@ const AppTable = (props: Props) => {
   const confirm = useConfirm();
   const navigate = useNavigate();
   const timeZone = dayjs.tz.guess();
-
+  
   const [skipPageReset, setSkipPageReset] = useState(false);
 
   const RunStatusCell = ({ value, row, column: { id } }: any) => {

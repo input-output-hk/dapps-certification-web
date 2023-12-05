@@ -21,6 +21,8 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   const { runStatus, runState } = useAppSelector(state => state.testing);
+  const { profile, impersonate } = useAppSelector(state => state.profile);
+  const { features } = useAppSelector((state) => state.auth);
 
   const getItemClassName = (pathname: string) => location.pathname !== pathname ? 'nav-bar-item' : 'nav-bar-item-active';
   const getIconClassName = (pathname: string) => location.pathname !== pathname ? 'nav-bar-icon' : 'nav-bar-icon-active';
@@ -34,11 +36,13 @@ const NavBar = () => {
           </Typography>
         </Toolbar>
       </AppBar>
+
       <MenuList>
         <MenuItem className={getItemClassName('/home')} onClick={() => navigate('/home')}>
           <ListItemIcon><HomeIcon className={getIconClassName('/home')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">Home</ListItemText>
         </MenuItem>
+
         <MenuItem className={getItemClassName('/testing')} onClick={() => navigate('/testing')}>
           <ListItemIcon><TestingIcon className={getIconClassName('/testing')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">
@@ -47,38 +51,49 @@ const NavBar = () => {
             { runStatus === 'finished' && <Chip label="Finished" color="success" size="small" className="float-right" /> }
           </ListItemText>
         </MenuItem>
+
         <MenuItem className={getItemClassName('/history')} onClick={() => navigate('/history')}>
           <ListItemIcon><TestingHistoryIcon className={getIconClassName('/history')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">Testing History</ListItemText>
         </MenuItem>
-        <MenuItem className={getItemClassName('/audit-report-upload')} onClick={() => navigate('/audit-report-upload')}>
-          <ListItemIcon><ReportUploadIcon className={getIconClassName('/audit-report-upload')} /></ListItemIcon>
-          <ListItemText className="text-white font-medium">Auditor Report Upload</ListItemText>
-        </MenuItem>
+
+        {features?.includes("l2-upload-report") ?
+          <MenuItem className={getItemClassName('/audit-report-upload')} onClick={() => navigate('/audit-report-upload')}>
+            <ListItemIcon><ReportUploadIcon className={getIconClassName('/audit-report-upload')} /></ListItemIcon>
+            <ListItemText className="text-white font-medium">Auditor Report Upload</ListItemText>
+          </MenuItem>
+        : null}
+
         <MenuItem className={getItemClassName('/profile')} onClick={() => navigate('/profile')}>
           <ListItemIcon><UserProfileIcon className={getIconClassName('/profile')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">User Profile</ListItemText>
         </MenuItem>
+
         <MenuItem className={getItemClassName('/support')} onClick={() => navigate('/support')}>
           <ListItemIcon><SupportIcon className={getIconClassName('/support')} /></ListItemIcon>
           <ListItemText className="text-white font-medium">Support</ListItemText>
         </MenuItem>
+
         <MenuItem className="nav-bar-item" onClick={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}>
           <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
           <ListItemText className="text-white font-medium">Documentation</ListItemText>
         </MenuItem>
+
         <hr className="mx-[10px] opacity-[0.4]" />
-        <MenuItem
-          className={getItemClassName("/support-commands")}
-          onClick={() => navigate("/support-commands")}
-        >
-          <ListItemIcon>
-            <Support className="nav-bar-icon" />
-          </ListItemIcon>
-          <ListItemText className="text-white font-medium">
-            Support Commands
-          </ListItemText>
-        </MenuItem>
+
+        {(profile?.role === "admin" || profile?.role === "support") && !impersonate ? 
+          <MenuItem
+            className={getItemClassName("/support-commands")}
+            onClick={() => navigate("/support-commands")}
+          >
+            <ListItemIcon>
+              <Support className="nav-bar-icon" />
+            </ListItemIcon>
+            <ListItemText className="text-white font-medium">
+              Support Commands
+            </ListItemText>
+          </MenuItem>
+        : null}
       </MenuList>
     </Box>
   );

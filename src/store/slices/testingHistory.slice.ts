@@ -24,7 +24,8 @@ const initialState: TestingHistoryState = {
 
 export const fetchHistory = createAsyncThunk("fetchHistory", async (payload: {}, thunkApi) => {
   try {
-    const response = await fetch<Run[]>(thunkApi, { method: 'GET', url: '/run' });
+    const apiUrl = payload ? `/profile/${payload}/runs`: '/run';
+    const response = await fetch<Run[]>(thunkApi, { method: 'GET', url: apiUrl });
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);

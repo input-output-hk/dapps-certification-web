@@ -12,14 +12,15 @@ import "./index.css";
 const TestHistory = () => {
   const dispatch = useAppDispatch();
 
+  const { impersonate, retainId } = useAppSelector((state) => state.profile);
   const { history, certificates, loading } = useAppSelector(state => state.testingHistory);
 
   useEffect(() => {
-    dispatch(fetchHistory({}));
+    dispatch(fetchHistory(impersonate ? retainId : null));
   }, []);
 
   const onRefreshData = () => {
-    dispatch(fetchHistory({}));
+    dispatch(fetchHistory(impersonate ? retainId : null));
   }
   
   return (

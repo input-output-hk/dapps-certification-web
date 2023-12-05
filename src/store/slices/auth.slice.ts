@@ -16,9 +16,9 @@ const initialState: AuthState = {
   features: [],
 };
 
-export const fetchActiveSubscription = createAsyncThunk('fetchActiveSubscription', async (payload: {}, thunkApi) => {
+export const fetchActiveSubscription = createAsyncThunk('fetchActiveSubscription', async (payload: any, thunkApi) => {
   try {
-    const response = await fetch<string[]>(thunkApi, { method: 'GET', url: '/profile/current/subscriptions/active-features' });
+    const response: any = await fetch<string[]>(thunkApi, { method: 'GET', url: `/profile/${payload || "current"}/subscriptions/active-features` });
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {

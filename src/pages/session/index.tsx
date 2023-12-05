@@ -16,12 +16,16 @@ const Session = () => {
   const location = useLocation();
 
   const { hasAnActiveSubscription, isSessionFetched } = useAppSelector((state) => state.auth);
-  const { profile } = useAppSelector((state) => state.profile);
-
-  useEffect(() => { dispatch(fetchActiveSubscription({})) }, []);
+  const { profile, impersonate, retainId } = useAppSelector((state) => state.profile);
 
   useEffect(() => {
-    if (hasAnActiveSubscription) dispatch(fetchProfile({}));
+    dispatch(fetchActiveSubscription(impersonate ? retainId : null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (hasAnActiveSubscription)
+      dispatch(fetchProfile(impersonate ? retainId : null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAnActiveSubscription]);
 

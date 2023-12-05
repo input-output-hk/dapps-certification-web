@@ -71,16 +71,17 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
     const [, , , owner, repo] = form.repoUrl!.split('/');
     const profile = (thunkApi.getState() as RootState).profile.profile!;
     const githubToken = (thunkApi.getState() as RootState).session.accessToken || undefined;
-    await thunkApi.dispatch(updateProfile({
+    await thunkApi.dispatch(updateProfile({ data: {
       ...profile, dapp: {
         ...profile.dapp,
         name: form.name!,
         subject: form.subject,
         owner, repo, githubToken
       }
-    }));
+    }, profileId: payload || null }));
     await thunkApi.dispatch(clearAccessToken({}));
-    const response = await fetch<string>(thunkApi, { method: 'POST', url: '/run', data: form.commitHash }, { useSession: true, useTextPlainClient: true });
+    const apiUrl = payload ? `/profile/${payload}/run`: '/run';
+    const response = await fetch<string>(thunkApi, { method: 'POST', url: apiUrl, data: form.commitHash }, { useSession: true, useTextPlainClient: true });
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);

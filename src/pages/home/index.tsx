@@ -164,9 +164,14 @@ const Home = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { history, loading } = useAppSelector(state => state.testingHistory);
+  const { history, loading } = useAppSelector((state) => state.testingHistory);
+  const { impersonate, retainId } = useAppSelector((state) => state.profile);
 
-  useEffect(() => { dispatch(fetchHistory({})) }, []);
+  useEffect(() => {
+    dispatch(fetchHistory(impersonate ? retainId : null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   return (
     <Container maxWidth="xl" className="pt-8">

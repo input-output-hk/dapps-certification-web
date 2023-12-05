@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "store/store";
 import { formatToTitleCase, getStatusLabel } from "utils/utils";
-import { Box, CircularProgress, Grid, Snackbar, Alert, Container } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Snackbar, Alert } from "@mui/material";
 import { Card } from "../components/Card";
 import dayjs from "dayjs";
+import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
 
 import { PROFILE_DETAILS_KEYS } from "../config";
 
@@ -16,7 +17,7 @@ import {
 } from "store/slices/profile.slice";
 
 import "./index.css";
-import { fetchProfileRunHistory } from "store/slices/profile.slice";
+import { fetchProfileRunHistory, setImpersonate } from "store/slices/profile.slice";
 import HistoryContainer from "pages/testingHistory/components/HistoryContainer";
 
 
@@ -30,7 +31,8 @@ const UserDetails = () => {
     detailsError,
     updateSuccess,
     loadingHistory,
-    runHistory
+    runHistory,
+    impersonate
   } = useAppSelector((state) => state.profile);
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
@@ -48,7 +50,6 @@ const UserDetails = () => {
   }, []);
 
   useEffect(() => {
-    console.log(detailsError, updateSuccess);
     if (detailsError || updateSuccess) {
       setShowToast(true);
       setTimeout(() => {
@@ -88,7 +89,21 @@ const UserDetails = () => {
 
   return (
     <div>
-      <h2 className="px-9 my-0">{profile?.companyName}</h2>
+      <h2 className="px-9 my-0 flex justify-between">
+        {profile?.companyName}
+        {!impersonate ? (
+          <Button
+            title={`Impersonate as ${profile?.fullName}`}
+            className="cursor-pointer	text-sm inline-flex items-center bg-white normal-case"
+            onClick={() => {
+              dispatch(setImpersonate({ status: true, url: profile.id }));
+              // window.location.pathname = "/";
+            }}
+          >
+            <TheaterComedyIcon className="mr-2" /> Impersonate
+          </Button>
+        ) : null}
+      </h2>
       <Grid container className="py-5 px-9" justifyContent="space-between">
         <Card
           key={'profile-card'}
@@ -176,7 +191,6 @@ const UserDetails = () => {
       {profile && (
         <UserDetailsModal
           onClose={() => setOpen(false)}
-          data={profile}
           title={title}
           show={open}
         />
