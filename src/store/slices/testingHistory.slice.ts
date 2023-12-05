@@ -54,6 +54,7 @@ export const getRowStatus = createAsyncThunk("getRowStatus", async (payload: { r
 export const fetchCertificate = createAsyncThunk("fetchCertificate", async (payload: { runId: string }, thunkApi) => {
   try {
     const response = await fetch<Certificate>(thunkApi, { method: 'GET', url: `/run/${payload.runId}/certificate` });
+    if (response.status !== 200) throw new Error();
     return {
       runId: payload.runId,
       certificate: response.data

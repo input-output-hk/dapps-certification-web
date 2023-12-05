@@ -26,6 +26,8 @@ interface Props {
   appName: string;
   history: Run[];
   certificates: Map<string, Certificate>;
+  showAbort?: boolean;
+  refreshData: () => void
 }
 
 const AppTable = (props: Props) => {
@@ -70,6 +72,15 @@ const AppTable = (props: Props) => {
   };
 
   const viewCertificate = async (runId: string) => {
+    if (!props.certificates) {
+      const response: any = await dispatch(fetchCertificate({ runId }));
+      if (!response.error) {
+        // TBD verification as transactions not yet done
+        openCertificate(response.certificate.transactionId);
+      }
+      return;
+    } 
+    // if props.certificates
     const certificate = props.certificates.get(runId);
     if (certificate) {
       openCertificate(certificate.transactionId);
@@ -189,17 +200,32 @@ const AppTable = (props: Props) => {
       },
     },
     {
-      Header: "",
+      Header: props.showAbort ? "Action" : "",
       disableSortBy: true,
       accessor: "delete",
-      Cell: (props: any) => {
-        if (props.row.original.runStatus !== "certified" && props.row.original.runStatus !== "ready-for-certification") {
+      Cell: (cellProps: any) => {
+        if (props.showAbort) {
+          if (cellProps.row.original.runStatus === 'queued') {
+            return (
+              <Button
+                variant="text"
+                color="error"
+                size="small"
+                className="text-main"
+                onClick={() => onDelete(cellProps.row.original.runId)}
+              >
+                KILL
+              </Button>
+            )
+          }
+        }
+        else if (cellProps.row.original.runStatus !== "certified" && cellProps.row.original.runStatus !== "ready-for-certification") {
           return (
             <IconButton 
               size="small"
               className="text-main"
               onClick={() => {
-                onDelete(props.row.original.runId);
+                onDelete(cellProps.row.original.runId);
               }}
             >
               <DeleteIcon fontSize="small" />
@@ -212,10 +238,10 @@ const AppTable = (props: Props) => {
   );
 
   const onDelete = (runId: string) => {
-    confirm({ title: '', description: 'Are you sure want to remove this run campaign from logs!' })
+    confirm({ title: '', description: props.showAbort ? 'Are you sure you want to abort this run campaign?' : 'Are you sure want to remove this run campaign from logs!' })
       .then(async () => {
-        await dispatch(deleteTestHistoryData({ url: `/run/${runId}?delete=true` }));
-        dispatch(fetchHistory({}));
+        await dispatch(deleteTestHistoryData({ url: `/run/${runId}${props.showAbort ? '' : '?delete=true'}` }));
+        props.refreshData()
       })
       .catch(() => { });
   };

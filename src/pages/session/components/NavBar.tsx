@@ -10,6 +10,7 @@ import ReportUploadIcon from '@mui/icons-material/ReceiptOutlined';
 import UserProfileIcon from '@mui/icons-material/PersonOutlined';
 import SupportIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import DocumentationIcon from '@mui/icons-material/SupportOutlined';
+import Support from "@mui/icons-material/KeyboardCommandKey";
 
 import { useAppSelector } from "store/store";
 
@@ -65,6 +66,18 @@ const NavBar = () => {
         <MenuItem className="nav-bar-item" onClick={() => window.open('https://rsoulatiohk.github.io/docs/intro', '_blank', 'noreferrer')}>
           <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
           <ListItemText className="text-white font-medium">Documentation</ListItemText>
+        </MenuItem>
+        <hr className="mx-[10px] opacity-[0.4]" />
+        <MenuItem
+          className={getItemClassName("/support-commands")}
+          onClick={() => navigate("/support-commands")}
+        >
+          <ListItemIcon>
+            <Support className="nav-bar-icon" />
+          </ListItemIcon>
+          <ListItemText className="text-white font-medium">
+            Support Commands
+          </ListItemText>
         </MenuItem>
       </MenuList>
     </Box>

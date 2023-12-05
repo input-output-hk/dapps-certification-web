@@ -5,7 +5,7 @@ import { Typography } from "@mui/material";
 import Input from "./components/Input";
 import Container from "./components/Container";
 
-import type { InputGroupProps } from './interface';
+import type { InputGroupProps } from "./interface";
 
 import "./index.css";
 
@@ -25,7 +25,7 @@ const InputGroup = (props: InputGroupProps) => {
           register={props.register}
           getFieldState={props.getFieldState}
           getValues={props.getValues}
-          disabled={props.disabled}
+          disabled={field?.disabled ||props.disabled}
         />
       ))}
     </Container>
