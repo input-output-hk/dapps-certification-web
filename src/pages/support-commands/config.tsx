@@ -15,6 +15,12 @@ export const PROFILE_DETAILS_KEYS = [
 
 export const userDetailsFields: Field[] = [
   {
+    label: 'Company name',
+    name: 'companyName',
+    type: FieldType.Text,
+    required: true,
+  },
+  {
     label: "Contact email",
     name: "contactEmail",
     type: FieldType.Email,

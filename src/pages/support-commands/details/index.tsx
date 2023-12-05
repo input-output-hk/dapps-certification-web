@@ -36,6 +36,7 @@ const UserDetails = () => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [currentSubscription, setCurrentSubscription] = useState<any>(null);
 
   // Fetch user profile details if not already available
   useEffect(() => {
@@ -57,6 +58,29 @@ const UserDetails = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detailsError, updateSuccess]);
+
+  useEffect(() => {
+    if (userSubscription?.length && !currentSubscription) {
+      let currentSub = userSubscription.find((sub: any) => sub.status === 'active')
+      if (!currentSub) {
+        // find latest subscription by sorting startDate
+        const sortedSubs = userSubscription.sort((a: any, b: any) => {
+          if (dayjs(a.startDate).isBefore(dayjs(b.startDate))) {
+            return 1;
+          } else if (dayjs(b.startDate).isBefore(dayjs(a.startDate))) {
+            return -1;
+          } else {
+            return 0;
+          }
+        })
+        if (sortedSubs[0]) {
+          currentSub = sortedSubs[0]
+        }
+      }
+      setCurrentSubscription(currentSub)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userSubscription])
 
   const onRefreshHistory = () => {
     dispatch(fetchProfileRunHistory(window.location.href.split("/").pop()));
@@ -104,37 +128,37 @@ const UserDetails = () => {
           <div className="details inline-flex flex-col w-full">
             <h3 className="m-0 mb-3">Current Subscription</h3>
             {!loadingSubDetails ? (
-              userSubscription?.length ? (
+              userSubscription?.length && currentSubscription ? (
                 <>
                   <span className={classNames("text-gray-label mb-1 tierType")}>
-                    {userSubscription[0]?.type}
+                    {currentSubscription.type}
                   </span>
                   <span className={classNames("text-gray-label mb-1")}>
-                    Tier {userSubscription[0]?.tierId}
+                    Tier {currentSubscription.tierId}
                   </span>
                   <span className={classNames("text-gray-label mb-1")}>
-                    {dayjs(userSubscription[0]?.startDate).format("MM/DD/YYYY")}
+                    {dayjs(currentSubscription.startDate).format("MM/DD/YYYY")}
                   </span>
                   <span className={classNames("text-gray-label mb-1")}>
-                    {dayjs(userSubscription[0]?.endDate).format("MM/DD/YYYY")}
+                    {dayjs(currentSubscription.endDate).format("MM/DD/YYYY")}
                   </span>
                   <span className={classNames("text-gray-label mb-1")}>
-                    Subscribed at ${userSubscription[0]?.price}/year (
-                    {userSubscription[0]?.price}Ada)
+                    Subscribed at ${currentSubscription.price}/year (
+                    {currentSubscription.price}Ada)
                   </span>
                   <span
                     className={classNames(
                       "text-gray-label mb-1",
                       `uppercase font-semibold ${getStatusLabel(
-                        userSubscription[0]?.status?.toLowerCase()
+                        currentSubscription.status?.toLowerCase()
                       )}`
                     )}
                   >
-                    {userSubscription[0]?.status}
+                    {currentSubscription.status}
                   </span>
                 </>
               ) : (
-                "No subscription"
+                "No subscription found"
               )
             ) : (
               <Box className="flex items-center justify-center p-8">
