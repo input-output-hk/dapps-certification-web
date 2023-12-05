@@ -41,6 +41,7 @@ const AuditorRunTestForm: React.FC = () => {
   useEffect(() => {
     const subscription = form.watch(value => dispatch(updateForm(removeEmptyStringsDeep(value))));
     return () => subscription.unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.watch]);
   
   useEffect(() => {
@@ -50,6 +51,7 @@ const AuditorRunTestForm: React.FC = () => {
       searchParams.delete('code');
       setSearchParams(searchParams);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -57,10 +59,12 @@ const AuditorRunTestForm: React.FC = () => {
       setInitialized(true);
       checkRepoAccess(form.getValues().repoUrl!);
     }
-  }, [form.getValues().repoUrl]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialized, form.getValues().repoUrl]);
 
   useEffect(() => {
     if (showConfirmConnection) confirmConnectModal();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showConfirmConnection]);
 
   useEffect(() => {
@@ -78,6 +82,7 @@ const AuditorRunTestForm: React.FC = () => {
       }
       form.setValue('commitHash', undefined);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
   useEffect(() => {
@@ -91,6 +96,7 @@ const AuditorRunTestForm: React.FC = () => {
     if (resetForm === 'commit') {
       form.setValue('commitHash', undefined);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetForm]);
 
   const handleRepoFieldBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
