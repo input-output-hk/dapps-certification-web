@@ -68,7 +68,7 @@ const NavBar = () => {
           <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
           <ListItemText className="text-white font-medium">Documentation</ListItemText>
         </MenuItem>
-        {role === null && (
+        {role === 'admin' && (
           <>
             <Divider className="border-slate-textLight" />
             <MenuItem className={getItemClassName('/metrics')} onClick={() => navigate('/metrics')}>
