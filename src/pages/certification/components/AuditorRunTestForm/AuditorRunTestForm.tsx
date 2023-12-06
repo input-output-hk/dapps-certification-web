@@ -126,7 +126,7 @@ const AuditorRunTestForm: React.FC = () => {
   };
 
   const confirmConnectModal = () => {
-    if (hasAnActiveSubscription) {
+    if (hasAnActiveSubscription && !uuid) {
       confirm({
         title: "Verify the Repository details",
         description:
