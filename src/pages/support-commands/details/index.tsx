@@ -52,9 +52,10 @@ const UserDetails = () => {
   useEffect(() => {
     if (detailsError || updateSuccess) {
       setShowToast(true);
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setShowToast(false);
         dispatch(clearSuccess());
+        clearTimeout(timer)
       }, 5000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,7 +66,7 @@ const UserDetails = () => {
       let currentSub = userSubscription.find((sub: any) => sub.status === 'active')
       if (!currentSub) {
         // find latest subscription by sorting startDate
-        const sortedSubs = userSubscription.sort((a: any, b: any) => {
+        const sortedSubs = [...userSubscription].sort((a: any, b: any) => {
           if (dayjs(a.startDate).isBefore(dayjs(b.startDate))) {
             return 1;
           } else if (dayjs(b.startDate).isBefore(dayjs(a.startDate))) {
