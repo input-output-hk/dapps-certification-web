@@ -129,7 +129,7 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
         }
 
         if (forceLogout) {
-          await dispatch(logout({}));
+          await dispatch(logout());
           isListening = false;
           return true;
         } else {
@@ -137,7 +137,7 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
           isListening = (getState() as RootState).walletConnection.listeningWalletChanges;
         }
       } catch (error) {
-        await dispatch(logout({}));
+        await dispatch(logout());
         isListening = false;
         return true;
       }
@@ -150,7 +150,6 @@ export const walletConnectionSlice = createSlice({
   name: "walletConnection",
   initialState,
   reducers: {
-    clearWallet: () => initialState,
     stopListenWalletChanges: (state) => {
       return {
         ...state,
@@ -200,6 +199,6 @@ export const walletConnectionSlice = createSlice({
   },
 });
 
-export const { clearWallet, stopListenWalletChanges } = walletConnectionSlice.actions;
+export const { stopListenWalletChanges } = walletConnectionSlice.actions;
 
 export default walletConnectionSlice.reducer;

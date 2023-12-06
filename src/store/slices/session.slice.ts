@@ -18,7 +18,6 @@ export const sessionSlice = createSlice({
   name: "session",
   initialState,
   reducers: {
-    clearSession: () => initialState,
     setSession: (state, actions) => ({
       ...state,
       authToken: actions.payload.authToken,
@@ -36,6 +35,6 @@ export const sessionSlice = createSlice({
   }
 });
 
-export const { clearSession, setSession, setAccessToken, clearAccessToken } = sessionSlice.actions;
+export const { setSession, setAccessToken, clearAccessToken } = sessionSlice.actions;
 
 export default sessionSlice.reducer;
