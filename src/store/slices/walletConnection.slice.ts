@@ -109,8 +109,8 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
 });
 
 export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', async (payload: any, { dispatch, getState }) => {
-  const { hasAnActiveSubscription } = (getState() as RootState).auth;
-  if (!hasAnActiveSubscription) {
+  const { authToken } = (getState() as RootState).session;
+  if (authToken) {
     let isListening = true;
     while (isListening) {
       try {
@@ -142,6 +142,8 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
         return true;
       }
     }
+  } else {
+    // don't listen as a wallet is not connected to 
   }
   return false;
 });

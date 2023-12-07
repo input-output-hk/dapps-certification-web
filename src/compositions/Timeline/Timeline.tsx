@@ -8,7 +8,7 @@ import "./Timeline.css";
 const Timeline = (props: any) => {
   const { statusConfig, unitTestSuccess, hasFailedTasks } = props;
   const { buildInfo } = useAppSelector((state) => state.runTime);
-
+  
   return (
     <div className="statusTimeline" data-testid="statusTimeline">
       <ul className="statusTimelineUl">
