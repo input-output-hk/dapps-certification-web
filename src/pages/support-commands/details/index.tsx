@@ -154,10 +154,10 @@ const UserDetails = () => {
                     Tier {currentSubscription.tierId}
                   </span>
                   <span className={classNames("text-gray-label mb-1")}>
-                    {dayjs(currentSubscription.startDate).format("MM/DD/YYYY")}
+                    {dayjs(currentSubscription.startDate).format("YYYY-MM-DD")}
                   </span>
                   <span className={classNames("text-gray-label mb-1")}>
-                    {dayjs(currentSubscription.endDate).format("MM/DD/YYYY")}
+                    {dayjs(currentSubscription.endDate).format("YYYY-MM-DD")}
                   </span>
                   <span className={classNames("text-gray-label mb-1")}>
                     Subscribed at ${Math.round(currentSubscription.price/1000000*currentSubscription.adaUsdPrice*100)/100}/year (
