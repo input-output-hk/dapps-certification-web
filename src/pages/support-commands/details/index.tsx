@@ -159,8 +159,8 @@ const UserDetails = () => {
                     {dayjs(currentSubscription.endDate).format("MM/DD/YYYY")}
                   </span>
                   <span className={classNames("text-gray-label mb-1")}>
-                    Subscribed at ${currentSubscription.price}/year (
-                    {currentSubscription.price}Ada)
+                    Subscribed at ${Math.round(currentSubscription.price/1000000*currentSubscription.adaUsdPrice*100)/100}/year (
+                    {Math.round(currentSubscription.price*100/1000000)/100} Ada)
                   </span>
                   <span
                     className={classNames(
