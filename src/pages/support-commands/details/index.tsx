@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "store/store";
 import { formatToTitleCase, getStatusLabel } from "utils/utils";
@@ -20,7 +21,6 @@ import "./index.css";
 import { fetchProfileRunHistory, setImpersonate } from "store/slices/profile.slice";
 import HistoryContainer from "pages/testingHistory/components/HistoryContainer";
 
-
 const UserDetails = () => {
   // const [data] = useState<any>(UserDetails);
   const {
@@ -35,6 +35,7 @@ const UserDetails = () => {
     impersonate
   } = useAppSelector((state) => state.profile);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -97,8 +98,8 @@ const UserDetails = () => {
             title={`Impersonate as ${profile?.fullName}`}
             className="cursor-pointer	text-sm inline-flex items-center bg-white normal-case"
             onClick={() => {
-              dispatch(setImpersonate({ status: true, url: profile.id }));
-              // window.location.pathname = "/";
+              dispatch(setImpersonate({ status: true, id: profile.id }));
+              navigate("/")
             }}
           >
             <TheaterComedyIcon className="mr-2" /> Impersonate
