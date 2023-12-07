@@ -42,6 +42,48 @@ export const SubjectField = {
   textArea: true,
 };
 
+export const NumberOfTestsField = {
+  label: 'Number of Tests',
+  name: 'numberOfTests',
+  type: FieldType.NumberOfTests,
+  required: false
+}
+
+export const DEFAULT_TESTS_COUNT = 100;
+
+export const ADVANCED_TEST_MODE_FIELDS = [
+  {
+    label: "No Locked Funds",
+    name: "numberOfLockedFunds",
+    type: FieldType.NumberOfTests,
+    required: false,
+  },
+  {
+    label: "No Locked Funds Light",
+    name: "numberOfLockedFundsLight",
+    type: FieldType.NumberOfTests,
+    required: false,
+  },
+  {
+    label: "Crash Tolerance",
+    name: "crashTolerance",
+    type: FieldType.NumberOfTests,
+    required: false,
+  },
+  {
+    label: "Whitelist",
+    name: "whitelist",
+    type: FieldType.NumberOfTests,
+    required: false,
+  },
+  {
+    label: "DL Tests",
+    name: "dlTests",
+    type: FieldType.NumberOfTests,
+    required: false,
+  },
+];
+
 export const resolver: Resolver<TestingForm> = buildFormResolver<TestingForm>([
-  RepoField, CommitField, NameField, VersionField, SubjectField
+  RepoField, CommitField, NameField, VersionField, SubjectField, NumberOfTestsField, ...ADVANCED_TEST_MODE_FIELDS
 ]);

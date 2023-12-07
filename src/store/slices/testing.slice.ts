@@ -17,6 +17,12 @@ export interface TestingForm {
   name?: string;
   version?: string;
   subject?: string;
+  numberOfTests?: number;
+  numberOfLockedFunds?: number;
+  numberOfLockedFundsLight?: number;
+  crashTolerance?: number;
+  whitelist?: number;
+  dlTests?: number;
 }
 
 export interface RunStatus {

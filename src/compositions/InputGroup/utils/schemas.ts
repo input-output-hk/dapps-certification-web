@@ -82,3 +82,7 @@ export const GitHubRepository = yup.string()
   });
 
 export const Dropdown = yup.string();
+
+export const NumberOfTests = yup.number()
+  .min(0)
+  .max(1000)

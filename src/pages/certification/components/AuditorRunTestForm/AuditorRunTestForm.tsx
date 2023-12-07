@@ -3,25 +3,37 @@ import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { useConfirm } from "material-ui-confirm";
 
-import { Button, Box } from "@mui/material";
+import {
+  Button,
+  Box,
+  Divider,
+  AccordionSummary,
+  Accordion,
+  Typography,
+  AccordionDetails,
+} from "@mui/material";
 
 import InputGroup from "compositions/InputGroup";
 import Input from "compositions/InputGroup/components/Input";
 import RepoAccessStatus from "components/RepoAccessStatus/RepoAccessStatus";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { updateForm, createTestRun } from "store/slices/testing.slice";
 import { clearAccessStatus, verifyRepoAccess, verifyRepoAccessWithAccessToken, fetchClientId } from "store/slices/repositoryAccess.slice";
-import { resolver, RepoField, CommitField, NameField, VersionField, SubjectField } from "./utils";
+import { resolver, RepoField, CommitField, NameField, VersionField, SubjectField, NumberOfTestsField, DEFAULT_TESTS_COUNT, ADVANCED_TEST_MODE_FIELDS } from "./utils";
 import { removeNullsDeep, removeEmptyStringsDeep } from "utils/utils";
 
 import type { TestingForm } from "store/slices/testing.slice";
+import CustomSwitch from "components/CustomSwitch/CustomSwitch";
 
 const AuditorRunTestForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
 
+  const [isCustomizedTestingMode, setIsCustomizedTestingMode] = useState<boolean>(false)
   const [initialized, setInitialized] = useState<boolean>(false);
+  const [showField, setShowField] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const githubAccessCode = searchParams.get('code');
 
@@ -30,13 +42,21 @@ const AuditorRunTestForm: React.FC = () => {
   const { profile } = useAppSelector((state) => state.profile);
   const { form: formValues, creating, uuid, resetForm } = useAppSelector((state) => state.testing);
   const { dapp } = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
-  const defaultValues = formValues ? removeNullsDeep(JSON.parse(JSON.stringify(formValues))) : (dapp ? {
-    repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
-    name: dapp.name,
-    version: dapp.version,
-    subject: dapp.subject,
-  } : undefined);
-  const form = useForm<TestingForm>({ resolver, defaultValues, mode: 'all' });
+  // const defaultValues = formValues ? removeNullsDeep(JSON.parse(JSON.stringify(formValues))) : (dapp ? {
+  //   repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
+  //   name: dapp.name,
+  //   version: dapp.version,
+  //   subject: dapp.subject,
+  //   numberOfTests: DEFAULT_TESTS_COUNT
+  // } : undefined);
+  // const form = useForm<TestingForm>({ resolver, defaultValues, mode: 'all' });
+  const form = useForm<TestingForm>({ resolver, mode: "all" });
+
+  const setAdvancedTestCount = () => {
+    ADVANCED_TEST_MODE_FIELDS.forEach((key: { name: any; }) =>
+      form.setValue(key.name as any, DEFAULT_TESTS_COUNT)
+    );
+  };
 
   useEffect(() => {
     const subscription = form.watch(value => dispatch(updateForm(removeEmptyStringsDeep(value))));
@@ -81,6 +101,8 @@ const AuditorRunTestForm: React.FC = () => {
         form.setValue('repoUrl', dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined);
       }
       form.setValue('commitHash', undefined);
+      setAdvancedTestCount();
+      form.setValue("numberOfTests", DEFAULT_TESTS_COUNT);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
@@ -96,7 +118,11 @@ const AuditorRunTestForm: React.FC = () => {
     if (resetForm === 'commit') {
       form.setValue('commitHash', undefined);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setIsCustomizedTestingMode(false);
+    form.setValue("numberOfTests", DEFAULT_TESTS_COUNT);
+    setAdvancedTestCount();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetForm]);
 
   const handleRepoFieldBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -117,7 +143,7 @@ const AuditorRunTestForm: React.FC = () => {
         dispatch(clearAccessStatus());
       }
     }
-  }
+  };
 
   const connectToGithub = async () => {
     let updatedClientId = clientId;
@@ -152,9 +178,17 @@ const AuditorRunTestForm: React.FC = () => {
     dispatch(createTestRun({}));
   };
 
+  const onTestingModeToggle = (isChecked: boolean) => {
+    setIsCustomizedTestingMode(isChecked);
+    isChecked
+      ? setAdvancedTestCount()
+      : form.setValue("numberOfTests", DEFAULT_TESTS_COUNT);
+    setShowField(true);
+  };
+
   return (
     <div>
-      <form onSubmit={form.handleSubmit(formHandler)}>
+      <form onSubmit={form.handleSubmit(formHandler)} style={{"marginBottom": "20px"}}>
         <Button
           type="submit" 
           variant="contained" size="large"
@@ -192,6 +226,52 @@ const AuditorRunTestForm: React.FC = () => {
               disabled={creating}
             />
           </Box>
+          <CustomSwitch onToggle={onTestingModeToggle} />
+          <div className="relative input-wrapper" hidden={!showField}>
+            <Input
+              noGutter={true}
+              field={NumberOfTestsField}
+              formState={form.formState}
+              register={form.register}
+              getFieldState={form.getFieldState}
+              getValues={form.getValues}
+              disabled={!isCustomizedTestingMode}
+            />
+          </div>
+
+          {isCustomizedTestingMode ? (
+            <Accordion className="shadow-none mt-0" onChange={(_, expanded) =>setShowField(!expanded)}>
+              <AccordionSummary
+                expandIcon={
+                  <ExpandMoreIcon className="text-slate-highlighted" />
+                }
+                aria-controls="accordion-content"
+                id="accordion-header"
+                className="pr-0"
+              >
+                <Typography className="w-full text-right text-slate-highlighted hover:underline">
+                  Advanced
+                </Typography>
+              </AccordionSummary>
+
+              <AccordionDetails className="p-0">
+                <Divider textAlign="left" className="mb-2">
+                  Number of Tests
+                </Divider>
+
+                <div className="-mx-4">
+                  <InputGroup
+                    fields={ADVANCED_TEST_MODE_FIELDS}
+                    formState={form.formState}
+                    register={form.register}
+                    getFieldState={form.getFieldState}
+                    getValues={form.getValues}
+                    disabled={creating}
+                  />
+                </div>
+              </AccordionDetails>
+            </Accordion>
+          ) : null}
         </div>
       </form>
     </div>
