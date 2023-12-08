@@ -111,14 +111,18 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
 });
 
 export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', async (payload: any, { dispatch, getState }) => {
-  const { authToken } = (getState() as RootState).session;
-  if (authToken) {
+  const { authToken, networkId } = (getState() as RootState).session;
+  const { wallet, walletName, stakeAddress } = (getState() as RootState).walletConnection;
+  
+  if (authToken || wallet.getNetworkId === undefined) {
     let isListening = true;
     while (isListening) {
       try {
         let forceLogout = false;
-        const { networkId } = (getState() as RootState).session;
-        const { wallet, walletName, stakeAddress } = (getState() as RootState).walletConnection;
+
+        if (wallet.getNetworkId === undefined) {
+          isListening = false;
+        }
 
         if (!wallet.getNetworkId) {
           await dispatch(updateWallet(await CardanoNS[walletName!].enable()));
