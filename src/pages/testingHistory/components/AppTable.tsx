@@ -58,7 +58,7 @@ const AppTable = (props: Props) => {
           <IconButton 
             size="small"
             className="text-main ml-1 mt-[-4px]"
-            onClick={() => triggerApi(runId)}
+            onClick={() => {triggerApi(runId); props.refreshData();}}
           >
             <RefreshIcon fontSize="small" />
           </IconButton>

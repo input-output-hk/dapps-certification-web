@@ -97,9 +97,9 @@ const UserDetails = () => {
           <Button
             title={`Impersonate as ${profile?.fullName}`}
             className="cursor-pointer	text-sm inline-flex items-center bg-white normal-case"
-            onClick={() => {
-              dispatch(setImpersonate({ status: true, id: profile.id }));
-              navigate("/")
+            onClick={async () => {
+              await dispatch(setImpersonate({ status: true, id: profile.id }));
+              window.location.pathname = '/'
             }}
           >
             <TheaterComedyIcon className="mr-2" /> Impersonate
