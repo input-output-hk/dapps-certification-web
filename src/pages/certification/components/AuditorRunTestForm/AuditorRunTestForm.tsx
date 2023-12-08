@@ -16,6 +16,23 @@ import { resolver, RepoField, CommitField, NameField, VersionField, SubjectField
 import { removeNullsDeep, removeEmptyStringsDeep } from "utils/utils";
 
 import type { TestingForm } from "store/slices/testing.slice";
+import type { UserProfile } from "store/slices/profile.slice";
+
+const getFormDefaultValues = (form: TestingForm|null, profile: UserProfile|null, githubAccessCode: string|null, uuid: string|null): TestingForm|undefined => {
+  if (form !== null && (githubAccessCode !== null || uuid !== null)) {
+    return removeNullsDeep(JSON.parse(JSON.stringify(form)));
+  } else if (profile !== null && profile.dapp !== null) {
+    const { dapp } = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
+    return {
+      repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
+      name: dapp.name,
+      version: dapp.version,
+      subject: dapp.subject,
+    };
+  } else {
+    return undefined;
+  }
+};
 
 const AuditorRunTestForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -31,14 +48,10 @@ const AuditorRunTestForm: React.FC = () => {
   
   const { profile } = useAppSelector((state) => state.profile);
   const { form: formValues, creating, uuid, resetForm } = useAppSelector((state) => state.testing);
-  const { dapp } = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
-  const defaultValues = formValues ? removeNullsDeep(JSON.parse(JSON.stringify(formValues))) : (dapp ? {
-    repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
-    name: dapp.name,
-    version: dapp.version,
-    subject: dapp.subject,
-  } : undefined);
-  const form = useForm<TestingForm>({ resolver, defaultValues, mode: 'all' });
+  const form = useForm<TestingForm>({
+    resolver, mode: 'all',
+    defaultValues: getFormDefaultValues(formValues, profile, githubAccessCode, uuid)
+  });
 
   useEffect(() => {
     const subscription = form.watch(value => dispatch(updateForm(removeEmptyStringsDeep(value))));
@@ -59,7 +72,7 @@ const AuditorRunTestForm: React.FC = () => {
   useEffect(() => {
     if (form.getValues().repoUrl && !initialized) {
       setInitialized(true);
-      checkRepoAccess(form.getValues().repoUrl!);
+      if (!githubAccessCode) checkRepoAccess(form.getValues().repoUrl!);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialized, form.getValues().repoUrl]);
@@ -71,12 +84,13 @@ const AuditorRunTestForm: React.FC = () => {
 
   useEffect(() => {
     if (formValues === null) {
-      if (!dapp) {
+      if (!profile || !profile.dapp) {
         form.setValue('name', undefined);
         form.setValue('version', undefined);
         form.setValue('subject', undefined);
         form.setValue('repoUrl', undefined);
       } else {
+        const { dapp } = profile;
         form.setValue('name', dapp.name);
         form.setValue('version', dapp.version);
         form.setValue('subject', dapp.subject);

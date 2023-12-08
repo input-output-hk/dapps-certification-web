@@ -83,6 +83,11 @@ export const repositoryAccessSlice = createSlice({
         state.showConfirmConnection = true;
         state.accessStatus = "notAccessible";
       })
+      .addCase(verifyRepoAccessWithAccessToken.pending, (state) => {
+        state.verifying = true;
+        state.accessStatus = "verifying";
+        state.showConfirmConnection = false;
+      })
       .addCase(fetchClientId.fulfilled, (state, actions) => {
         state.clientId = actions.payload;
       })
