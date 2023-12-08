@@ -42,7 +42,7 @@ const internalAuditorFields: Field[] = [
   {
     label: 'Name',
     name: 'name',
-    type: FieldType.Subject,
+    type: FieldType.Text,
     required: true,
   },
   {

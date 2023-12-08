@@ -1,8 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetch } from "api";
-import { clearSession } from "./session.slice";
-import { clearProfile } from "./profile.slice";
-import { clearWallet } from "./walletConnection.slice";
 
 interface AuthState {
   isSessionFetched: boolean;
@@ -22,20 +19,20 @@ export const fetchActiveSubscription = createAsyncThunk('fetchActiveSubscription
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {
+    await thunkApi.dispatch(logout());
     return [];
   }
-});
-
-export const logout = createAsyncThunk('logout', async (payload: {}, { dispatch }) => {
-  dispatch(clearProfile());
-  dispatch(clearWallet());
-  dispatch(clearSession());
 });
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    logout: () => ({
+      ...initialState,
+      isSessionFetched: true
+    }),
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchActiveSubscription.pending, (state) => {
@@ -52,12 +49,9 @@ export const authSlice = createSlice({
         state.isSessionFetched = true;
         state.hasAnActiveSubscription = false;
       })
-      .addCase(logout.fulfilled, (state) => {
-        state.isSessionFetched = true;
-        state.hasAnActiveSubscription = false;
-        state.features = [];
-      })
   },
 });
+
+export const { logout } = authSlice.actions;
 
 export default authSlice.reducer;
