@@ -63,9 +63,7 @@ export const updateProfile = createAsyncThunk('updateProfile', async (data: User
 export const profileSlice = createSlice({
   name: "profile",
   initialState,
-  reducers: {
-    clearProfile: () => initialState,
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // FETCH PROFILE
@@ -92,7 +90,5 @@ export const profileSlice = createSlice({
       })
   },
 });
-
-export const { clearProfile } = profileSlice.actions;
 
 export default profileSlice.reducer;

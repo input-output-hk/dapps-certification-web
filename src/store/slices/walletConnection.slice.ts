@@ -14,6 +14,7 @@ declare global {
 
 interface WalletConnectionState {
   wallet: any | null;
+  walletName: string | null;
   walletAddress: string | null;
   stakeAddress: string | null;
   activeWallets: string[];
@@ -26,6 +27,7 @@ interface WalletConnectionState {
 
 const initialState: WalletConnectionState = {
   wallet: null,
+  walletName: null,
   walletAddress: null,
   stakeAddress: null,
   activeWallets: ['lace', 'nami', 'yoroi'],
@@ -90,7 +92,7 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
 
     await thunkApi.dispatch(fetchActiveSubscription({}));
     
-    return { wallet, walletAddress: changeAddressBech32, stakeAddress: stakeAddrBech32 };
+    return { wallet, walletName, walletAddress: changeAddressBech32, stakeAddress: stakeAddrBech32 };
   } catch (error: any) {
     const payload = {
       showRetry: true,
@@ -109,39 +111,48 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
 });
 
 export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', async (payload: any, { dispatch, getState }) => {
-  const { hasAnActiveSubscription } = (getState() as RootState).auth;
-  if (!hasAnActiveSubscription) {
+  const { authToken, networkId } = (getState() as RootState).session;
+  const { wallet, walletName, stakeAddress } = (getState() as RootState).walletConnection;
+  
+  if (authToken || wallet.getNetworkId === undefined) {
     let isListening = true;
     while (isListening) {
       try {
         let forceLogout = false;
-        const { networkId } = (getState() as RootState).session;
-        const { wallet, stakeAddress } = (getState() as RootState).walletConnection;
-        
-        if (wallet !== null && stakeAddress !== null) {
-          const newStakeAddress = (await getAddresses(wallet))[1];
-          forceLogout = newStakeAddress !== stakeAddress;
-        }
 
-        if (!forceLogout && wallet !== null && networkId !== null) {
-          const newNetworkId = await wallet.getNetworkId();
-          forceLogout = newNetworkId !== networkId;
-        }
-
-        if (forceLogout) {
-          await dispatch(logout({}));
+        if (wallet.getNetworkId === undefined) {
           isListening = false;
-          return true;
+        }
+
+        if (!wallet.getNetworkId) {
+          await dispatch(updateWallet(await CardanoNS[walletName!].enable()));
         } else {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          isListening = (getState() as RootState).walletConnection.listeningWalletChanges;
+          if (wallet !== null && stakeAddress !== null) {
+            const newStakeAddress = (await getAddresses(wallet))[1];
+            forceLogout = newStakeAddress !== stakeAddress;
+          }
+
+          if (!forceLogout && wallet !== null && networkId !== null) {
+            const newNetworkId = await wallet.getNetworkId();
+            forceLogout = newNetworkId !== networkId;
+          }
+
+          if (forceLogout) {
+            await dispatch(logout());
+            isListening = false;
+            return true;
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            isListening = (getState() as RootState).walletConnection.listeningWalletChanges;
+          }
         }
       } catch (error) {
-        await dispatch(logout({}));
-        isListening = false;
-        return true;
+        console.log(error);
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
+  } else {
+    // don't listen as a wallet is not connected to 
   }
   return false;
 });
@@ -150,13 +161,14 @@ export const walletConnectionSlice = createSlice({
   name: "walletConnection",
   initialState,
   reducers: {
-    clearWallet: () => initialState,
-    stopListenWalletChanges: (state) => {
-      return {
-        ...state,
-        listeningWalletChanges: false
-      };
-    }
+    stopListenWalletChanges: (state) => ({
+      ...state,
+      listeningWalletChanges: false
+    }),
+    updateWallet: (state, action) => ({
+      ...state,
+      wallet: action.payload
+    })
   },
   extraReducers: (builder) => {
     builder
@@ -164,6 +176,7 @@ export const walletConnectionSlice = createSlice({
       // CONNECT WALLET
       .addCase(connectWallet.pending, (state) => {
         state.wallet = null;
+        state.walletName = null;
         state.walletAddress = null;
         state.stakeAddress = null;
         state.errorMessage = null;
@@ -174,6 +187,7 @@ export const walletConnectionSlice = createSlice({
       })
       .addCase(connectWallet.fulfilled, (state, actions) => {
         state.wallet = actions.payload.wallet;
+        state.walletName = actions.payload.walletName;
         state.walletAddress = actions.payload.walletAddress;
         state.stakeAddress = actions.payload.stakeAddress;
         state.loading = false;
@@ -200,6 +214,6 @@ export const walletConnectionSlice = createSlice({
   },
 });
 
-export const { clearWallet, stopListenWalletChanges } = walletConnectionSlice.actions;
+export const { stopListenWalletChanges, updateWallet } = walletConnectionSlice.actions;
 
 export default walletConnectionSlice.reducer;

@@ -62,7 +62,7 @@ const initialState: TestingState = {
   hasFailedTasks: false,
   refetchMin: 5,
   shouldFetchRunStatus: false,
-  resetForm: null,
+  resetForm: null
 };
 
 export const createTestRun = createAsyncThunk("createTestRun", async (payload: {}, thunkApi) => {
@@ -156,7 +156,7 @@ export const testingSlice = createSlice({
     resetCommit: (state) => ({
       ...initialState,
       resetForm: 'commit'
-    })
+    }),
   },
   extraReducers: (builder) => {
     builder

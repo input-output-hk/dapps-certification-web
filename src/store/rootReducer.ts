@@ -1,4 +1,4 @@
-import { combineReducers } from "@reduxjs/toolkit";
+import { combineReducers, Reducer, AnyAction } from "@reduxjs/toolkit";
 
 import authSlice from "./slices/auth.slice";
 import sessionSlice from "./slices/session.slice";
@@ -17,7 +17,7 @@ import testingSlice from "./slices/testing.slice";
 import certificationResultSlice from "./slices/certificationResult.slice";
 import metricsSlice from "./slices/metrics.slice";
 
-const rootReducer = combineReducers({
+const combinedReducer = combineReducers({
   auth: authSlice,
   session: sessionSlice,
   register: registerSlice,
@@ -36,6 +36,11 @@ const rootReducer = combineReducers({
   metrics: metricsSlice,
 });
 
-export type RootState = ReturnType<typeof rootReducer>;
+const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
+  if (action.type === 'auth/logout') state = {} as RootState;
+  return combinedReducer(state, action);
+}
+
+export type RootState = ReturnType<typeof combinedReducer>;
 
 export default rootReducer;
