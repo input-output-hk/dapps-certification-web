@@ -20,6 +20,7 @@ import {
 import "./index.css";
 import { fetchProfileRunHistory, setImpersonate } from "store/slices/profile.slice";
 import HistoryContainer from "pages/testingHistory/components/HistoryContainer";
+import { clearRun } from "store/slices/testing.slice";
 
 const UserDetails = () => {
   // const [data] = useState<any>(UserDetails);
@@ -99,7 +100,8 @@ const UserDetails = () => {
             className="cursor-pointer	text-sm inline-flex items-center bg-white normal-case"
             onClick={async () => {
               await dispatch(setImpersonate({ status: true, id: profile.id }));
-              window.location.pathname = '/'
+              await dispatch(clearRun());
+              window.location.pathname = '/';
             }}
           >
             <TheaterComedyIcon className="mr-2" /> Impersonate

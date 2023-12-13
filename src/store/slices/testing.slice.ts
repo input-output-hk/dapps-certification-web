@@ -95,8 +95,8 @@ export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload:
     const newTimelineConfig = processTimeLineConfig(response, timelineConfig);
     const newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks);
 
-    const status = response.data.status;
-    const state = response.data.hasOwnProperty('state') && response.data.state ? response.data.state : null;
+    const status: string = response.data.status;
+    const state: string | null = response.data.hasOwnProperty('state') && response.data.state ? response.data.state : null;
     
     let coverageFile = null;
     let resultData = null;
@@ -158,6 +158,16 @@ export const testingSlice = createSlice({
       ...initialState,
       resetForm: 'commit'
     }),
+    clearRun: (state) => ({
+      ...state,
+      runEnded: false,
+      runState: null,
+      runStatus: null,
+      uuid: null,
+      fetching: false,
+      creating: false,
+      shouldFetchRunStatus: false
+    })
   },
   extraReducers: (builder) => {
     builder
@@ -211,6 +221,6 @@ export const testingSlice = createSlice({
   },
 });
 
-export const { updateForm, resetForm, resetDApp, resetCommit } = testingSlice.actions;
+export const { updateForm, resetForm, resetDApp, resetCommit, clearRun } = testingSlice.actions;
 
 export default testingSlice.reducer;

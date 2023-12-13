@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "store/store";
 import { setImpersonate } from "store/slices/profile.slice";
 import { startListenWalletChanges, stopListenWalletChanges } from "store/slices/walletConnection.slice";
 import ReconnectWallet from "components/ReconnectWallet/ReconnectWallet";
+import { clearRun } from "store/slices/testing.slice";
 
 const Session = lazy(() => import("../pages/session"));
 const Landing = lazy(() => import("../pages/landing"));
@@ -95,6 +96,7 @@ const App = () => {
             onClick={async () => {
               const impersonatedProfile = retainId;
               await dispatch(setImpersonate({ status: false, id: null }));
+              await dispatch(clearRun());
               window.location.pathname = `/support-commands/${impersonatedProfile}`;
             }}
           >

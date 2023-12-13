@@ -5,7 +5,7 @@ import { useConfirm } from "material-ui-confirm";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 
-import { fetchRunStatus } from "store/slices/testing.slice";
+import { fetchRunStatus, clearRun } from "store/slices/testing.slice";
 import { deleteTestHistoryData } from "store/slices/testingHistory.slice";
 
 import { useAppDispatch, useAppSelector } from "store/store";
@@ -63,6 +63,7 @@ const TimelineView: React.FC<Props> = ({ onAbort }) => {
 
   const viewFullReport = () => {
     navigate("/report/" + uuid, { state: { certifiable: true, repo: form?.repoUrl, commitHash: form?.commitHash } });
+    dispatch(clearRun())
   };
 
   const processLatestTestingProgressFromLogs = (response: {status: any}) => {
