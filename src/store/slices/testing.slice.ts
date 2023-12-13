@@ -162,7 +162,7 @@ export const testingSlice = createSlice({
     resetCommit: (state) => ({
       ...initialState,
       resetForm: 'commit'
-    })
+    }),
   },
   extraReducers: (builder) => {
     builder
