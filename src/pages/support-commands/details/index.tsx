@@ -59,6 +59,8 @@ const UserDetails = () => {
         dispatch(clearSuccess());
         clearTimeout(timer)
       }, 5000);
+      // to clear timeout if component unmounts before timeout completes
+      return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detailsError, updateSuccess]);
