@@ -91,7 +91,7 @@ const SupportCommands = () => {
           showEdit
           showDelete={false}
           onEdit={() => {
-            navigate(`/support-commands/${item.id}`);
+            navigate(`/support-commands/${item.id}`, {state: {companyName: item.companyName}});
           }}
           onDelete={() => {
             setOpen(true);
@@ -104,20 +104,20 @@ const SupportCommands = () => {
             <img
               src={
                 item?.profile ||
-                "https://avatars.githubusercontent.com/u/22358125?v=4" // placeholder img
+                "/images/avatar.png" // placeholder img
               }
-              alt={`${item.fullName} profile`}
+              alt={`${item.companyName} profile`}
               height={100}
             />
           </div>
 
           <div className="details pl-7 inline-flex flex-col w-full">
-            <h4 className="m-0">{item.fullName}</h4>
+            <h4 className="m-0">{item.companyName}</h4>
             {/* <span className="text-gray-label">{`${item.id.slice(
               0,
               7
             )}...${item.id.slice(-6)}`}</span> */}
-            <span className="text-gray-label">{item.companyName}</span>
+            <span className="text-gray-label">{item.fullName}</span>
             <span className="text-gray-label">{formatToTitleCase(item.subscription?.tierType)}</span>
           </div>
         </Card>

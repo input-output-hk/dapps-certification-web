@@ -23,8 +23,6 @@ import { fetchCertificationResult } from "store/slices/certificationResult.slice
 
 import "../Certification.css";
 
-import "../Certification.css";
-
 const CertificationResult = () => {
   const dispatch = useAppDispatch();
   const param = useParams<{ uuid: string }>();

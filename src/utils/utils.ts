@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export const exportObjectToJsonFile = (objectData: any, filename: string) => {
     let contentType = "application/json;charset=utf-8;";
     const navigator = window.navigator as any;
@@ -126,3 +128,23 @@ export const getStatusLabel = (status: string) => {
       return "text-lime-600";
   }
 };
+
+export const findCurrentSubscription = (subscriptions: any) => {
+  let currentSubscription = subscriptions.find((sub: any) => sub.status === 'active')
+  if (!currentSubscription) {
+    // find latest subscription by sorting startDate
+    const sortedSubs = [...subscriptions].sort((a: any, b: any) => {
+      if (dayjs(a.startDate).isBefore(dayjs(b.startDate))) {
+        return 1;
+      } else if (dayjs(b.startDate).isBefore(dayjs(a.startDate))) {
+        return -1;
+      } else {
+        return 0;
+      }
+    })
+    if (sortedSubs[0]) {
+      currentSubscription = sortedSubs[0]
+    }
+  }
+  return currentSubscription
+}
