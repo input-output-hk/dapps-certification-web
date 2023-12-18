@@ -12,15 +12,15 @@ import "./index.css";
 const TestHistory = () => {
   const dispatch = useAppDispatch();
 
-  const { impersonate, retainId } = useAppSelector((state) => state.profile);
   const { history, certificates, loading } = useAppSelector(state => state.testingHistory);
 
   useEffect(() => {
-    dispatch(fetchHistory(impersonate ? retainId : null));
+    dispatch(fetchHistory());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onRefreshData = () => {
-    dispatch(fetchHistory(impersonate ? retainId : null));
+    dispatch(fetchHistory());
   }
   
   return (

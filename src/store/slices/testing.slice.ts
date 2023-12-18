@@ -65,12 +65,13 @@ const initialState: TestingState = {
   resetForm: null
 };
 
-export const createTestRun = createAsyncThunk("createTestRun", async (payload: {}, thunkApi) => {
+export const createTestRun = createAsyncThunk("createTestRun", async (payload, thunkApi) => {
   try {
     const form = (thunkApi.getState() as RootState).testing.form!;
     const [, , , owner, repo] = form.repoUrl!.split('/');
     const profile = (thunkApi.getState() as RootState).profile.profile!;
     const githubToken = (thunkApi.getState() as RootState).session.accessToken || undefined;
+    const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
     await thunkApi.dispatch(updateProfile({ data: {
       ...profile, dapp: {
         ...profile.dapp,
@@ -78,9 +79,9 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
         subject: form.subject,
         owner, repo, githubToken
       }
-    }, profileId: payload || null }));
+    } }));
     await thunkApi.dispatch(clearAccessToken({}));
-    const apiUrl = payload ? `/profile/${payload}/run`: '/run';
+    const apiUrl = impersonate ? `/profile/${retainId}/run`: '/run';
     const response = await fetch<string>(thunkApi, { method: 'POST', url: apiUrl, data: form.commitHash }, { useSession: true, useTextPlainClient: true });
     return response.data;
   } catch (e: any) {

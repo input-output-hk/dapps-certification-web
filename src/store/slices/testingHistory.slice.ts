@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "store/rootReducer";
 import { fetch } from "api";
 
 import { processFinishedJson } from "compositions/Timeline/components/TimelineItem/timeline.helper";
@@ -22,9 +23,10 @@ const initialState: TestingHistoryState = {
   certificates: new Map(),
 };
 
-export const fetchHistory = createAsyncThunk("fetchHistory", async (payload: {}, thunkApi) => {
+export const fetchHistory = createAsyncThunk("fetchHistory", async (payload, thunkApi) => {
   try {
-    const apiUrl = payload ? `/profile/${payload}/runs`: '/run';
+    const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
+    const apiUrl = impersonate ? `/profile/${retainId}/runs`: '/run';
     const response = await fetch<Run[]>(thunkApi, { method: 'GET', url: apiUrl });
     return response.data;
   } catch (e: any) {

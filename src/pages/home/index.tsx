@@ -165,10 +165,9 @@ const Home = () => {
   const dispatch = useAppDispatch();
 
   const { history, loading } = useAppSelector((state) => state.testingHistory);
-  const { impersonate, retainId } = useAppSelector((state) => state.profile);
 
   useEffect(() => {
-    dispatch(fetchHistory(impersonate ? retainId : null));
+    dispatch(fetchHistory());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

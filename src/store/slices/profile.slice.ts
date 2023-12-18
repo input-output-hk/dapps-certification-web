@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "store/rootReducer";
 import { fetch } from "api";
 import type { Run } from 'components/CreateCertificate/CreateCertificate';
 
@@ -84,9 +85,10 @@ const initialState: ProfileState = {
   retainId: null
 };
 
-export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {}, thunkApi) => {
+export const fetchProfile = createAsyncThunk('fetchProfile', async (payload, thunkApi) => {
   try {
-    const response = await fetch<UserProfile>(thunkApi, { method: 'GET', url: `/profile/${payload || 'current'}` });
+    const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
+    const response = await fetch<UserProfile>(thunkApi, { method: 'GET', url: `/profile/${impersonate ? retainId : 'current'}` });
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {
@@ -94,9 +96,10 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload: {},
   }
 });
 
-export const updateProfile = createAsyncThunk('updateProfile', async (payload: {data: UserProfile, profileId: any}, thunkApi) => {
+export const updateProfile = createAsyncThunk('updateProfile', async (payload: {data: UserProfile}, thunkApi) => {
   try {
-    const response = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: `/profile/${payload.profileId || 'current'}`, data: payload.data });
+    const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
+    const response = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: `/profile/${impersonate ? retainId : 'current'}`, data: payload.data });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

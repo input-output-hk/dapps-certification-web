@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { CircularProgress, Typography, Fab } from "@mui/material";
 import ChatIcon from "@mui/icons-material/QuestionAnswer";
 import CloseIcon from "@mui/icons-material/Close";
@@ -50,7 +50,8 @@ const CustomGPT = () => {
 
 const App = () => {
   const dispatch = useAppDispatch();
-
+  const navigate = useNavigate();
+  
   const { impersonate, selectedUser, retainId } = useAppSelector(
     (state) => state.profile
   );
@@ -97,7 +98,7 @@ const App = () => {
               const impersonatedProfile = retainId;
               await dispatch(setImpersonate({ status: false, id: null }));
               await dispatch(clearRun());
-              window.location.pathname = `/support-commands/${impersonatedProfile}`;
+              navigate(`/support-commands/${impersonatedProfile}`);
             }}
           >
             <StopCircleIcon className="text-red-300" fontSize="large" />
