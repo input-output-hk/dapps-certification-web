@@ -24,6 +24,46 @@ export interface UserProfile {
   role: string;
 }
 
+export interface IProfile {
+  address: string;
+  companyName: string;
+  contactEmail: string;
+  dapp: {
+    githubToken: string;
+    name: string;
+    owner: string;
+    repo: string;
+    subject: string;
+    version: string
+  };
+  email: string;
+  fullName: string;
+  id: number;
+  linkedin: string;
+  role: "no-role" | "support" | "admin";
+  runStats: {
+    aborted: number;
+    certified: number;
+    failed: number;
+    queued: number;
+    readyForCertification: number;
+    successful: number;
+    total: number
+  },
+  subscription: {
+    adaUsdPrice: number;
+    endDate: string;
+    id: number;
+    name: string;
+    price: number;
+    startDate: string;
+    status: "inactive" | "active" | "pending";
+    tierType: "developer" | "auditor";
+  },
+  twitter: string;
+  website: string;
+}
+
 interface ProfileState {
   profile: UserProfile | null;
   errorMessage: string | null;
@@ -31,7 +71,7 @@ interface ProfileState {
   success: boolean;
   selectedUser: any;
   userSubscription: any;
-  allUsers: any;
+  allUsers: IProfile[] | null;
   loadingDetails: boolean;
   loadingSubDetails: boolean;
   detailsSuccess: boolean;
@@ -42,7 +82,7 @@ interface ProfileState {
   loadingHistory: boolean;
   runHistory: Run[];
   impersonate: boolean;
-  retainId: any;
+  retainId: number | null;
 }
 
 export interface IUpdateProfile {

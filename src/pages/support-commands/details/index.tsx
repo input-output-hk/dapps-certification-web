@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "store/store";
 import { findCurrentSubscription, formatToTitleCase, getStatusLabel } from "utils/utils";
@@ -22,6 +22,20 @@ import { fetchProfileRunHistory, setImpersonate } from "store/slices/profile.sli
 import HistoryContainer from "pages/testingHistory/components/HistoryContainer";
 import { clearRun } from "store/slices/testing.slice";
 
+interface ISubscription {
+  adaUsdPrice: number;
+  endDate: string;
+  features: {id: string, name: string}[];
+  id: string;
+  name: string;
+  price: number;
+  profileId: number;
+  status: "active" | "inactive" | "pending";
+  startDate: string;
+  tierId: number;
+  type: "developer" | "auditor"
+}
+
 const UserDetails = () => {
   // const [data] = useState<any>(UserDetails);
   const {
@@ -36,18 +50,18 @@ const UserDetails = () => {
     impersonate
   } = useAppSelector((state) => state.profile);
   const dispatch = useAppDispatch();
+  const param = useParams<{ id: string }>();
   const { state } = useLocation();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [showToast, setShowToast] = useState(false);
-  const [currentSubscription, setCurrentSubscription] = useState<any>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<ISubscription | null>(null);
 
   // Fetch user profile details if not already available
   useEffect(() => {
-    const currentProfileId = window.location.href.split("/").pop()
-    dispatch(fetchProfileDetails(currentProfileId));
-    dispatch(fetchProfileSubscriptionDetails(currentProfileId));
-    dispatch(fetchProfileRunHistory(currentProfileId));
+    dispatch(fetchProfileDetails(param.id));
+    dispatch(fetchProfileSubscriptionDetails(param.id));
+    dispatch(fetchProfileRunHistory(param.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

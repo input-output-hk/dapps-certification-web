@@ -13,9 +13,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
 interface Props {
-  id: string;
+  id: number | null;
   show: boolean;
-  onClose: (id?: string) => void;
+  onClose: (id?: number | null) => void;
 }
 
 const DeleteUserModal = (props: Props) => {

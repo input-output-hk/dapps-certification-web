@@ -17,7 +17,7 @@ export const Card = (props: any) => {
       )}
       key={props.id}
     >
-      <div className="absolute top-4 right-4 inline-flex text-gray-secondary icons">
+      <div className="absolute top-4 right-4 inline-flex text-gray-secondary icons !top-[6px]">
         {props.showEdit ? (
           <EditIcon
             className="mr-4 hover:text-gray-600 cursor-pointer"

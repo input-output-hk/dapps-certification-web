@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 import SearchIcon from "@mui/icons-material/Search";
 
-import { fetchAllProfileDetails } from "store/slices/profile.slice";
+import { fetchAllProfileDetails, IProfile } from "store/slices/profile.slice";
 import { useAppDispatch, useAppSelector } from "store/store";
 import { formatToTitleCase } from "utils/utils";
 
@@ -21,12 +21,12 @@ import { Card } from "./components/Card";
 import "./index.css";
 
 const SupportCommands = () => {
-  const [items, setItems] = useState<any>([]);
+  const [items, setItems] = useState<IProfile[]>([]);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchField, setSearchField] = useState("");
-  const [selectedId, setId] = useState("");
+  const [selectedId, setId] = useState<number | null>(null);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { allUsers, loadingDetails, detailsSuccess } = useAppSelector(
@@ -36,7 +36,7 @@ const SupportCommands = () => {
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 10;
 
-  const filteredPersons = (details: any[]) =>
+  const filteredPersons = (details: IProfile[]) =>
     details.filter((person: { fullName: string; companyName: string }) => {
       return (
         person?.fullName?.toLowerCase().includes(searchField.toLowerCase()) ||
@@ -82,9 +82,9 @@ const SupportCommands = () => {
     rootMargin: "0px 0px 400px 0px",
   });
 
-  const buildCards = (items: any, showText = "") =>
+  const buildCards = (items: IProfile[], showText = "") =>
     items.length ? (
-      items.map((item: any, index: number) => (
+      items.map((item: IProfile, index: number) => (
         <Card
           key={`card-${index}`}
           index={index}
@@ -103,7 +103,6 @@ const SupportCommands = () => {
           <div className="img">
             <img
               src={
-                item?.profile ||
                 "/images/avatar.png" // placeholder img
               }
               alt={`${item.companyName} profile`}
