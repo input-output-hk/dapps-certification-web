@@ -51,7 +51,7 @@ const AuditorRunTestForm: React.FC = () => {
 
   const [isCustomizedTestingMode, setIsCustomizedTestingMode] = useState<boolean>(false)
   const [initialized, setInitialized] = useState<boolean>(false);
-  const [showField, setShowField] = useState(true);
+  const [showAdvancedCountFields, setShowAdvancedCountFields] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [repoUrl, setRepoUrl] = useState<string|null>(null);
   const githubAccessCode = searchParams.get('code');
@@ -75,9 +75,9 @@ const form = useForm<TestingForm>({
     defaultValues: getFormDefaultValues(formValues, profile, githubAccessCode, uuid)
   });
 
-  const setAdvancedTestCount = () => {
+  const setAdvancedTestCount = (overrideValue?: number) => {
     ADVANCED_TEST_MODE_FIELDS.forEach((key: { name: any; }) =>
-      form.setValue(key.name as any, DEFAULT_TESTS_COUNT)
+      form.setValue(key.name as any, (overrideValue !== null || overrideValue !== undefined) ? overrideValue : DEFAULT_TESTS_COUNT)
     );
   };
 
@@ -201,7 +201,7 @@ const form = useForm<TestingForm>({
   };
 
   const formHandler = (formData: TestingForm) => {
-    dispatch(createTestRun({}));
+    dispatch(createTestRun({isCustomizedTestingMode: isCustomizedTestingMode, isAdvancedCount: !showAdvancedCountFields}));
   };
 
   const onTestingModeToggle = (isChecked: boolean) => {
@@ -209,9 +209,15 @@ const form = useForm<TestingForm>({
     isChecked
       ? setAdvancedTestCount()
       : form.setValue("numberOfTests", DEFAULT_TESTS_COUNT);
-    setShowField(true);
+    setShowAdvancedCountFields(true);
   };
 
+  const onExpandAdvancedFields = (hide: boolean) => {
+    setShowAdvancedCountFields(hide)
+    if (!hide) {
+      setAdvancedTestCount(parseInt(form.getValues().numberOfTests))
+    }
+  }
   return (
     <div>
       <form onSubmit={form.handleSubmit(formHandler)} style={{"marginBottom": "20px"}}>
@@ -253,7 +259,7 @@ const form = useForm<TestingForm>({
             />
           </Box>
           <CustomSwitch onToggle={onTestingModeToggle} />
-          <div className="relative input-wrapper" hidden={!showField}>
+          <div className="relative input-wrapper" hidden={!showAdvancedCountFields}>
             <Input
               noGutter={true}
               field={NumberOfTestsField}
@@ -266,7 +272,7 @@ const form = useForm<TestingForm>({
           </div>
 
           {isCustomizedTestingMode ? (
-            <Accordion className="shadow-none mt-0" onChange={(_, expanded) =>setShowField(!expanded)}>
+            <Accordion className="shadow-none mt-0" onChange={(_, expanded) => onExpandAdvancedFields(!expanded)}>
               <AccordionSummary
                 expandIcon={
                   <ExpandMoreIcon className="text-slate-highlighted" />

@@ -17,12 +17,13 @@ export interface TestingForm {
   name?: string;
   version?: string;
   subject?: string;
-  numberOfTests?: number;
-  numberOfLockedFunds?: number;
-  numberOfLockedFundsLight?: number;
-  crashTolerance?: number;
-  whitelist?: number;
-  dlTests?: number;
+  numberOfTests?: any;
+  numCrashTolerance?: number;
+  numWhiteList?: number;
+  numDLTests?: number;
+  numStandardProperty?: number;
+  numNoLockedFunds?: number;
+  numNoLockedFundsLight?: number;
 }
 
 export interface RunStatus {
@@ -31,6 +32,13 @@ export interface RunStatus {
   result: any;
   progress: any;
   plan: any;
+}
+
+interface CustomizedRunPayload {
+  certArgs: {
+    certOptNumTests: any
+  },
+  commitOrBranch: string | undefined
 }
 
 interface TestingState {
@@ -71,7 +79,15 @@ const initialState: TestingState = {
   resetForm: null
 };
 
-export const createTestRun = createAsyncThunk("createTestRun", async (payload: {}, thunkApi) => {
+const processIntValue = (value: any) => {
+  if (isNaN(parseInt(value))) {
+    return 0;
+  } else {
+    return parseInt(value);
+  }
+}
+
+export const createTestRun = createAsyncThunk("createTestRun", async (payload: {isCustomizedTestingMode: boolean, isAdvancedCount: boolean}, thunkApi) => {
   try {
     const form = (thunkApi.getState() as RootState).testing.form!;
     const [, , , owner, repo] = form.repoUrl!.split('/');
@@ -86,7 +102,27 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
       }
     }));
     await thunkApi.dispatch(clearAccessToken({}));
-    const response = await fetch<string>(thunkApi, { method: 'POST', url: '/run', data: form.commitHash }, { useSession: true, useTextPlainClient: true });
+
+    let payloadData: string | CustomizedRunPayload | undefined = form.commitHash;
+    let useTextPlainClient = true;
+    if (payload.isCustomizedTestingMode) {
+      const numOfTests = processIntValue(form.numberOfTests)
+      payloadData = {
+        certArgs: {
+          certOptNumTests: {
+            numCrashTolerance: payload.isAdvancedCount ? processIntValue(form.numCrashTolerance) : numOfTests,
+            numWhiteList: payload.isAdvancedCount ? processIntValue(form.numWhiteList) : numOfTests,
+            numDLTests: payload.isAdvancedCount ? processIntValue(form.numDLTests) : numOfTests,
+            numStandardProperty: payload.isAdvancedCount ? processIntValue(form.numStandardProperty) : numOfTests,
+            numNoLockedFunds: payload.isAdvancedCount ? processIntValue(form.numNoLockedFunds) : numOfTests,
+            numNoLockedFundsLight: payload.isAdvancedCount ? processIntValue(form.numNoLockedFundsLight) : numOfTests
+          }
+        },
+        commitOrBranch: form.commitHash
+      }
+      useTextPlainClient = false;
+    }
+    const response: any = await fetch<string>(thunkApi, { method: 'POST', url: '/run', data: payloadData }, { useSession: true, useTextPlainClient: useTextPlainClient });
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);

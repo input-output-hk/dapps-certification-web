@@ -53,35 +53,41 @@ export const DEFAULT_TESTS_COUNT = 100;
 
 export const ADVANCED_TEST_MODE_FIELDS = [
   {
+    label: "Crash Tolerance",
+    name: "numCrashTolerance",
+    type: FieldType.NumberOfTests,
+    required: false
+  },
+  {
+    label: "DL Tests",
+    name: "numDLTests",
+    type: FieldType.NumberOfTests,
+    required: false,
+  },
+  {
     label: "No Locked Funds",
-    name: "numberOfLockedFunds",
+    name: "numNoLockedFunds",
     type: FieldType.NumberOfTests,
     required: false,
   },
   {
     label: "No Locked Funds Light",
-    name: "numberOfLockedFundsLight",
+    name: "numNoLockedFundsLight",
     type: FieldType.NumberOfTests,
     required: false,
   },
   {
-    label: "Crash Tolerance",
-    name: "crashTolerance",
+    label: "Standard Property",
+    name: "numStandardProperty",
     type: FieldType.NumberOfTests,
     required: false,
   },
   {
     label: "Whitelist",
-    name: "whitelist",
+    name: "numWhiteList",
     type: FieldType.NumberOfTests,
     required: false,
-  },
-  {
-    label: "DL Tests",
-    name: "dlTests",
-    type: FieldType.NumberOfTests,
-    required: false,
-  },
+  }
 ];
 
 export const resolver: Resolver<TestingForm> = buildFormResolver<TestingForm>([
