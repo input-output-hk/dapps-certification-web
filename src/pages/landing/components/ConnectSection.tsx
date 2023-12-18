@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { connectWallet } from "store/slices/walletConnection.slice";
+import { showSnackbar, clearSnackbar } from "store/slices/snackbar.slice";
 
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, IconButton, CircularProgress, Snackbar, Alert, Grid } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -63,7 +64,6 @@ const ConnectSection = () => {
   const dispatch = useAppDispatch();
   const { loading, errorMessage, errorRetry, activeWallets } = useAppSelector(state => state.walletConnection);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [showError, setShowError] = useState<boolean>(false);
   const [walletName, setWalletName] = useState<string|null>(null);
 
   const handleSelectWallet = (walletName: string) => {
@@ -72,18 +72,25 @@ const ConnectSection = () => {
   }
 
   const handleRetry = () => {
-    setShowError(false);
+    dispatch(clearSnackbar());
     dispatch(connectWallet({ walletName: walletName! }));
   }
 
   const handleCloseSnackbar = () => {
-    setShowError(false);
     setWalletName(null);
   }
 
   useEffect(() => {
     if (errorMessage !== null) {
-      setShowError(true);
+      dispatch(showSnackbar({
+        message: errorMessage,
+        severity: 'error',
+        onClose: handleCloseSnackbar,
+        action: errorRetry ? {
+          label: 'Retry',
+          callback: handleRetry
+        } : null
+      }));
       setShowModal(false);
     }
   }, [errorMessage]);
@@ -131,29 +138,6 @@ const ConnectSection = () => {
           />
         </DialogContent>
       </Dialog>
-
-      <Snackbar
-        open={showError}
-        autoHideDuration={5000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert
-          severity="error" variant="filled"
-          onClose={handleCloseSnackbar}
-          action={errorRetry && (
-            <Button
-              className="normal-case"
-              color="inherit" size="small" variant="outlined"
-              onClick={handleRetry}
-            >
-              Retry
-            </Button>
-          )}
-        >
-          {errorMessage}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

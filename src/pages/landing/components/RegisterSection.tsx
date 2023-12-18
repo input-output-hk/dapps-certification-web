@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useInterval } from "usehooks-ts";
 import { useForm } from "react-hook-form";
 
-import { Container, Box, Typography, Button, TextField, Snackbar, Alert } from "@mui/material";
+import { Container, Box, Typography, Button, TextField } from "@mui/material";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { fetchPrice } from "store/slices/price.slice";
+import { showSnackbar } from "store/slices/snackbar.slice";
 import type { Tier } from "store/slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
 
@@ -23,12 +24,16 @@ const RegisterSection = (props: Props) => {
   const { price } = useAppSelector((state) => state.price);
   const { processing, errorMessage } = useAppSelector((state) => state.register);
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
-  const [showError, setShowError] = useState<boolean>(false);
   const [count, setCount] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
-    if (errorMessage !== null) setShowError(true);
+    if (errorMessage !== null) {
+      dispatch(showSnackbar({
+        message: errorMessage,
+        severity: 'error'
+      }));
+    }
   }, [errorMessage]);
 
   useEffect(() => {
@@ -148,20 +153,6 @@ const RegisterSection = (props: Props) => {
           </form>
         </Container>
       </Box>
-
-      <Snackbar
-        open={showError}
-        autoHideDuration={5000}
-        onClose={() => setShowError(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert
-          severity="error" variant="filled"
-          onClose={() => setShowError(false)}
-        >
-          {errorMessage}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

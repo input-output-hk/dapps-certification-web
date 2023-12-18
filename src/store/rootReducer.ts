@@ -15,6 +15,7 @@ import reportUploadSlice from "./slices/reportUpload.slice";
 import certificateSlice from "./slices/certificate.slice";
 import testingSlice from "./slices/testing.slice";
 import certificationResultSlice from "./slices/certificationResult.slice";
+import snackbarSlice from "./slices/snackbar.slice";
 
 const combinedReducer = combineReducers({
   auth: authSlice,
@@ -31,7 +32,8 @@ const combinedReducer = combineReducers({
   reportUpload: reportUploadSlice,
   certificate: certificateSlice,
   testing: testingSlice,
-  certificationResult: certificationResultSlice
+  certificationResult: certificationResultSlice,
+  snackbar: snackbarSlice,
 });
 
 const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
