@@ -27,7 +27,7 @@ const LogsView: FC<{
     setShowLogs(true);
     const timeout = setTimeout(() => {
       clearTimeout(timeout);
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" }); // scroll to bottom
+      bottomRef.current?.scrollTo({ behavior: "smooth" }); // scroll to bottom
     }, 2);
   };
 
@@ -47,7 +47,7 @@ const LogsView: FC<{
         }
       }
     }
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" }); // scroll to bottom
+    bottomRef.current?.scrollTo({ behavior: "smooth" }); // scroll to bottom
   }, [logs, endPolling, latestTestingProgress]);
 
   useEffect(() => {
