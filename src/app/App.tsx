@@ -6,6 +6,8 @@ import { useAppDispatch, useAppSelector } from "store/store";
 import ChatIcon from '@mui/icons-material/QuestionAnswer';
 import CloseIcon from '@mui/icons-material/Close';
 import { startListenWalletChanges, stopListenWalletChanges } from "store/slices/walletConnection.slice";
+
+import Snackbar from "components/Snackbar";
 import ReconnectWallet from "components/ReconnectWallet/ReconnectWallet";
 
 const Session = lazy(() => import("../pages/session"));
@@ -74,6 +76,7 @@ const App = () => {
         </Routes>
       </Suspense>
       <CustomGPT />
+      <Snackbar />
       <ReconnectWallet />
     </>
   );
