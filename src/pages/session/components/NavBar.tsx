@@ -82,30 +82,29 @@ const NavBar = () => {
         </MenuItem>
 
         {(role === "admin" || role === "support") && !impersonate ?
-          <>
-            <Divider className="border-slate-textLight" />
+          <Divider className="border-slate-textLight" />
+        : null}
+            
 
-            {role === 'admin' ? 
-              (<MenuItem className={getItemClassName('/metrics')} onClick={() => navigate('/metrics')}>
-                <ListItemIcon><MetricsIcon className={getIconClassName('/metrics')} /></ListItemIcon>
-                <ListItemText className="text-white font-medium">Metrics</ListItemText>
-              </MenuItem>)
-            : null }
+        {role === 'admin' && !impersonate ? 
+          (<MenuItem className={getItemClassName('/metrics')} onClick={() => navigate('/metrics')}>
+            <ListItemIcon><MetricsIcon className={getIconClassName('/metrics')} /></ListItemIcon>
+            <ListItemText className="text-white font-medium">Metrics</ListItemText>
+          </MenuItem>)
+        : null }
 
-            {(role === "admin" || role === "support") ? 
-              (<MenuItem
-                className={getItemClassName("/support-commands")}
-                onClick={() => navigate("/support-commands")}
-              >
-                <ListItemIcon>
-                  <Support className="nav-bar-icon" />
-                </ListItemIcon>
-                <ListItemText className="text-white font-medium">
-                  Support Commands
-                </ListItemText>
-              </MenuItem>)
-            : null}
-          </>
+        {(role === "admin" || role === "support") && !impersonate ? 
+          (<MenuItem
+            className={getItemClassName("/support-commands")}
+            onClick={() => navigate("/support-commands")}
+          >
+            <ListItemIcon>
+              <Support className="nav-bar-icon" />
+            </ListItemIcon>
+            <ListItemText className="text-white font-medium">
+              Support Commands
+            </ListItemText>
+          </MenuItem>)
         : null}
 
       </MenuList>
