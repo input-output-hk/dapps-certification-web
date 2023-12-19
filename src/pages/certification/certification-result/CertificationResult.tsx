@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 
-import { Snackbar, Alert, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import FileCoverageContainer from "../components/FileCoverageContainer";
 import CreateCertificate from "components/CreateCertificate/CreateCertificate";
 import LogsView from "components/LogsView/LogsView";
@@ -20,6 +20,7 @@ import ProgressCard from "components/ProgressCard/ProgressCard";
 import FullReportTable from "./FullReportTable";
 import { calculateCurrentProgress, calculateExpectedProgress, CertificationTasks, getProgressCardInfo, ICertificationTask, isAnyTaskFailure, PlanObj } from "../Certification.helper";
 import { fetchCertificationResult } from "store/slices/certificationResult.slice";
+import { showSnackbar } from "store/slices/snackbar.slice";
 
 import "../Certification.css";
 
@@ -30,7 +31,6 @@ const CertificationResult = () => {
   const [coverageFile, setCoverageFile] = useState("");
   const [resultData, setResultData] = useState<any>({});
   const [unitTestSuccess, setUnitTestSuccess] = useState(true); // assuming unit tests will pass
-  const [errorToast, setErrorToast] = useState(false);
   const [timelineConfig, setTimelineConfig] = useState(TIMELINE_CONFIG);
 
   const testTaskProgress = useRef<PlanObj[]>([])
@@ -86,12 +86,10 @@ const CertificationResult = () => {
   }, [param.uuid]);
 
   const handleErrorScenario = useCallback(() => {
-    // show an api error toast
-    setErrorToast(true);
-    const timeout = setTimeout(() => {
-      clearTimeout(timeout);
-      setErrorToast(false);
-    }, 5000); // hide after 5 seconds
+    dispatch(showSnackbar({
+      message: 'Something wrong occurred. Please try again.',
+      severity: 'error', position: 'bottom'
+    }));
     setTimelineConfig(TIMELINE_CONFIG);
   }, []);
 
@@ -147,12 +145,6 @@ const CertificationResult = () => {
         </div>
         
       </div>
-
-      <Snackbar open={errorToast} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity="error" variant="filled">
-          Something wrong occurred. Please try again.
-        </Alert>
-      </Snackbar>
     </>
   );
 };

@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "store/rootReducer";
 import { fetch } from "api";
 import type { Run } from 'components/CreateCertificate/CreateCertificate';
+import { setRole } from "./session.slice";
 
 export interface UserProfile {
   address: string;
@@ -13,6 +14,7 @@ export interface UserProfile {
   linkedin: string | null;
   twitter: string | null;
   website: string | null;
+  role: string | null;
   dapp: {
     name: string;
     owner: string;
@@ -21,7 +23,6 @@ export interface UserProfile {
     subject?: string;
     githubToken?: string;
   } | null;
-  role: string;
 }
 
 export interface IProfile {
@@ -130,6 +131,7 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload, thu
     const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
     const response = await fetch<UserProfile>(thunkApi, { method: 'GET', url: `/profile/${impersonate ? retainId : 'current'}` });
     if (response.status !== 200) throw new Error();
+    await thunkApi.dispatch(setRole({ role: response.data.role }));
     return response.data;
   } catch (error) {
     return thunkApi.rejectWithValue(null);
