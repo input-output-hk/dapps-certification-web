@@ -33,7 +33,7 @@ const WalletSelection = (props: {
       {networkEnvVar !== '1' && ( 
         <Grid item xs={12}>
           <Alert variant="outlined" severity="warning">
-            Your wallet is connected to a Testnet which is expected while the tool is in Beta. Please ensure that you are connected to the <strong>Preprod</strong> network.
+            This tool is in Beta, please ensure that you are connected to the <strong>Preprod</strong> network.
           </Alert>
         </Grid>
       )}
