@@ -25,7 +25,7 @@ interface RunTimesChartProps {
 
 const RunTimesChart = (props: RunTimesChartProps) => (
   <Box className="pl-0 pr-4 pt-0 pb-1">
-    <ResponsiveContainer width="100%" aspect={4.0/1.5}>
+    <ResponsiveContainer width="100%" aspect={4.0/1.5} debounce={1}>
       <AreaChart data={props.data}>
         <defs>
           <linearGradient id="avgColor" x1="0" y1="0" x2="0" y2="1">
