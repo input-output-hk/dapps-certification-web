@@ -22,6 +22,7 @@ interface Props {
 }
 
 const UserDetailsModal = (props: Props) => {
+  const { role } = useAppSelector(state => state.session);
   const { loadingDetails: loading, selectedUser } = useAppSelector((state) => state.profile);
   const dispatch = useAppDispatch();
   const defaultValues = selectedUser
@@ -53,6 +54,11 @@ const UserDetailsModal = (props: Props) => {
     props.onClose();
   };
 
+  const getProfileEditableFields = () => {
+    // anyone other than role="admin" cannot edit "role", hence excluded from edit form
+    return role === "admin" ?  userDetailsFields : userDetailsFields.filter(field => field.name !== "role")
+  }
+
   return (
     <Dialog open={props.show}>
       <DialogTitle className="inline-flex items-center">
@@ -69,7 +75,7 @@ const UserDetailsModal = (props: Props) => {
         )} */}
 
           <InputGroup
-            fields={userDetailsFields}
+            fields={getProfileEditableFields()}
             formState={formState}
             register={register}
             getFieldState={getFieldState}

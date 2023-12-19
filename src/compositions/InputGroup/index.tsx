@@ -25,7 +25,7 @@ const InputGroup = (props: InputGroupProps) => {
           register={props.register}
           getFieldState={props.getFieldState}
           getValues={props.getValues}
-          disabled={field?.disabled ||props.disabled}
+          disabled={field?.disabled || props.disabled}
         />
       ))}
     </Container>

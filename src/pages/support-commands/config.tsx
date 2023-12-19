@@ -50,7 +50,7 @@ export const userDetailsFields: Field[] = [
         value: "admin",
       },
     ],
-    required: true,
+    required: true
   },
   {
     label: "Twitter",
