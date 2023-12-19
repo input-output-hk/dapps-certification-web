@@ -24,8 +24,6 @@ import { showSnackbar } from "store/slices/snackbar.slice";
 
 import "../Certification.css";
 
-import "../Certification.css";
-
 const CertificationResult = () => {
   const dispatch = useAppDispatch();
   const param = useParams<{ uuid: string }>();
@@ -105,7 +103,7 @@ const CertificationResult = () => {
     <>
       <div className="content-area">
         <div className="content-area-title-section pb-7">
-          <h2>
+          <h2 className="break-all">
             {(state?.repo && state?.commitHash) ?
               state.repo + ": " + ellipsizeString(state.commitHash, 7, 3)
               : (param?.uuid ? "Result: " + ellipsizeString(param?.uuid, 5, 3) : "Result")}

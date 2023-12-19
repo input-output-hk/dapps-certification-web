@@ -27,6 +27,7 @@ export interface Field {
   placeholder?: string;
   tooltip?: string;
   required?: boolean;
+  disabled?: boolean;
   textArea?: boolean;
   options?: {
     label: string;

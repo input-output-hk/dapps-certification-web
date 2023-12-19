@@ -1,14 +1,17 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { CircularProgress, Typography, Fab } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "store/store";
+import ChatIcon from "@mui/icons-material/QuestionAnswer";
+import CloseIcon from "@mui/icons-material/Close";
+import StopCircleIcon from "@mui/icons-material/StopCircle";
 
-import ChatIcon from '@mui/icons-material/QuestionAnswer';
-import CloseIcon from '@mui/icons-material/Close';
+import { useAppDispatch, useAppSelector } from "store/store";
+import { setImpersonate } from "store/slices/profile.slice";
 import { startListenWalletChanges, stopListenWalletChanges } from "store/slices/walletConnection.slice";
 
 import Snackbar from "components/Snackbar";
 import ReconnectWallet from "components/ReconnectWallet/ReconnectWallet";
+import { clearRun } from "store/slices/testing.slice";
 
 const Session = lazy(() => import("../pages/session"));
 const Landing = lazy(() => import("../pages/landing"));
@@ -19,6 +22,8 @@ const Profile = lazy(() => import("../pages/profile"))
 const Certification = lazy(() => import("../pages/certification/Certification"));
 const CertificationResult = lazy(() => import("../pages/certification/certification-result/CertificationResult"));
 const Metrics = lazy(() => import("../pages/metrics"));
+const SupportCommands = lazy(() => import("pages/support-commands"));
+const SupportCommandDetails = lazy(() => import("pages/support-commands/details"));
 
 const ComingSoon = () => (
   <Typography>Coming soon...</Typography>
@@ -27,6 +32,39 @@ const ComingSoon = () => (
 const Support = () => (
   <Typography><p>Contact us on your dedicated Slack channel for support or questions.</p></Typography>
 )
+
+const ImpersonationBanner = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  
+  const { selectedUser, retainId } = useAppSelector(
+    (state) => state.profile
+  );
+  if (!selectedUser) {
+    (async () => {
+      await dispatch(setImpersonate({ status: false, id: null }));
+      await dispatch(clearRun());
+    })();
+    return null;
+  }
+  return (
+    <div className="inline-flex justify-between fixed top-0 left-0 w-full bg-[#000000bd] z-[10000] p-2 text-slate-300 text-center font-bold">
+      <span className="self-center">Impersonating: {selectedUser.fullName}</span>
+      <span
+        className="inline-flex items-center hover:cursor-pointer hover:underline"
+        title="Stop Impersonating"
+        onClick={async () => {
+          const impersonatedProfile = retainId;
+          await dispatch(setImpersonate({ status: false, id: null }));
+          await dispatch(clearRun());
+          navigate(`/support-commands/${impersonatedProfile}`);
+        }}
+      >
+        <StopCircleIcon className="text-red-300" fontSize="large" />
+      </span>
+    </div>
+  )
+}
 
 const CustomGPT = () => {
   const [show, setShow] = useState<boolean>(false);
@@ -44,10 +82,15 @@ const CustomGPT = () => {
       {show ? <CloseIcon /> : <ChatIcon />}
     </Fab>
   );
-}
+};
 
 const App = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  
+  const { impersonate } = useAppSelector(
+    (state) => state.profile
+  );
   const { wallet } = useAppSelector((state) => state.walletConnection);
 
   useEffect(() => {
@@ -74,10 +117,16 @@ const App = () => {
             <Route path="audit-report-upload" element={<ReportUpload />} />
             <Route path="/report/:uuid" element={<CertificationResult />} />
             <Route path="metrics" element={<Metrics />} />
+            <Route path="/support-commands" element={<SupportCommands />} />
+            <Route path="/support-commands/:id" element={<SupportCommandDetails />} />
           </Route>
         </Routes>
       </Suspense>
       <CustomGPT />
+
+      {/* Impersonate banner */}
+      {impersonate ? <ImpersonationBanner /> : null}
+      
       <Snackbar />
       <ReconnectWallet />
     </>

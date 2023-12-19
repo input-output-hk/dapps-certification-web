@@ -164,9 +164,13 @@ const Home = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { history, loading } = useAppSelector(state => state.testingHistory);
+  const { history, loading } = useAppSelector((state) => state.testingHistory);
 
-  useEffect(() => { dispatch(fetchHistory({})) }, []);
+  useEffect(() => {
+    dispatch(fetchHistory());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   return (
     <Container maxWidth="xl" className="pt-8">

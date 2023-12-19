@@ -167,7 +167,7 @@ const AuditorRunTestForm: React.FC = () => {
   };
 
   const formHandler = (formData: TestingForm) => {
-    dispatch(createTestRun({}));
+    dispatch(createTestRun());
   };
 
   return (
