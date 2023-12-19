@@ -15,6 +15,7 @@ import reportUploadSlice from "./slices/reportUpload.slice";
 import certificateSlice from "./slices/certificate.slice";
 import testingSlice from "./slices/testing.slice";
 import certificationResultSlice from "./slices/certificationResult.slice";
+import metricsSlice from "./slices/metrics.slice";
 import snackbarSlice from "./slices/snackbar.slice";
 
 const combinedReducer = combineReducers({
@@ -33,6 +34,7 @@ const combinedReducer = combineReducers({
   certificate: certificateSlice,
   testing: testingSlice,
   certificationResult: certificationResultSlice,
+  metrics: metricsSlice,
   snackbar: snackbarSlice,
 });
 

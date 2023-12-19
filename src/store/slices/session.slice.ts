@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface SessionState {
-  authToken: string|null;
-  accessToken: string|null;
-  networkId: number|null;
-  walletAddress: string|null;
+  authToken: string | null;
+  accessToken: string | null;
+  networkId: number | null;
+  walletAddress: string | null;
+  role: string | null;
 }
 
 const initialState: SessionState = {
@@ -12,6 +13,7 @@ const initialState: SessionState = {
   accessToken: null,
   networkId: null,
   walletAddress: null,
+  role: null,
 };
 
 export const sessionSlice = createSlice({
@@ -28,6 +30,10 @@ export const sessionSlice = createSlice({
       ...state,
       accessToken: actions.payload.accessToken,
     }),
+    setRole: (state, actions) => ({
+      ...state,
+      role: actions.payload.role,
+    }),
     clearAccessToken: (state, actions) => ({
       ...state,
       accessToken: null,
@@ -35,6 +41,6 @@ export const sessionSlice = createSlice({
   }
 });
 
-export const { setSession, setAccessToken, clearAccessToken } = sessionSlice.actions;
+export const { setSession, setAccessToken, setRole, clearAccessToken } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

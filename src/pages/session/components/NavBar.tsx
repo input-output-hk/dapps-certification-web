@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, Chip } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, Chip, Divider } from "@mui/material";
 
 import HomeIcon from '@mui/icons-material/HomeOutlined';
 import TestingIcon from '@mui/icons-material/BarChartOutlined';
@@ -10,6 +10,7 @@ import ReportUploadIcon from '@mui/icons-material/ReceiptOutlined';
 import UserProfileIcon from '@mui/icons-material/PersonOutlined';
 import SupportIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import DocumentationIcon from '@mui/icons-material/SupportOutlined';
+import MetricsIcon from '@mui/icons-material/TimelineOutlined';
 
 import { useAppSelector } from "store/store";
 
@@ -19,6 +20,7 @@ const NavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { role } = useAppSelector(state => state.session);
   const { runStatus, runState } = useAppSelector(state => state.testing);
 
   const getItemClassName = (pathname: string) => location.pathname !== pathname ? 'nav-bar-item' : 'nav-bar-item-active';
@@ -66,6 +68,15 @@ const NavBar = () => {
           <ListItemIcon><DocumentationIcon className="nav-bar-icon" /></ListItemIcon>
           <ListItemText className="text-white font-medium">Documentation</ListItemText>
         </MenuItem>
+        {role === 'admin' && (
+          <>
+            <Divider className="border-slate-textLight" />
+            <MenuItem className={getItemClassName('/metrics')} onClick={() => navigate('/metrics')}>
+              <ListItemIcon><MetricsIcon className={getIconClassName('/metrics')} /></ListItemIcon>
+              <ListItemText className="text-white font-medium">Metrics</ListItemText>
+            </MenuItem>
+          </>
+        )}
       </MenuList>
     </Box>
   );
