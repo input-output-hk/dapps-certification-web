@@ -12,8 +12,11 @@ const CustomSwitch: React.FC<Props> = ({ onToggle }) => {
   const [checked, setChecked] = React.useState(false);
 
   const toggleChecked = () => {
-    setChecked((prev) => !prev);
-    onToggle(!checked)
+    setChecked((prev) => {
+      const newChecked = !prev;
+      onToggle(newChecked);
+      return newChecked
+    });
   };
 
   const CustomSwitchComponent = styled(Switch)(({ theme }) => ({
