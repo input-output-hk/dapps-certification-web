@@ -93,14 +93,15 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
     const [, , , owner, repo] = form.repoUrl!.split('/');
     const profile = (thunkApi.getState() as RootState).profile.profile!;
     const githubToken = (thunkApi.getState() as RootState).session.accessToken || undefined;
-    await thunkApi.dispatch(updateProfile({
+    const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
+    await thunkApi.dispatch(updateProfile({ data: {
       ...profile, dapp: {
         ...profile.dapp,
         name: form.name!,
         subject: form.subject,
         owner, repo, githubToken
       }
-    }));
+    } }));
     await thunkApi.dispatch(clearAccessToken({}));
 
     let payloadData: string | CustomizedRunPayload | undefined = form.commitHash;
@@ -122,7 +123,8 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
       }
       useTextPlainClient = false;
     }
-    const response: any = await fetch<string>(thunkApi, { method: 'POST', url: '/run', data: payloadData }, { useSession: true, useTextPlainClient: useTextPlainClient });
+    const apiUrl = impersonate ? `/profile/${retainId}/run`: '/run';
+    const response: any = await fetch<string>(thunkApi, { method: 'POST', url: apiUrl, data: payloadData }, { useSession: true, useTextPlainClient: useTextPlainClient });
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);
@@ -136,8 +138,8 @@ export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload:
     const newTimelineConfig = processTimeLineConfig(response, timelineConfig);
     const newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks);
 
-    const status = response.data.status;
-    const state = response.data.hasOwnProperty('state') && response.data.state ? response.data.state : null;
+    const status: string = response.data.status;
+    const state: string | null = response.data.hasOwnProperty('state') && response.data.state ? response.data.state : null;
     
     let coverageFile = null;
     let resultData = null;
@@ -199,6 +201,16 @@ export const testingSlice = createSlice({
       ...initialState,
       resetForm: 'commit'
     }),
+    clearRun: (state) => ({
+      ...state,
+      runEnded: false,
+      runState: null,
+      runStatus: null,
+      uuid: null,
+      fetching: false,
+      creating: false,
+      shouldFetchRunStatus: false
+    })
   },
   extraReducers: (builder) => {
     builder
@@ -252,6 +264,6 @@ export const testingSlice = createSlice({
   },
 });
 
-export const { updateForm, resetForm, resetDApp, resetCommit } = testingSlice.actions;
+export const { updateForm, resetForm, resetDApp, resetCommit, clearRun } = testingSlice.actions;
 
 export default testingSlice.reducer;

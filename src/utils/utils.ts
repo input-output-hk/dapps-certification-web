@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export const exportObjectToJsonFile = (objectData: any, filename: string) => {
     let contentType = "application/json;charset=utf-8;";
     const navigator = window.navigator as any;
@@ -23,6 +25,7 @@ export const exportObjectToJsonFile = (objectData: any, filename: string) => {
   };
 
 export const formatToTitleCase = (value: string) => {
+  if (!value) { return ''; }
   if (value.indexOf(' ') !== -1) {
     return value.toLowerCase().split(' ').map((word) => {
       return word.replace(word[0], word[0].toUpperCase());
@@ -115,4 +118,33 @@ export const getErrorMessage = (errorObj: any) => {
 
 export const ellipsizeString = (data: string, firstSet: number = 5, lastSet: number = 4) => {
   return data ? `${data.slice(0, firstSet)}...${data.slice(-lastSet)}` : '...'
+}
+
+export const getStatusLabel = (status: string) => {
+  switch (status) {
+    case "inactive":
+      return "text-yellow-500";
+    case "active":
+      return "text-lime-600";
+  }
+};
+
+export const findCurrentSubscription = (subscriptions: any) => {
+  let currentSubscription = subscriptions.find((sub: any) => sub.status === 'active')
+  if (!currentSubscription) {
+    // find latest subscription by sorting startDate
+    const sortedSubs = [...subscriptions].sort((a: any, b: any) => {
+      if (dayjs(a.startDate).isBefore(dayjs(b.startDate))) {
+        return 1;
+      } else if (dayjs(b.startDate).isBefore(dayjs(a.startDate))) {
+        return -1;
+      } else {
+        return 0;
+      }
+    })
+    if (sortedSubs[0]) {
+      currentSubscription = sortedSubs[0]
+    }
+  }
+  return currentSubscription
 }

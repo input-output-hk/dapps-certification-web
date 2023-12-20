@@ -1,0 +1,8 @@
+.form-card .icons svg {
+    margin-right: -6px !important;
+    font-size: larger;
+}
+
+.tierType::first-letter {
+    text-transform:capitalize;
+}

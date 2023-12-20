@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-import { Container, Grid, Typography, Paper, Button, Alert, Snackbar } from "@mui/material";
+import { Container, Grid, Typography, Paper, Button } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { updateProfile } from "store/slices/profile.slice";
+import { showSnackbar } from "store/slices/snackbar.slice";
 import { removeEmptyStringsDeep, removeNullsDeep } from "utils/utils";
 import { fields, resolver } from "./utils";
 
@@ -21,27 +22,30 @@ const Profile = () => {
   const dispatch = useAppDispatch();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
 
-  const { profile, loading, success, errorMessage } = useAppSelector(state => state.profile);
-  
+  const { profile, loading, success, errorMessage} = useAppSelector(state => state.profile);
+
   const defaultValues = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
   const { register, handleSubmit, reset, clearErrors, formState, getFieldState, getValues } = useForm<UserProfile>({ defaultValues, resolver, mode: 'onBlur' });
-
+  
   useEffect(() => {
     if (submitted) {
       if (success || errorMessage !== null) {
         setIsEditing(false);
-        setShowSnackbar(true);
         setSubmitted(false);
+        dispatch(showSnackbar({
+          message: success ? 'Profile updated successfully' : errorMessage,
+          severity: success ? 'success' : 'error',
+          position: 'bottom'
+        }));
       }
     }
   }, [success, errorMessage, submitted]);
 
   const onSubmit = (form: UserProfile) => {
     setSubmitted(true);
-    dispatch(updateProfile(removeEmptyStringsDeep(JSON.parse(JSON.stringify(form)))));
+    dispatch(updateProfile({data: removeEmptyStringsDeep(JSON.parse(JSON.stringify(form)))}));
   }
 
   const startEditing = () => {
@@ -92,20 +96,6 @@ const Profile = () => {
           </Grid>
         </Container>
       </form>
-
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={5000}
-        onClose={() => setShowSnackbar(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity={success ? 'success' : 'error'} variant="filled"
-          onClose={() => setShowSnackbar(false)}
-        >
-          {success ? 'Profile updated successfully' : errorMessage}
-        </Alert>
-      </Snackbar>
     </>
   );
 };

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "store/rootReducer";
 import { fetch } from "api";
 
 import { processFinishedJson } from "compositions/Timeline/components/TimelineItem/timeline.helper";
@@ -22,9 +23,11 @@ const initialState: TestingHistoryState = {
   certificates: new Map(),
 };
 
-export const fetchHistory = createAsyncThunk("fetchHistory", async (payload: {}, thunkApi) => {
+export const fetchHistory = createAsyncThunk("fetchHistory", async (payload, thunkApi) => {
   try {
-    const response = await fetch<Run[]>(thunkApi, { method: 'GET', url: '/run' });
+    const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
+    const apiUrl = impersonate ? `/profile/${retainId}/runs`: '/run';
+    const response = await fetch<Run[]>(thunkApi, { method: 'GET', url: apiUrl });
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);
@@ -54,6 +57,7 @@ export const getRowStatus = createAsyncThunk("getRowStatus", async (payload: { r
 export const fetchCertificate = createAsyncThunk("fetchCertificate", async (payload: { runId: string }, thunkApi) => {
   try {
     const response = await fetch<Certificate>(thunkApi, { method: 'GET', url: `/run/${payload.runId}/certificate` });
+    if (response.status !== 200) throw new Error("Failed loading certificate.");
     return {
       runId: payload.runId,
       certificate: response.data

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { RootState } from "store/rootReducer";
 import { fetch } from "api";
 
 interface AuthState {
@@ -13,9 +14,11 @@ const initialState: AuthState = {
   features: [],
 };
 
-export const fetchActiveSubscription = createAsyncThunk('fetchActiveSubscription', async (payload: {}, thunkApi) => {
+export const fetchActiveSubscription = createAsyncThunk('fetchActiveSubscription', async (payload, thunkApi) => {
   try {
-    const response = await fetch<string[]>(thunkApi, { method: 'GET', url: '/profile/current/subscriptions/active-features' });
+    const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
+    const response: any = await fetch<string[]>(thunkApi, { method: 'GET', url: `/profile/${impersonate ? retainId : "current"}/subscriptions/active-features` });
+    if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {
     await thunkApi.dispatch(logout());

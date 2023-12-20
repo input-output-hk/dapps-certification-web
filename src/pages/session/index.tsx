@@ -18,10 +18,14 @@ const Session = () => {
   const { hasAnActiveSubscription, isSessionFetched } = useAppSelector((state) => state.auth);
   const { profile } = useAppSelector((state) => state.profile);
 
-  useEffect(() => { dispatch(fetchActiveSubscription({})) }, []);
+  useEffect(() => {
+    dispatch(fetchActiveSubscription());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    if (hasAnActiveSubscription) dispatch(fetchProfile({}));
+    if (hasAnActiveSubscription)
+      dispatch(fetchProfile());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAnActiveSubscription]);
 
