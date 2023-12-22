@@ -19,10 +19,11 @@ import RepoAccessStatus from "components/RepoAccessStatus/RepoAccessStatus";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { useAppDispatch, useAppSelector } from "store/store";
-import { updateForm, createTestRun } from "store/slices/testing.slice";
+import { updateForm, createTestRun, setIsCustomized } from "store/slices/testing.slice";
 import { clearAccessStatus, verifyRepoAccess, verifyRepoAccessWithAccessToken, fetchClientId } from "store/slices/repositoryAccess.slice";
-import { resolver, RepoField, CommitField, NameField, VersionField, SubjectField, NumberOfTestsField, DEFAULT_TESTS_COUNT, ADVANCED_TEST_MODE_FIELDS } from "./utils";
+import { resolver, RepoField, CommitField, NameField, VersionField, SubjectField, NumberOfTestsField, ADVANCED_TEST_MODE_FIELDS } from "./utils";
 import { removeNullsDeep, removeEmptyStringsDeep } from "utils/utils";
+import { CUSTOMIZED_TESTS_COUNT, DEFAULT_TESTS_COUNT } from "pages/certification/Certification.helper";
 
 import type { TestingForm } from "store/slices/testing.slice";
 import type { UserProfile } from "store/slices/profile.slice";
@@ -77,7 +78,7 @@ const form = useForm<TestingForm>({
 
   const setAdvancedTestCount = (overrideValue?: number) => {
     ADVANCED_TEST_MODE_FIELDS.forEach((key: { name: any; }) =>
-      form.setValue(key.name as any, (overrideValue !== null || overrideValue !== undefined) ? overrideValue : DEFAULT_TESTS_COUNT)
+      form.setValue(key.name as any, (overrideValue !== null || overrideValue !== undefined) ? overrideValue : CUSTOMIZED_TESTS_COUNT)
     );
   };
 
@@ -200,7 +201,8 @@ const form = useForm<TestingForm>({
     }).then(connectToGithub).catch(err => {});
   };
 
-  const formHandler = (formData: TestingForm) => {
+  const formHandler = async (formData: TestingForm) => {
+    await dispatch(setIsCustomized(isCustomizedTestingMode))
     dispatch(createTestRun({isCustomizedTestingMode: isCustomizedTestingMode, isAdvancedCount: !showAdvancedCountFields}));
   };
 

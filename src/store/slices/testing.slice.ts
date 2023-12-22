@@ -58,6 +58,7 @@ interface TestingState {
   refetchMin: number;
   shouldFetchRunStatus: boolean;
   resetForm: string | null;
+  isCustomizedTestingMode: boolean;
 }
 
 const initialState: TestingState = {
@@ -76,7 +77,8 @@ const initialState: TestingState = {
   hasFailedTasks: false,
   refetchMin: 5,
   shouldFetchRunStatus: false,
-  resetForm: null
+  resetForm: null,
+  isCustomizedTestingMode: false
 };
 
 const processIntValue = (value: any) => {
@@ -133,10 +135,10 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
 
 export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload: {}, thunkApi) => {
   try {
-    const { uuid, timelineConfig, plannedTestingTasks, unitTestSuccess, hasFailedTasks } = (thunkApi.getState() as RootState).testing;
+    const { uuid, timelineConfig, plannedTestingTasks, unitTestSuccess, hasFailedTasks, isCustomizedTestingMode } = (thunkApi.getState() as RootState).testing;
     const response = await fetch<RunStatus>(thunkApi, { method: 'GET', url: `/run/${uuid}` });
     const newTimelineConfig = processTimeLineConfig(response, timelineConfig);
-    const newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks);
+    const newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks, isCustomizedTestingMode);
 
     const status: string = response.data.status;
     const state: string | null = response.data.hasOwnProperty('state') && response.data.state ? response.data.state : null;
@@ -210,6 +212,10 @@ export const testingSlice = createSlice({
       fetching: false,
       creating: false,
       shouldFetchRunStatus: false
+    }),
+    setIsCustomized: (state, actions) => ({
+      ...state,
+      isCustomizedTestingMode: actions.payload
     })
   },
   extraReducers: (builder) => {
@@ -264,6 +270,6 @@ export const testingSlice = createSlice({
   },
 });
 
-export const { updateForm, resetForm, resetDApp, resetCommit, clearRun } = testingSlice.actions;
+export const { updateForm, resetForm, resetDApp, resetCommit, clearRun, setIsCustomized } = testingSlice.actions;
 
 export default testingSlice.reducer;

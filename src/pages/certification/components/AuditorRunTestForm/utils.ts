@@ -49,8 +49,6 @@ export const NumberOfTestsField = {
   required: false
 }
 
-export const DEFAULT_TESTS_COUNT = 100;
-
 export const ADVANCED_TEST_MODE_FIELDS = [
   {
     label: "Crash Tolerance",
