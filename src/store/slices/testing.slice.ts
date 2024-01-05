@@ -94,7 +94,10 @@ export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload:
     const { uuid, timelineConfig, plannedTestingTasks, unitTestSuccess, hasFailedTasks } = (thunkApi.getState() as RootState).testing;
     const response = await fetch<RunStatus>(thunkApi, { method: 'GET', url: `/run/${uuid}` });
     const newTimelineConfig = processTimeLineConfig(response, timelineConfig);
-    const newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks);
+    let newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks);
+    if (newPlannedTestingTasks.length === 0 && plannedTestingTasks.length > 0) {
+      newPlannedTestingTasks = plannedTestingTasks;
+    }
 
     const status: string = response.data.status;
     const state: string | null = response.data.hasOwnProperty('state') && response.data.state ? response.data.state : null;

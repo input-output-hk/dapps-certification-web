@@ -111,6 +111,8 @@ const AuditorRunTestForm: React.FC = () => {
     }
     if (resetForm === 'commit') {
       form.setValue('commitHash', undefined);
+      if (form.getValues('subject') === null) form.setValue('subject', undefined);
+      if (form.getValues('version') === null) form.setValue('version', undefined);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetForm]);
