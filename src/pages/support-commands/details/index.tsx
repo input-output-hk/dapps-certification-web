@@ -11,6 +11,8 @@ import TheaterComedyIcon from "@mui/icons-material/TheaterComedy";
 import { PROFILE_DETAILS_KEYS } from "../config";
 
 import UserDetailsModal from "../components/UserDetailsModal";
+import Avatar from 'components/Avatar';
+
 import {
   clearSuccess,
   fetchProfileDetails,
@@ -120,11 +122,7 @@ const UserDetails = () => {
           class="p-5 form-card"
         >
           <div className="img">
-            <img
-              src="/images/avatar.png"
-              alt="profile"
-              className="w-full"
-            />
+            <Avatar seed={profile?.address} square={true} detail={true} />
           </div>
 
           <div className="details pl-7 inline-flex flex-col w-full">
