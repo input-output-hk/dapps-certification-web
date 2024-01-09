@@ -10,12 +10,16 @@ const initialState: PriceState = {
 };
 
 export const fetchPrice = createAsyncThunk("fetchPrice", async (payload: any, thunkApi) => {
-  try {
-    const response = await fetch<number>(thunkApi, { method: 'GET', url: '/ada-usd-price' });
-    return response.data;
-  } catch (e: any) {
-    return thunkApi.rejectWithValue(e.response.data);
-  }
+  let data = null;
+  do {
+    try {
+      const response = await fetch<number>(thunkApi, { method: 'GET', url: '/ada-usd-price' });
+      data = response.data;
+    } catch (e: any) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  } while (data === null);
+  return data;
 });
 
 export const priceSlice = createSlice({
@@ -24,14 +28,8 @@ export const priceSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPrice.pending, (state) => {
-        state.price = 0;
-      })
       .addCase(fetchPrice.fulfilled, (state, actions) => {
         state.price = actions.payload;
-      })
-      .addCase(fetchPrice.rejected, (state, actions) => {
-        state.price = 0;
       })
   },
 });

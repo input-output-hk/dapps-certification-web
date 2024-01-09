@@ -13,7 +13,7 @@ import {
   processTimeLineConfig,
 } from "compositions/Timeline/components/TimelineItem/timeline.helper";
 
-import { useAppDispatch } from "store/store";
+import { useAppDispatch, useAppSelector } from "store/store";
 import { ellipsizeString } from "../../../utils/utils";
 import DownloadResult from "../components/DownloadResult/DownloadResult";
 import ProgressCard from "components/ProgressCard/ProgressCard";
@@ -28,6 +28,7 @@ const CertificationResult = () => {
   const dispatch = useAppDispatch();
   const param = useParams<{ uuid: string }>();
   const { state } = useLocation();
+  const { isCustomizedTestingMode } = useAppSelector((state) => state.testing);
   const [coverageFile, setCoverageFile] = useState("");
   const [resultData, setResultData] = useState<any>({});
   const [unitTestSuccess, setUnitTestSuccess] = useState(true); // assuming unit tests will pass
@@ -72,7 +73,7 @@ const CertificationResult = () => {
 
               testTaskProgress.current.push({
                 ...taskEntry,
-                ...getProgressCardInfo(resultJson[key], taskEntry)
+                ...getProgressCardInfo(resultJson[key], taskEntry, isCustomizedTestingMode)
               })
             }
           })

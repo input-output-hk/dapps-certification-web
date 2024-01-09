@@ -17,6 +17,13 @@ export interface TestingForm {
   name?: string;
   version?: string;
   subject?: string;
+  numberOfTests?: any;
+  numCrashTolerance?: number;
+  numWhiteList?: number;
+  numDLTests?: number;
+  numStandardProperty?: number;
+  numNoLockedFunds?: number;
+  numNoLockedFundsLight?: number;
 }
 
 export interface RunStatus {
@@ -25,6 +32,13 @@ export interface RunStatus {
   result: any;
   progress: any;
   plan: any;
+}
+
+interface CustomizedRunPayload {
+  certArgs: {
+    certOptNumTests: any
+  },
+  commitOrBranch: string | undefined
 }
 
 interface TestingState {
@@ -44,6 +58,7 @@ interface TestingState {
   refetchMin: number;
   shouldFetchRunStatus: boolean;
   resetForm: string | null;
+  isCustomizedTestingMode: boolean;
 }
 
 const initialState: TestingState = {
@@ -62,10 +77,19 @@ const initialState: TestingState = {
   hasFailedTasks: false,
   refetchMin: 5,
   shouldFetchRunStatus: false,
-  resetForm: null
+  resetForm: null,
+  isCustomizedTestingMode: false
 };
 
-export const createTestRun = createAsyncThunk("createTestRun", async (payload, thunkApi) => {
+const processIntValue = (value: any) => {
+  if (isNaN(parseInt(value))) {
+    return 0;
+  } else {
+    return parseInt(value);
+  }
+}
+
+export const createTestRun = createAsyncThunk("createTestRun", async (payload: {isCustomizedTestingMode: boolean, isAdvancedCount: boolean}, thunkApi) => {
   try {
     const form = (thunkApi.getState() as RootState).testing.form!;
     const [, , , owner, repo] = form.repoUrl!.split('/');
@@ -81,8 +105,28 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload, t
       }
     } }));
     await thunkApi.dispatch(clearAccessToken({}));
+
+    let payloadData: string | CustomizedRunPayload | undefined = form.commitHash;
+    let useTextPlainClient = true;
+    if (payload.isCustomizedTestingMode) {
+      const numOfTests = processIntValue(form.numberOfTests)
+      payloadData = {
+        certArgs: {
+          certOptNumTests: {
+            numCrashTolerance: payload.isAdvancedCount ? processIntValue(form.numCrashTolerance) : numOfTests,
+            numWhiteList: payload.isAdvancedCount ? processIntValue(form.numWhiteList) : numOfTests,
+            numDLTests: payload.isAdvancedCount ? processIntValue(form.numDLTests) : numOfTests,
+            numStandardProperty: payload.isAdvancedCount ? processIntValue(form.numStandardProperty) : numOfTests,
+            numNoLockedFunds: payload.isAdvancedCount ? processIntValue(form.numNoLockedFunds) : numOfTests,
+            numNoLockedFundsLight: payload.isAdvancedCount ? processIntValue(form.numNoLockedFundsLight) : numOfTests
+          }
+        },
+        commitOrBranch: form.commitHash
+      }
+      useTextPlainClient = false;
+    }
     const apiUrl = impersonate ? `/profile/${retainId}/run`: '/run';
-    const response = await fetch<string>(thunkApi, { method: 'POST', url: apiUrl, data: form.commitHash }, { useSession: true, useTextPlainClient: true });
+    const response: any = await fetch<string>(thunkApi, { method: 'POST', url: apiUrl, data: payloadData }, { useSession: true, useTextPlainClient: useTextPlainClient });
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);
@@ -91,10 +135,10 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload, t
 
 export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload: {}, thunkApi) => {
   try {
-    const { uuid, timelineConfig, plannedTestingTasks, unitTestSuccess, hasFailedTasks } = (thunkApi.getState() as RootState).testing;
+    const { uuid, timelineConfig, plannedTestingTasks, unitTestSuccess, hasFailedTasks, isCustomizedTestingMode } = (thunkApi.getState() as RootState).testing;
     const response = await fetch<RunStatus>(thunkApi, { method: 'GET', url: `/run/${uuid}` });
     const newTimelineConfig = processTimeLineConfig(response, timelineConfig);
-    let newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks);
+    let newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks, isCustomizedTestingMode);
     if (newPlannedTestingTasks.length === 0 && plannedTestingTasks.length > 0) {
       newPlannedTestingTasks = plannedTestingTasks;
     }
@@ -171,6 +215,10 @@ export const testingSlice = createSlice({
       fetching: false,
       creating: false,
       shouldFetchRunStatus: false
+    }),
+    setIsCustomized: (state, actions) => ({
+      ...state,
+      isCustomizedTestingMode: actions.payload
     })
   },
   extraReducers: (builder) => {
@@ -225,6 +273,6 @@ export const testingSlice = createSlice({
   },
 });
 
-export const { updateForm, resetForm, resetDApp, resetCommit, clearRun } = testingSlice.actions;
+export const { updateForm, resetForm, resetDApp, resetCommit, clearRun, setIsCustomized } = testingSlice.actions;
 
 export default testingSlice.reducer;

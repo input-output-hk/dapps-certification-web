@@ -18,6 +18,7 @@ export enum FieldType {
   Dropdown,
   Object,
   Array,
+  NumberOfTests
 }
 
 export interface Field {
