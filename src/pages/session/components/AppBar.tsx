@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { logout } from "store/slices/auth.slice";
-import { AppBar as MuiAppBar, Toolbar, Avatar, IconButton, Button, Menu, MenuItem, ListItemIcon } from "@mui/material";
+import { AppBar as MuiAppBar, Toolbar, IconButton, Button, Menu, MenuItem, ListItemIcon } from "@mui/material";
 
 import MenuIcon from '@mui/icons-material/ExpandMore';
 import LogoutIcon from '@mui/icons-material/Logout';
+
+import Avatar from 'components/Avatar';
 
 import "../index.css";
 
@@ -13,6 +15,7 @@ const AppBar = () => {
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
   const { walletAddress } = useAppSelector(state => state.walletConnection);
+  const { profile } = useAppSelector(state => state.profile);
 
   const getProfileAddress = () => {
     return walletAddress ? `${walletAddress.slice(0,4)}...${walletAddress.slice(-4)}` : '...';
@@ -38,7 +41,7 @@ const AppBar = () => {
             {getProfileAddress()}
           </Button>
           <IconButton className="p-0" onClick={handleMenu}>
-            <Avatar className="text-text" />
+            <Avatar seed={profile!.address} />
           </IconButton>
         </Toolbar>
       </MuiAppBar>
