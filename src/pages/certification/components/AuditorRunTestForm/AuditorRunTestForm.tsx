@@ -38,8 +38,8 @@ const getFormDefaultValues = (form: TestingForm|null, profile: UserProfile|null,
     return {
       repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
       name: dapp.name,
-      version: dapp.version,
-      subject: dapp.subject,
+      version: dapp.version !== null ? dapp.version : undefined,
+      subject: dapp.subject !== null ? dapp.subject : undefined,
     };
   } else {
     return undefined;
@@ -62,16 +62,8 @@ const AuditorRunTestForm: React.FC = () => {
   
   const { profile } = useAppSelector((state) => state.profile);
   const { form: formValues, creating, uuid, resetForm } = useAppSelector((state) => state.testing);
-  // const { dapp } = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
-  // const defaultValues = formValues ? removeNullsDeep(JSON.parse(JSON.stringify(formValues))) : (dapp ? {
-  //   repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
-  //   name: dapp.name,
-  //   version: dapp.version,
-  //   subject: dapp.subject,
-  //   numberOfTests: DEFAULT_TESTS_COUNT
-  // } : undefined);
   
-const form = useForm<TestingForm>({
+  const form = useForm<TestingForm>({
     resolver, mode: 'all',
     defaultValues: getFormDefaultValues(formValues, profile, githubAccessCode, uuid)
   });
