@@ -77,9 +77,10 @@ const form = useForm<TestingForm>({
   });
 
   const setAdvancedTestCount = (overrideValue?: number) => {
-    ADVANCED_TEST_MODE_FIELDS.forEach((key: { name: any; }) =>
+    ADVANCED_TEST_MODE_FIELDS.forEach((key: { name: any; }) => {
+      form.clearErrors(key.name)
       form.setValue(key.name as any, (overrideValue !== null || overrideValue !== undefined) ? overrideValue : CUSTOMIZED_TESTS_COUNT)
-    );
+    });
   };
 
   useEffect(() => {
@@ -211,6 +212,7 @@ const form = useForm<TestingForm>({
     isChecked
       ? setAdvancedTestCount()
       : form.setValue("numberOfTests", DEFAULT_TESTS_COUNT);
+    form.clearErrors("numberOfTests");
     setShowAdvancedCountFields(true);
   };
 

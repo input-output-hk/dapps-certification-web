@@ -116,7 +116,7 @@ const CertificationResult = () => {
             {Object.keys(resultData).length ? (<>
               <div className="w-full flex items-stretch justify-end gap-x-4">
                 <DownloadResult resultData={resultData} />
-                {(unitTestSuccess && state?.certifiable && !isAnyTaskFailure(resultData)) ? <CreateCertificate uuid={param.uuid as string} /> : null}
+                {((!state.withCustomOptions && !isCustomizedTestingMode) && unitTestSuccess && state?.certifiable && !isAnyTaskFailure(resultData)) ? <CreateCertificate uuid={param.uuid as string} /> : null}
               </div>
               <div className="flex items-center justify-evenly my-10">
                 {unitTestSuccess && <FileCoverageContainer 

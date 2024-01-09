@@ -168,7 +168,8 @@ const AppTable = (props: Props) => {
                 { state: {
                   repo: formatRepoUrl(props.row.original.repoUrl),
                   commitHash: props.row.original.commitHash,
-                  certifiable: notCertified
+                  certifiable: notCertified,
+                  withCustomOptions: props.row.original.withCustomOptions
                 }}
               )}
             >
