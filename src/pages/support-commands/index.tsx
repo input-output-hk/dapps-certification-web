@@ -17,6 +17,7 @@ import { formatToTitleCase } from "utils/utils";
 
 import DeleteUserModal from "./components/DeleteUserModal";
 import { Card } from "./components/Card";
+import Avatar from 'components/Avatar';
 
 import "./index.css";
 
@@ -101,13 +102,7 @@ const SupportCommands = () => {
           class="pt-12 pb-10 px-6"
         >
           <div className="img">
-            <img
-              src={
-                "/images/avatar.png" // placeholder img
-              }
-              alt={`${item.companyName} profile`}
-              height={100}
-            />
+            <Avatar seed={item.address} square={true} />
           </div>
 
           <div className="details pl-7 inline-flex flex-col w-full">
