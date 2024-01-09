@@ -10,6 +10,7 @@ import { useAppSelector } from "store/store";
 import { payFromWallet } from "store/slices/walletTransaction.slice";
 import { fetchDetails, submitCertificate  } from "store/slices/certificate.slice";
 import { showSnackbar, clearSnackbar } from "store/slices/snackbar.slice";
+import PaymentDetailsVerification from "components/PaymentConfirmation/PaymentDetailsVerification";
 
 export interface Run {
   certificationPrice: number;
@@ -49,6 +50,7 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
   const [ openModal, setOpenModal ] = useState(false);
   const [ openMetadataModal, setOpenMetadataModal ] = useState(false);
   const [ disableCertify, setDisableCertify ] = useState(false);
+  const [ showVerificationModal, setShowVerificationModal ] = useState(false);
 
   useEffect(() => { dispatch(fetchDetails({ uuid })) }, []);
 
@@ -100,19 +102,25 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
     setCertifying(true);
     dispatch(clearSnackbar());
     if (performTransaction) {
-      const response = await dispatch(
-        payFromWallet({ fee: BigNum.from_str(certificationPrice!.toString()), wallet, walletAddress, payer: profile?.address })
-      );
-      if (response.payload) {
-        triggerSubmitCertificate(response.payload);
-      } else if (response?.error?.message) {
-        handleError(response.error.message);
-      }
+      setShowVerificationModal(true)
     } else {
       triggerSubmitCertificate();
     }
   }
   
+  const onPaymentDetailsVerified = async () => {
+    setShowVerificationModal(false)
+    const fee: BigNum = BigNum.from_str(certificationPrice!.toString())
+    const response = await dispatch(
+      payFromWallet({ fee: fee, wallet, walletAddress, payer: profile?.address })
+    );
+    if (response.payload) {
+      triggerSubmitCertificate(response.payload);
+    } else if (response?.error?.message) {
+      handleError(response.error.message);
+    }
+  }
+
   const CertificateButton = () => {
     if (certified || disableCertify) return null;
     return (
@@ -176,7 +184,12 @@ const CreateCertificate: React.FC<{ uuid: string; }> = ({ uuid }) => {
           <MetadataModal />
         </>
       }
+
+      {showVerificationModal ? 
+        <PaymentDetailsVerification onAccept={onPaymentDetailsVerified} data={null} />
+      : null}
     </>
+
   );
 }
 

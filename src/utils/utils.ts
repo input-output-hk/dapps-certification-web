@@ -24,7 +24,7 @@ export const exportObjectToJsonFile = (objectData: any, filename: string) => {
     }
   };
 
-export const formatToTitleCase = (value: string) => {
+export const formatToTitleCase = (value: string | undefined) => {
   if (!value) { return ''; }
   if (value.indexOf(' ') !== -1) {
     return value.toLowerCase().split(' ').map((word) => {
