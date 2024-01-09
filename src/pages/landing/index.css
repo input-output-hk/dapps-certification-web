@@ -20,30 +20,6 @@
     @apply flex flex-col m-0 min-w-[50vw] bg-white;
   }
 
-  .wallet-card {
-    cursor: pointer;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.3s;
-    border-radius: 5px;
-    width: 155px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .wallet-card:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-  }
-
-  .wallet-card-image {
-    width: 30px;
-    margin-right: 5px;
-  }
-
-  .wallet-card-name {
-    padding: 2px 16px;
-  }
-
   .subscription, .subscription-active {
     @apply
       px-4
@@ -71,6 +47,22 @@
 
   .subscription-feature {
     @apply font-normal mb-12 text-slate-main;
+  }
+
+  .button-wallet {
+    @apply normal-case text-slate-main border-[#E0E0E0] p-4;
+  }
+
+  .button-wallet:hover {
+    @apply text-slate-main border-slate-main;
+  }
+
+  .button-wallet-image {
+    @apply w-[32px] mr-2;
+  }
+
+  .button-wallet-label {
+    @apply text-base;
   }
   
 }
