@@ -75,7 +75,7 @@ export const processTimeLineConfig = (
   });
 }
 
-export const getPlannedTestingTasks = (res: any, _plannedTestingTasks: PlanObj[]): PlanObj[] => {
+export const getPlannedTestingTasks = (res: any, _plannedTestingTasks: PlanObj[], isCustomizedTestingMode: boolean): PlanObj[] => {
   const plannedTestingTasks = JSON.parse(JSON.stringify(_plannedTestingTasks));
   const status = res.data.status;
   const state = res.data.hasOwnProperty('state') ? res.data.state : '';
@@ -132,7 +132,7 @@ export const getPlannedTestingTasks = (res: any, _plannedTestingTasks: PlanObj[]
         } else {
           item.progress = PROGRESS_FAIL;
         }
-        return {...item, ...getProgressCardInfo(resultJson[item.key], item)}
+        return {...item, ...getProgressCardInfo(resultJson[item.key], item, isCustomizedTestingMode)}
       })
     )
   }

@@ -175,9 +175,11 @@ export const calculateExpectedProgress = (plannedTasks: PlanObj[]) => {
   }, 0)
 }
 
-const DEFAULT_TESTS_COUNT: number = 100;
+export const DEFAULT_TESTS_COUNT: number = 100;
+export const CUSTOMIZED_TESTS_COUNT: number = 30;
+
 // calculate the expected and completed to populate the Progress Card
-export const getProgressCardInfo = (keyResult: any, currentTask: PlanObj) => {
+export const getProgressCardInfo = (keyResult: any, currentTask: PlanObj, isCustomizedTestingMode: boolean) => {
   const item = {...currentTask}
   if (isTaskSuccess(keyResult, item.key)) {
     if (item.name === 'dl-tests') {
@@ -193,6 +195,7 @@ export const getProgressCardInfo = (keyResult: any, currentTask: PlanObj) => {
     }
     item.completed = item.expected
   } else {
+    const TESTS_COUNT = isCustomizedTestingMode ? CUSTOMIZED_TESTS_COUNT : DEFAULT_TESTS_COUNT
     if (!item.hasOwnProperty('expected')) {
       // expected not already calculated from 'finished-tasks'
       if (item.name === 'unit-tests') {
@@ -211,12 +214,12 @@ export const getProgressCardInfo = (keyResult: any, currentTask: PlanObj) => {
             item.expected = (item.expected || 0) + (dlTest[1].numTests - dlTest[1].numDiscarded)
             item.completed = (item.completed || 0) + (dlTest[1].numTests - dlTest[1].numDiscarded)
           } else if (dlTest[1].tag === 'Failure') {
-            item.expected = (item.expected || 0) + DEFAULT_TESTS_COUNT
+            item.expected = (item.expected || 0) + TESTS_COUNT
             item.completed = (item.completed || 0) + (dlTest[1].numTests || 0)
           }
         })
       } else {
-        item.expected = DEFAULT_TESTS_COUNT
+        item.expected = TESTS_COUNT
         item.completed = keyResult.numTests || 0
       }
     }

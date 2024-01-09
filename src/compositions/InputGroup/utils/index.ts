@@ -8,7 +8,7 @@ import type { AnySchema, AnyObjectSchema } from "yup";
 import { FieldValues, Resolver } from "react-hook-form";
 
 const getFieldSchema = (fieldType: FieldType, required: boolean): AnySchema => {
-  let schema = Schema.Text;
+  let schema: yup.StringSchema | yup.NumberSchema = Schema.Text;
   switch (fieldType) {
     case FieldType.Email: schema = Schema.Email; break;
     case FieldType.Subject: schema = Schema.Subject; break;
@@ -24,6 +24,7 @@ const getFieldSchema = (fieldType: FieldType, required: boolean): AnySchema => {
     case FieldType.GitHubUserName: schema = Schema.GitHubUserName; break;
     case FieldType.GitHubRepository: schema = Schema.GitHubRepository; break;
     case FieldType.Dropdown: schema = Schema.Dropdown; break;
+    case FieldType.NumberOfTests: schema = Schema.NumberOfTests; break;
   }
   return !required ? schema : schema.required('The field is required');
 };
