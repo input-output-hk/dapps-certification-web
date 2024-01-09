@@ -7,10 +7,12 @@ interface AvatarProps {
   saturation?: number;
   lightness?: number;
   square?: boolean;
+  detail?: boolean;
 }
 
 const Avatar = (props: AvatarProps) => {
-  const size = props.square ? 100 : 40;
+  let size = props.square ? 100 : 40;
+  if (props.detail) size = 250;
   const svgURI = useMemo(
     () => 'data:image/svg+xml;utf8,' + encodeURIComponent(minidenticon(props.seed, props.saturation, props.lightness)),
     [props.seed, props.saturation, props.lightness]
@@ -24,7 +26,6 @@ const Avatar = (props: AvatarProps) => {
         backgroundColor: '#F0F0F6',
         width: size, height: size,
       }}
-      {...props}
     />
   );
 }
