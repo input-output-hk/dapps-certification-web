@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "store/store";
 import { connectWallet } from "store/slices/walletConnection.slice";
 import { showSnackbar, clearSnackbar } from "store/slices/snackbar.slice";
 
-import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, IconButton, CircularProgress } from "@mui/material";
+import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, IconButton, CircularProgress, Snackbar, Alert, Grid } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 import "../index.css";
@@ -16,6 +16,49 @@ declare global {
 }
 
 const CardanoNS = window.cardano;
+
+const WalletSelection = (props: {
+  walletName: string|null;
+  activeWallets: string[];
+  loading: boolean;
+  handleSelectWallet: (walletName: string) => void;
+}) => {
+  const networkEnvVar = process.env.REACT_APP_WALLET_NETWORK;
+
+  if (props.loading) return <CircularProgress color="secondary" size={60} className="my-2" />;
+  if (props.walletName) return null;
+  if (!CardanoNS) return <Typography className="my-2 text-base">No wallet extensions installed yet!</Typography>;
+
+  return (
+    <Grid container spacing={2} justifyContent="center" alignItems="center">
+      {networkEnvVar !== '1' && ( 
+        <Grid item xs={12}>
+          <Alert variant="outlined" severity="warning">
+            This tool is in Beta, please ensure that you are connected to the <strong>Preprod</strong> network.
+          </Alert>
+        </Grid>
+      )}
+      { props.activeWallets.map((walletName: string, index: number) => CardanoNS && CardanoNS[walletName] ? (
+        <Grid item key={index} xs={6}>
+          <Button
+            fullWidth variant="outlined"
+            size="large" className="button-wallet"
+            onClick={() => props.handleSelectWallet(walletName)}
+          >
+            <img
+              className="button-wallet-image"
+              src={CardanoNS[walletName].icon}
+              alt={CardanoNS[walletName].name}
+            />
+            <span className="button-wallet-label">
+              {CardanoNS[walletName].name}
+            </span>
+          </Button>
+        </Grid>
+      ) : null) }
+    </Grid>
+  );
+}
 
 const ConnectSection = () => {
   const dispatch = useAppDispatch();
@@ -74,27 +117,25 @@ const ConnectSection = () => {
         </Box>
       </Box>
 
-      <Dialog open={showModal} onClose={() => setShowModal(false)}>
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={showModal}
+        onClose={() => setShowModal(false)}
+      >
         <DialogTitle className="pr-24">
           <span>Connect your wallet</span>
           <IconButton size="small" className="absolute top-4 right-4" onClick={() => setShowModal(false)}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent className="flex flex-col items-center px-4 pt-4 pb-8 gap-4">
-          {walletName ? null : !CardanoNS ? (
-            <Typography>No wallet extensions installed yet!</Typography>
-          ) : (
-            activeWallets.map((walletName: string, index: number) =>
-              CardanoNS && CardanoNS[walletName] ? (
-                <div key={index} className="wallet-card" onClick={() => handleSelectWallet(walletName)}>
-                  <img className="wallet-card-image" src={CardanoNS[walletName].icon} alt={CardanoNS[walletName].name} />
-                  <span className="wallet-card-name">{CardanoNS[walletName].name}</span>
-                </div>
-              ) : null
-            )
-          )}
-          {loading ? <CircularProgress color="secondary" size={50} /> : null}
+        <DialogContent dividers className="flex flex-col items-center px-4 py-5">
+          <WalletSelection
+            walletName={walletName}
+            activeWallets={activeWallets}
+            loading={loading}
+            handleSelectWallet={handleSelectWallet}
+          />
         </DialogContent>
       </Dialog>
     </>
