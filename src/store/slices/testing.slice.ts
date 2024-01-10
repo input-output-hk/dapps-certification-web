@@ -17,7 +17,7 @@ export interface TestingForm {
   name?: string;
   version?: string;
   subject?: string;
-  numberOfTests?: any;
+  numberOfTests?: number;
   numCrashTolerance?: number;
   numWhiteList?: number;
   numDLTests?: number;
