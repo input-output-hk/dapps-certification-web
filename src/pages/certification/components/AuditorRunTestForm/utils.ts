@@ -46,7 +46,7 @@ export const NumberOfTestsField = {
   label: 'Number of Tests',
   name: 'numberOfTests',
   type: FieldType.NumberOfTests,
-  required: false
+  required: false,
 }
 
 export const ADVANCED_TEST_MODE_FIELDS = [
@@ -54,7 +54,7 @@ export const ADVANCED_TEST_MODE_FIELDS = [
     label: "Crash Tolerance",
     name: "numCrashTolerance",
     type: FieldType.NumberOfTests,
-    required: false
+    required: false,
   },
   {
     label: "DL Tests",
