@@ -2,13 +2,17 @@ name: CI Tests
 on: 
   push: 
   pull_request:
-  workflow_call: # as ci-tests.yml is called from ci-deploy.yml as a dependency
+  workflow_call:
 jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.0.2
-      - run: npm run test
-      # - run: |
-      #     npm ci
-      #     npm run test
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: Install Dependencies
+        run: npm install
+      - name: Run the tests
+        run: npm run test
