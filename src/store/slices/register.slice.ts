@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { BigNum } from "@emurgo/cardano-serialization-lib-browser";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetch } from "api";
+import { fetch } from "../../api";
 
 import { payFromWallet } from "store/slices/walletTransaction.slice";
 

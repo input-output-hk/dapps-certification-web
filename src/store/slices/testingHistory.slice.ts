@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "store/rootReducer";
-import { fetch } from "api";
+import { fetch } from "../../api";
 
 import { processFinishedJson } from "compositions/Timeline/components/TimelineItem/timeline.helper";
 import { isAnyTaskFailure } from "pages/certification/Certification.helper";
