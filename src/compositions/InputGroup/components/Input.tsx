@@ -38,8 +38,9 @@ const Input = (props: InputProps) => {
             </Tooltip>
             <InfoIcon />
           </InputAdornment>
-        ) : undefined,
+        ) : undefined
       }}
+      inputProps={{ "data-testid" : props.field.name }}
       InputLabelProps={{ shrink: props.getValues(props.field.name) !== undefined && props.getValues(props.field.name) !== '' }}
     >
       {(props.field.options || []).map((option) => {

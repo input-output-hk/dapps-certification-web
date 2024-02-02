@@ -50,7 +50,7 @@ const WalletSelection = (props: {
               src={CardanoNS[walletName].icon}
               alt={CardanoNS[walletName].name}
             />
-            <span className="button-wallet-label">
+            <span className="button-wallet-label" data-testid={"connect-to-wallet-" + CardanoNS[walletName].name}>
               {CardanoNS[walletName].name}
             </span>
           </Button>
@@ -110,6 +110,7 @@ const ConnectSection = () => {
               variant="contained" size="large"
               className="py-3 px-4 font-medium button-contained-main"
               onClick={() => setShowModal(true)}
+              data-testid="connect-wallet-button"
             >
               Connect your wallet
             </Button>
