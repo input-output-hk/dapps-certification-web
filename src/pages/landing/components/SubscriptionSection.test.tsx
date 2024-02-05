@@ -39,14 +39,22 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test('fetches, render the subcriptions tiers and select one', async () => {
+test('fetches and render the subcriptions tiers', async () => {
+
+  renderWithProviders(<SubscriptionSection onSelectTier={() => {}} />);
+
+  expect(await screen.findByText(/Tier 1/i)).toBeInTheDocument();
+  expect(await screen.findByText(/Tier 2/i)).toBeInTheDocument();
+
+});
+
+test('render the subcriptions tiers and select one', async () => {
 
   const onSelectTier = jest.fn();
 
   renderWithProviders(<SubscriptionSection onSelectTier={onSelectTier} />);
 
-  expect(await screen.findByText(/Tier 1/i)).toBeInTheDocument();
-  expect(await screen.findByText(/Tier 2/i)).toBeInTheDocument();
+  await screen.findByText(/Tier 1/i);
 
   await userEvent.click(screen.getAllByRole('button')[0]);
 

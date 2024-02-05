@@ -40,7 +40,7 @@ const WalletSelection = (props: {
       { props.activeWallets.map((walletName: string, index: number) => CardanoNS && CardanoNS[walletName] ? (
         <Grid item key={index} xs={6}>
           <Button
-            data-testid="wallet-button"
+            role="button"
             fullWidth variant="outlined"
             size="large" className="button-wallet"
             onClick={() => props.handleSelectWallet(walletName)}
@@ -107,7 +107,7 @@ const ConnectSection = () => {
               Connect your in-browser wallet to login/sign-up
             </Typography>
             <Button
-              data-testid="connect-button"
+              role="button"
               variant="contained" size="large"
               className="py-3 px-4 font-medium button-contained-main"
               onClick={() => setShowModal(true)}

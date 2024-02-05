@@ -16,9 +16,11 @@ test('open modal when connect button is pressed and show 3 active wallets', asyn
 
   renderWithProviders(<ConnectSection />);
 
-  await userEvent.click(screen.getByTestId('connect-button'));
+  await userEvent.click(screen.getByRole('button', { name: /Connect your wallet/i }));
 
-  expect(screen.getAllByTestId('wallet-button')).toHaveLength(3);
+  expect(screen.getByRole('button', { name: /lace/i })).toBeVisible();
+  expect(screen.getByRole('button', { name: /nami/i })).toBeVisible();
+  expect(screen.getByRole('button', { name: /yoroi/i })).toBeVisible();
   
 });
 
@@ -28,7 +30,7 @@ test('open modal when connect button is pressed and show no active wallets', asy
 
   renderWithProviders(<ConnectSection />);
 
-  await userEvent.click(screen.getByTestId('connect-button'));
+  await userEvent.click(screen.getByRole('button', { name: /Connect your wallet/i }));
 
   expect(screen.getByText('No wallet extensions installed yet!')).toBeVisible();
 
