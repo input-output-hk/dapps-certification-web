@@ -29,4 +29,3 @@ jobs:
           coverage-summary-path: ./coverage/coverage-summary.json
           junitxml-title: JUnit
           junitxml-path: ./coverage/junit.xml
-          create-new-comment: true
