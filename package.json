@@ -46,12 +46,8 @@
     "react-test": "react-app-rewired test",
     "test": "jest --coverage --coverageReporters text --coverageReporters json-summary",
     "eject": "react-app-rewired eject",
-    "prepare": "husky"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run test && istanbul-badges-readme && git add README.md"
-    }
+    "prepare": "husky",
+    "update-readme": "npm run test && istanbul-badges-readme && git add README.md"
   },
   "eslintConfig": {
     "extends": [
