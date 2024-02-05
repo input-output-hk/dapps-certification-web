@@ -45,7 +45,8 @@
     "build:production": "REACT_APP_ENV=production npm run build",
     "react-test": "react-app-rewired test",
     "test": "jest --coverage --coverageReporters text --coverageReporters json-summary",
-    "eject": "react-app-rewired eject"
+    "eject": "react-app-rewired eject",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": [
@@ -75,6 +76,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/react-table": "^7.7.12",
     "@types/recharts": "^1.8.28",
+    "husky": "^9.0.10",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.5.0",
     "jest-junit": "^16.0.0",
