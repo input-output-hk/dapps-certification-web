@@ -21,4 +21,6 @@ jobs:
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@main
         with:
+          junitxml-path: ./coverage/junit.xml
           coverage-path: ./coverage.txt
+          create-new-comment: true
