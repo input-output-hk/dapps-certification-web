@@ -44,7 +44,7 @@
     "build": "react-app-rewired build",
     "build:production": "REACT_APP_ENV=production npm run build",
     "react-test": "react-app-rewired test",
-    "test": "jest --config=jest.config.js --coverage",
+    "test": "jest --coverage --coverageReporters text --coverageReporters json-summary",
     "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
