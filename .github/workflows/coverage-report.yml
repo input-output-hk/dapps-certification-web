@@ -1,4 +1,4 @@
-name: Jest Coverage Comment
+name: Coverage Report
 on:
   pull_request:
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - name: Run tests
         run: npm run test | tee ./coverage.txt && exit ${PIPESTATUS[0]}
 
-      - name: Jest Coverage Comment
+      - name: Coverage Report
         uses: MishaKav/jest-coverage-comment@main
         with:
           title: Coverage Report
