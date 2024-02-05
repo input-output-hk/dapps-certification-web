@@ -1,4 +1,8 @@
-### react-web
+### Testing Tool
+
+![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/MishaKav/5e90d640f8c212ab7bbac38f72323f80/raw/jest-coverage-comment__main.json)
+![License](https://img.shields.io/github/license/MishaKav/jest-coverage-comment)
+![Version](https://img.shields.io/github/package-json/v/MishaKav/jest-coverage-comment)
 
 Front-end repository for Certification Service integration
 
