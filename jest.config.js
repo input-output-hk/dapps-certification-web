@@ -22,4 +22,5 @@ module.exports = {
       "^.+\\.tsx?$": "ts-jest",
     },
     setupFiles: ['./jest.polyfills.js'],
+    reporters: ['default', 'jest-junit'],
   };
