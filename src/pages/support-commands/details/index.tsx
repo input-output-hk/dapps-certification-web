@@ -23,20 +23,7 @@ import "./index.css";
 import { fetchProfileRunHistory, setImpersonate } from "store/slices/profile.slice";
 import HistoryContainer from "pages/testingHistory/components/HistoryContainer";
 import { clearRun } from "store/slices/testing.slice";
-
-interface ISubscription {
-  adaUsdPrice: number;
-  endDate: string;
-  features: {id: string, name: string}[];
-  id: string;
-  name: string;
-  price: number;
-  profileId: number;
-  status: "active" | "inactive" | "pending";
-  startDate: string;
-  tierId: number;
-  type: "developer" | "auditor"
-}
+import { ISubscription } from "pages/landing";
 
 const UserDetails = () => {
   // const [data] = useState<any>(UserDetails);

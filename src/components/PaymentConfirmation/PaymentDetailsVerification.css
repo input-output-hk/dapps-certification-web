@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.MuiListItemText-primary {
+    font-size: 13px;
+    color: rgba(0,0,0,0.6);
+}
+
+.MuiListItemText-secondary {
+    font-size: 16px;
+    color: #000;
+}
