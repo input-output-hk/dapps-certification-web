@@ -83,9 +83,6 @@ export const GitHubRepository = yup.string()
 
 export const Dropdown = yup.string();
 
-export const NumberOfTests = yup.string()
-  .required("The field value must be a valid number count between min 0 and max 1000")
-  .matches(/^(0|[1-9][0-9]{0,2}|1000)$/, {
-    message: "The field value must be a valid number count between min 0 and max 1000",
-    excludeEmptyString: true
-  })
+export const NumberOfTests = yup.number()
+  .min(0, "The field value must be a valid number count between 0 and 1000")
+  .max(1000, "The field value must be a valid number count between 0 and 1000");

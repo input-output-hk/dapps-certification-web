@@ -47,7 +47,8 @@ const TimelineView: React.FC<Props> = ({ onAbort }) => {
     hasFailedTasks,
     fetching,
     refetchMin,
-    shouldFetchRunStatus
+    shouldFetchRunStatus,
+    isCustomizedTestingMode
   } = useAppSelector(state => state.testing);
 
   const abortTestRun = () => {
@@ -153,7 +154,7 @@ const TimelineView: React.FC<Props> = ({ onAbort }) => {
                 Full Report
               </Button>
               <div className="flex justify-around mb-20 flex-wrap gap-[8px]">
-                {(unitTestSuccess && !hasFailedTasks) && <CreateCertificate uuid={uuid} />}
+                {(!isCustomizedTestingMode && unitTestSuccess && !hasFailedTasks) ? <CreateCertificate uuid={uuid} /> : null}
                 <DownloadResult resultData={resultData} />
               </div>
             </>)}

@@ -31,6 +31,15 @@ import type { UserProfile } from "store/slices/profile.slice";
 import CustomSwitch from "components/CustomSwitch/CustomSwitch";
 
 const getFormDefaultValues = (form: TestingForm|null, profile: UserProfile|null, githubAccessCode: string|null, uuid: string|null): TestingForm|undefined => {
+  const defaultValues = {
+    numberOfTests: DEFAULT_TESTS_COUNT,
+    numCrashTolerance: CUSTOMIZED_TESTS_COUNT,
+    numWhiteList: CUSTOMIZED_TESTS_COUNT,
+    numDLTests: CUSTOMIZED_TESTS_COUNT,
+    numStandardProperty: CUSTOMIZED_TESTS_COUNT,
+    numNoLockedFunds: CUSTOMIZED_TESTS_COUNT,
+    numNoLockedFundsLight: CUSTOMIZED_TESTS_COUNT,
+  };
   if (form !== null && (githubAccessCode !== null || uuid !== null)) {
     return removeNullsDeep(JSON.parse(JSON.stringify(form)));
   } else if (profile !== null && profile.dapp !== null) {
@@ -38,11 +47,12 @@ const getFormDefaultValues = (form: TestingForm|null, profile: UserProfile|null,
     return {
       repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
       name: dapp.name,
-      version: dapp.version,
-      subject: dapp.subject,
+      version: dapp.version !== null ? dapp.version : undefined,
+      subject: dapp.subject !== null ? dapp.subject : undefined,
+      ...defaultValues
     };
   } else {
-    return undefined;
+    return defaultValues;
   }
 };
 
@@ -62,25 +72,11 @@ const AuditorRunTestForm: React.FC = () => {
   
   const { profile } = useAppSelector((state) => state.profile);
   const { form: formValues, creating, uuid, resetForm } = useAppSelector((state) => state.testing);
-  // const { dapp } = removeNullsDeep(JSON.parse(JSON.stringify(profile)));
-  // const defaultValues = formValues ? removeNullsDeep(JSON.parse(JSON.stringify(formValues))) : (dapp ? {
-  //   repoUrl: dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined,
-  //   name: dapp.name,
-  //   version: dapp.version,
-  //   subject: dapp.subject,
-  //   numberOfTests: DEFAULT_TESTS_COUNT
-  // } : undefined);
   
-const form = useForm<TestingForm>({
+  const form = useForm<TestingForm>({
     resolver, mode: 'all',
     defaultValues: getFormDefaultValues(formValues, profile, githubAccessCode, uuid)
   });
-
-  const setAdvancedTestCount = (overrideValue?: number) => {
-    ADVANCED_TEST_MODE_FIELDS.forEach((key: { name: any; }) =>
-      form.setValue(key.name as any, (overrideValue !== null || overrideValue !== undefined) ? overrideValue : CUSTOMIZED_TESTS_COUNT)
-    );
-  };
 
   useEffect(() => {
     const subscription = form.watch(value => dispatch(updateForm(removeEmptyStringsDeep(value))));
@@ -126,8 +122,6 @@ const form = useForm<TestingForm>({
         form.setValue('repoUrl', dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined);
       }
       form.setValue('commitHash', undefined);
-      setAdvancedTestCount();
-      form.setValue("numberOfTests", DEFAULT_TESTS_COUNT);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
@@ -142,11 +136,19 @@ const form = useForm<TestingForm>({
     }
     if (resetForm === 'commit') {
       form.setValue('commitHash', undefined);
+      if (form.getValues('subject') === null) form.setValue('subject', undefined);
+      if (form.getValues('version') === null) form.setValue('version', undefined);
     }
-    setIsCustomizedTestingMode(false);
-    form.setValue("numberOfTests", DEFAULT_TESTS_COUNT);
-    setAdvancedTestCount();
-
+    if (resetForm !== null) {
+      setIsCustomizedTestingMode(false);
+      form.setValue('numberOfTests', DEFAULT_TESTS_COUNT);
+      form.setValue('numCrashTolerance', CUSTOMIZED_TESTS_COUNT);
+      form.setValue('numWhiteList', CUSTOMIZED_TESTS_COUNT);
+      form.setValue('numDLTests', CUSTOMIZED_TESTS_COUNT);
+      form.setValue('numStandardProperty', CUSTOMIZED_TESTS_COUNT);
+      form.setValue('numNoLockedFunds', CUSTOMIZED_TESTS_COUNT);
+      form.setValue('numNoLockedFundsLight', CUSTOMIZED_TESTS_COUNT);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetForm]);
 
@@ -202,24 +204,19 @@ const form = useForm<TestingForm>({
   };
 
   const formHandler = async (formData: TestingForm) => {
-    await dispatch(setIsCustomized(isCustomizedTestingMode))
+    await dispatch(setIsCustomized(isCustomizedTestingMode));
     dispatch(createTestRun({isCustomizedTestingMode: isCustomizedTestingMode, isAdvancedCount: !showAdvancedCountFields}));
   };
 
   const onTestingModeToggle = (isChecked: boolean) => {
     setIsCustomizedTestingMode(isChecked);
-    isChecked
-      ? setAdvancedTestCount()
-      : form.setValue("numberOfTests", DEFAULT_TESTS_COUNT);
     setShowAdvancedCountFields(true);
   };
 
   const onExpandAdvancedFields = (hide: boolean) => {
-    setShowAdvancedCountFields(hide)
-    if (!hide) {
-      setAdvancedTestCount(parseInt(form.getValues().numberOfTests))
-    }
-  }
+    setShowAdvancedCountFields(hide);
+  };
+
   return (
     <div>
       <form onSubmit={form.handleSubmit(formHandler)} style={{"marginBottom": "20px"}}>
