@@ -1,69 +1,13 @@
 import axios from "axios";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "store/rootReducer";
-import { fetch } from "api";
-import type { Run } from 'components/CreateCertificate/CreateCertificate';
-import { setRole } from "./session.slice";
+import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import {RootState} from "store/rootReducer";
+import {fetch} from "api";
+import type {Run} from 'components/CreateCertificate/CreateCertificate';
+import {setRole} from "./session.slice";
+import * as Cert from 'dapps-certification'
 
-export interface UserProfile {
-  address: string;
-  email: string;
-  fullName: string;
-  companyName: string;
-  contactEmail: string;
-  linkedin: string | null;
-  twitter: string | null;
-  website: string | null;
-  role: string | null;
-  dapp: {
-    name: string;
-    owner: string;
-    repo: string;
-    version?: string;
-    subject?: string;
-    githubToken?: string;
-  } | null;
-}
-
-export interface IProfile {
-  address: string;
-  companyName: string;
-  contactEmail: string;
-  dapp: {
-    githubToken: string;
-    name: string;
-    owner: string;
-    repo: string;
-    subject: string;
-    version: string
-  };
-  email: string;
-  fullName: string;
-  id: number;
-  linkedin: string;
-  role: "no-role" | "support" | "admin";
-  runStats: {
-    aborted: number;
-    certified: number;
-    failed: number;
-    queued: number;
-    readyForCertification: number;
-    successful: number;
-    total: number
-  },
-  subscription: {
-    adaUsdPrice: number;
-    endDate: string;
-    id: number;
-    name: string;
-    price: number;
-    startDate: string;
-    status: "inactive" | "active" | "pending";
-    tierType: "developer" | "auditor";
-  },
-  twitter: string;
-  website: string;
-}
+export type UserProfile = Cert.ProfileDTO;
+export type IProfile = Cert.ProfileSummaryDTO;
 
 interface ProfileState {
   profile: UserProfile | null;
@@ -129,9 +73,9 @@ const initialState: ProfileState = {
 export const fetchProfile = createAsyncThunk('fetchProfile', async (payload, thunkApi) => {
   try {
     const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
-    const response = await fetch<UserProfile>(thunkApi, { method: 'GET', url: `/profile/${impersonate ? retainId : 'current'}` });
+    const response = await fetch<Cert.ProfileDTO>(thunkApi, {method: 'GET', url: `/profile/${impersonate ? retainId : 'current'}`});
     if (response.status !== 200) throw new Error();
-    await thunkApi.dispatch(setRole({ role: response.data.role }));
+    await thunkApi.dispatch(setRole({role: response.data.role}));
     return response.data;
   } catch (error) {
     return thunkApi.rejectWithValue(null);
@@ -141,7 +85,7 @@ export const fetchProfile = createAsyncThunk('fetchProfile', async (payload, thu
 export const updateProfile = createAsyncThunk('updateProfile', async (payload: {data: UserProfile}, thunkApi) => {
   try {
     const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
-    const response = await fetch<UserProfile>(thunkApi, { method: 'PUT', url: `/profile/${impersonate ? retainId : 'current'}`, data: payload.data });
+    const response = await fetch<Cert.ProfileDTO>(thunkApi, {method: 'PUT', url: `/profile/${impersonate ? retainId : 'current'}`, data: payload.data});
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -153,7 +97,7 @@ export const updateProfile = createAsyncThunk('updateProfile', async (payload: {
 
 export const fetchAllProfileDetails = createAsyncThunk('fetchAllProfileDetails', async (_, thunkApi) => {
   try {
-    const response: any = await fetch<any>(thunkApi, { method: 'GET', url: '/profiles' });
+    const response = await fetch<Cert.ProfileSummaryDTO[]>(thunkApi, {method: 'GET', url: '/profiles'});
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {
@@ -184,7 +128,7 @@ export const fetchProfileDetails = createAsyncThunk('fetchProfileDetails', async
   }
 });
 
-export const updateProfileDetails = createAsyncThunk('updateProfileDetails', async ({ id, data }: any, thunkApi) => {
+export const updateProfileDetails = createAsyncThunk('updateProfileDetails', async ({id, data}: any, thunkApi) => {
   try {
     const response = await fetch<any>(thunkApi, {
       method: "PUT",
@@ -215,7 +159,7 @@ export const updateProfileDetails = createAsyncThunk('updateProfileDetails', asy
 
 export const fetchProfileSubscriptionDetails = createAsyncThunk('fetchProfileSubscriptionDetails', async (payload: any, thunkApi) => {
   try {
-    const response = await fetch<any>(thunkApi, { method: 'GET', url: `/profile/${payload}/subscriptions?just-enabled=true` });
+    const response = await fetch<any>(thunkApi, {method: 'GET', url: `/profile/${payload}/subscriptions?just-enabled=true`});
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {
@@ -223,9 +167,9 @@ export const fetchProfileSubscriptionDetails = createAsyncThunk('fetchProfileSub
   }
 });
 
-export const fetchProfileRunHistory = createAsyncThunk("fetchProfileRunHistory", async( payload: any, thunkApi) => {
+export const fetchProfileRunHistory = createAsyncThunk("fetchProfileRunHistory", async (payload: any, thunkApi) => {
   try {
-    const response = await fetch<Run[]>(thunkApi, { method: 'GET', url: `/profile/${payload}/runs` });
+    const response = await fetch<Run[]>(thunkApi, {method: 'GET', url: `/profile/${payload}/runs`});
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);
@@ -243,7 +187,7 @@ export const profileSlice = createSlice({
     clearSuccess: (state) => {
       state.updateSuccess = false;
     },
-    setImpersonate: (state, { payload }) => {
+    setImpersonate: (state, {payload}) => {
       state.impersonate = payload.status;
       state.retainId = payload.id;
     }
@@ -351,6 +295,6 @@ export const profileSlice = createSlice({
   },
 });
 
-export const { clearProfile, setSelectedUser, clearSuccess, setImpersonate } = profileSlice.actions;
+export const {clearProfile, setSelectedUser, clearSuccess, setImpersonate} = profileSlice.actions;
 
 export default profileSlice.reducer;

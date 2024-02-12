@@ -1,18 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetch } from "api";
+import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import {fetch} from "api";
+import * as Cert from 'dapps-certification'
 
-interface TierFeature {
-  name: string;
-}
-
-export interface Tier {
-  id: string;
-  name: string;
-  subtitle: string;
-  features: TierFeature[];
-  usdPrice: number;
-  enabled: boolean;
-}
+export type Tier = Cert.TierDTO
 
 interface TiersState {
   tiers: Tier[];
@@ -22,9 +12,9 @@ const initialState: TiersState = {
   tiers: []
 };
 
-export const fetchTiers = createAsyncThunk("fetchTiers", async (payload: any, thunkApi) => {
+export const fetchTiers = createAsyncThunk("fetchTiers", async (_: any, thunkApi) => {
   try {
-    const response = await fetch<Tier[]>(thunkApi, { method: 'GET', url: '/tiers' });
+    const response = await fetch<Cert.TierDTO[]>(thunkApi, {method: 'GET', url: '/tiers'});
     return response.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);
@@ -43,7 +33,7 @@ export const tiersSlide = createSlice({
       .addCase(fetchTiers.fulfilled, (state, actions) => {
         state.tiers = actions.payload;
       })
-      .addCase(fetchTiers.rejected, (state, actions) => {
+      .addCase(fetchTiers.rejected, (state) => {
         state.tiers = [];
       })
   },

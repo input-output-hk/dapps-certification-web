@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState } from "react";
+import {SetStateAction, useEffect, useState} from "react";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 import {
   Box,
@@ -7,16 +7,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 import SearchIcon from "@mui/icons-material/Search";
 
-import { fetchAllProfileDetails, IProfile } from "store/slices/profile.slice";
-import { useAppDispatch, useAppSelector } from "store/store";
-import { formatToTitleCase } from "utils/utils";
+import {fetchAllProfileDetails, IProfile} from "store/slices/profile.slice";
+import {useAppDispatch, useAppSelector} from "store/store";
+import {formatToTitleCase} from "utils/utils";
 
 import DeleteUserModal from "./components/DeleteUserModal";
-import { Card } from "./components/Card";
+import {Card} from "./components/Card";
 import Avatar from 'components/Avatar';
 
 import "./index.css";
@@ -30,7 +30,7 @@ const SupportCommands = () => {
   const [selectedId, setId] = useState<number | null>(null);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { allUsers, loadingDetails, detailsSuccess } = useAppSelector(
+  const {allUsers, loadingDetails, detailsSuccess} = useAppSelector(
     (state) => state.profile
   );
 
@@ -38,14 +38,14 @@ const SupportCommands = () => {
   const itemsPerPage = 10;
 
   const filteredPersons = (details: IProfile[]) =>
-    details.filter((person: { fullName: string; companyName: string }) => {
+    details.filter((person) => {
       return (
         person?.fullName?.toLowerCase().includes(searchField.toLowerCase()) ||
         person?.companyName?.toLowerCase().includes(searchField.toLowerCase())
       );
     });
 
-  const handleChange = (e: { target: { value: SetStateAction<string> } }) => {
+  const handleChange = (e: {target: {value: SetStateAction<string>}}) => {
     setSearchField(e.target.value);
     e.target.value ? setHasNextPage(false) : setHasNextPage(true); // no need to call api when searching
   };
@@ -119,11 +119,11 @@ const SupportCommands = () => {
     ) : (
       <p>{showText}</p>
     );
-  
+
   useEffect(() => {
     dispatch(fetchAllProfileDetails());
   }, [dispatch]);
-  
+
   return (
     <div>
       <Grid container className="my-6">
@@ -153,10 +153,10 @@ const SupportCommands = () => {
         )}
 
         {detailsSuccess
-        ? searchField
-          ? buildCards(filteredPersons(items), "No matching persons found!")
-          : buildCards(items, "")
-        : null}
+          ? searchField
+            ? buildCards(filteredPersons(items), "No matching persons found!")
+            : buildCards(items, "")
+          : null}
 
         {/* Show loader while loading more results */}
         {hasNextPage && <div ref={infiniteRef}>Loading more...</div>}
