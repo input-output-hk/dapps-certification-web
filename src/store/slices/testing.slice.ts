@@ -136,9 +136,15 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
 export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload: {}, thunkApi) => {
   try {
     const { uuid, timelineConfig, plannedTestingTasks, unitTestSuccess, hasFailedTasks, isCustomizedTestingMode } = (thunkApi.getState() as RootState).testing;
-    const response = await fetch<RunStatus>(thunkApi, { method: 'GET', url: `/run/${uuid}` });
+    const response:any = await fetch<RunStatus>(thunkApi, { method: 'GET', url: `/run/${uuid}` });
     const newTimelineConfig = processTimeLineConfig(response, timelineConfig);
     let newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks, isCustomizedTestingMode);
+    if (response.data.status === "certifying" && response.data.state === "running") {
+      if (!response.data.plan || !response.data.progress) {
+        console.error("Plan and Progress not available in Certifying state");
+        return thunkApi.rejectWithValue("Plan and Progress not available in Certifying state");
+      }
+    }
     if (newPlannedTestingTasks.length === 0 && plannedTestingTasks.length > 0) {
       newPlannedTestingTasks = plannedTestingTasks;
     }
@@ -267,8 +273,7 @@ export const testingSlice = createSlice({
         state.shouldFetchRunStatus = actions.payload.shouldFetchRunStatus;
       })
       .addCase(fetchRunStatus.rejected, (state, actions) => {
-        state.uuid = null;
-        state.form = null;
+        clearRun();
       });
   },
 });
