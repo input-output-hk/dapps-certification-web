@@ -138,12 +138,6 @@ export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload:
     const { uuid, timelineConfig, plannedTestingTasks, unitTestSuccess, hasFailedTasks, isCustomizedTestingMode } = (thunkApi.getState() as RootState).testing;
     const response:any = await fetch<RunStatus>(thunkApi, { method: 'GET', url: `/run/${uuid}` });
     const newTimelineConfig = processTimeLineConfig(response, timelineConfig);
-    if (response.data.status === "certifying" && response.data.state === "running") {
-      if (!response.data.plan || !response.data.progress) {
-        console.error("Plan and Progress not available in Certifying state");
-        return thunkApi.rejectWithValue("Plan and Progress not available in Certifying state");
-      }
-    }
     let newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks, isCustomizedTestingMode);
     if (newPlannedTestingTasks.length === 0 && plannedTestingTasks.length > 0) {
       newPlannedTestingTasks = plannedTestingTasks;

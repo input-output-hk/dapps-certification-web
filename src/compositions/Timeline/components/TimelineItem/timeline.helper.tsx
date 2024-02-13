@@ -82,7 +82,10 @@ export const getPlannedTestingTasks = (res: any, _plannedTestingTasks: PlanObj[]
   if (status === "certifying" && state === "running") {
     const resPlan = res.data.plan;
     const resProgress = res.data.progress;
-    if (!plannedTestingTasks.length && resPlan.length) {
+    if (!resPlan || !resProgress) {
+      return []
+    }
+    else if (!plannedTestingTasks.length && resPlan.length) {
       return (
         resPlan.map((item: { index: number; name: string }) => {
           const TaskConfig: ICertificationTask | undefined = CertificationTasks.find((task) => task.name === item.name)
