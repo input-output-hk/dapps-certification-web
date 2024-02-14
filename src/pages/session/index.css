@@ -20,4 +20,8 @@
     @apply text-slate-highlighted;
   }
 
+  .MuiListItemText-primary {
+    @apply text-white font-medium;
+  }
+
 }
