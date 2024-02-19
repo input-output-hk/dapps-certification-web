@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-.MuiListItemText-primary {
+.payment-details .MuiListItemText-primary {
     font-size: 13px;
     color: rgba(0,0,0,0.6);
 }
 
-.MuiListItemText-secondary {
+.payment-details .MuiListItemText-secondary {
     font-size: 16px;
     color: #000;
 }
