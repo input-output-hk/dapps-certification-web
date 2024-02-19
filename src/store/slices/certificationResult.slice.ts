@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetch } from "api";
+import { fetch } from "../../api";
 
 export const fetchCertificationResult = createAsyncThunk("fetchCertificationResult", async (payload: { uuid: string }, thunkApi) => {
   try {

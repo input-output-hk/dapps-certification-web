@@ -1,7 +1,7 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "store/rootReducer";
-import { fetch } from "api";
+import { fetch } from "../../api";
 import type { Run } from 'components/CreateCertificate/CreateCertificate';
 import { setRole } from "./session.slice";
 

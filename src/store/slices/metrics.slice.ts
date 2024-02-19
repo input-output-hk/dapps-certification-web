@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetch } from "api";
+import { fetch } from "../../api";
 
 export interface AuditorReportMetric {
   date: number;

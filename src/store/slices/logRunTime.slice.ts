@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { formatTimeToReadable } from "utils/utils";
-import { fetch } from "api";
+import { fetch } from "../../api";
 
 interface RunTimeState {
   startTime: string;
