@@ -36,7 +36,7 @@ const PaymentDetailsVerification = ( props: Props ) => {
       </DialogTitle>
       <DialogContent>
         <>
-          <List className="px-[20px]">
+          <List className="px-[20px] payment-details">
             {props?.data?.profile && (<>
               <ListItem><ListItemText primary="Company Name" secondary={props?.data?.profile.companyName} /></ListItem>
               <ListItem><ListItemText primary="Full Name" secondary={props?.data?.profile.fullName} /></ListItem>
