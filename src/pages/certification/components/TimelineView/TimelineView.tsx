@@ -199,9 +199,6 @@ const TimelineView: React.FC<Props> = ({ onAbort }) => {
                             Property Name
                           </th>
                           <th scope="col" className="text-center p-2">
-                            Discarded
-                          </th>
-                          <th scope="col" className="text-center p-2">
                             Progress
                           </th>
                         </tr>
@@ -215,9 +212,6 @@ const TimelineView: React.FC<Props> = ({ onAbort }) => {
                             >
                               <td className="whitespace-nowrap p-2">
                                 {task.label}
-                              </td>
-                              <td className="text-center whitespace-nowrap p-2">
-                                {task.discarded}
                               </td>
                               <td className="text-center whitespace-nowrap p-2">
                                 {getTaskProgress(task, index)}
