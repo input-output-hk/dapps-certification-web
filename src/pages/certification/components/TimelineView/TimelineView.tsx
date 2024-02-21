@@ -181,51 +181,48 @@ const TimelineView: React.FC<Props> = ({ onAbort }) => {
                       result={resultData}
                       coverageFile={coverageFile}
                     />
-                    <ProgressCard 
-                      title={"Property Based Testing"} 
-                      currentValue={calculateCurrentProgress(plannedTestingTasks)} 
-                      totalValue={calculateExpectedProgress(plannedTestingTasks)}
-                    />
+                    {(!plannedTestingTasks || !plannedTestingTasks.length) ? null : (
+                      <ProgressCard 
+                        title={"Property Based Testing"} 
+                        currentValue={calculateCurrentProgress(plannedTestingTasks)} 
+                        totalValue={calculateExpectedProgress(plannedTestingTasks)}
+                      />
+                    )} 
                   </>)}
                 </div>
-
-                <div id="testingProgressContainer" className="mt-20">
-                  <table className="min-w-full text-left text-sm font-light">
-                    <thead className="font-medium dark:border-neutral-500 bg-slate-table-head text-slate-table-headText">
-                      <tr>
-                        <th scope="col" className="p-2">
-                          Property Name
-                        </th>
-                        <th scope="col" className="text-center p-2">
-                          Discarded
-                        </th>
-                        <th scope="col" className="text-center p-2">
-                          Progress
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {plannedTestingTasks.map((task: PlanObj, index: number) => {
-                        return (
-                          <tr
-                            key={task.name}
-                            className="dark:border-neutral-500"
-                          >
-                            <td className="whitespace-nowrap p-2">
-                              {task.label}
-                            </td>
-                            <td className="text-center whitespace-nowrap p-2">
-                              {task.discarded}
-                            </td>
-                            <td className="text-center whitespace-nowrap p-2">
-                              {getTaskProgress(task, index)}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                {(!plannedTestingTasks || !plannedTestingTasks.length) ? null : (  
+                  <div id="testingProgressContainer" className="mt-20">
+                    <table className="min-w-full text-left text-sm font-light">
+                      <thead className="font-medium dark:border-neutral-500 bg-slate-table-head text-slate-table-headText">
+                        <tr>
+                          <th scope="col" className="p-2">
+                            Property Name
+                          </th>
+                          <th scope="col" className="text-center p-2">
+                            Progress
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {plannedTestingTasks.map((task: PlanObj, index: number) => {
+                          return (
+                            <tr
+                              key={task.name}
+                              className="dark:border-neutral-500"
+                            >
+                              <td className="whitespace-nowrap p-2">
+                                {task.label}
+                              </td>
+                              <td className="text-center whitespace-nowrap p-2">
+                                {getTaskProgress(task, index)}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </>
             ) : null}
           </>
