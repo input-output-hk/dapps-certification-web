@@ -117,8 +117,8 @@ const AuditorRunTestForm: React.FC = () => {
       } else {
         const { dapp } = profile;
         form.setValue('name', dapp.name);
-        form.setValue('version', dapp.version);
-        form.setValue('subject', dapp.subject);
+        form.setValue('version', dapp.version !== null ? dapp.version : undefined);
+        form.setValue('subject', dapp.subject !== null ? dapp.subject : undefined);
         form.setValue('repoUrl', dapp.owner && dapp.repo ? `https://github.com/${dapp.owner}/${dapp.repo}` : undefined);
       }
       form.setValue('commitHash', undefined);
