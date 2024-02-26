@@ -1,0 +1,31 @@
+name: Coverage Report
+on:
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run test | tee ./coverage.txt && exit ${PIPESTATUS[0]}
+
+      - name: Coverage Report
+        uses: MishaKav/jest-coverage-comment@main
+        with:
+          title: Coverage Report
+          badge-title: Coverage
+          summary-title: Summary
+          coverage-title: Coverage
+          coverage-path: ./coverage.txt
+          coverage-summary-path: ./coverage/coverage-summary.json
+          junitxml-title: JUnit
+          junitxml-path: ./coverage/junit.xml

@@ -2,7 +2,7 @@ import { Address, BaseAddress, RewardAddress } from "@emurgo/cardano-serializati
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchActiveSubscription, logout } from "store/slices/auth.slice";
 import { setSession } from "store/slices/session.slice";
-import { fetch } from "api";
+import { fetch } from "../../api";
 
 import type { RootState } from "../rootReducer";
 

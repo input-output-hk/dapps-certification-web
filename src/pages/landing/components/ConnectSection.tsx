@@ -28,6 +28,7 @@ const WalletSelection = (props: {
   loading: boolean;
   handleSelectWallet: (walletName: string) => void;
 }) => {
+  const CardanoNS = window.cardano;
   const networkEnvVar = process.env.REACT_APP_WALLET_NETWORK;
 
   if (props.loading) return <CircularProgress color="secondary" size={60} className="my-2" />;
@@ -46,6 +47,7 @@ const WalletSelection = (props: {
       { props.activeWallets.map((walletName: string, index: number) => CardanoNS && CardanoNS[walletName] ? (
         <Grid item key={index} xs={6}>
           <Button
+            role="button"
             fullWidth variant="outlined"
             size="large" className="button-wallet"
             onClick={() => props.handleSelectWallet(walletName)}
@@ -112,6 +114,7 @@ const ConnectSection = () => {
               Connect your in-browser wallet to login/sign-up
             </Typography>
             <Button
+              role="button"
               variant="contained" size="large"
               className="py-3 px-4 font-medium button-contained-main"
               onClick={() => setShowModal(true)}

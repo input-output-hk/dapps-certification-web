@@ -56,6 +56,7 @@ const SubscriptionSection = (props: Props) => {
                     ))}
                   </Typography>
                   <Button
+                    role="button"
                     variant="contained" size="large"
                     disabled={!tier.enabled}
                     className={`py-3 px-14 font-medium ${tierId !== tier.id ? 'button-contained-active' : 'button-contained-main'}`}

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetch } from "api";
+import { fetch } from "../../api";
 
 import { updateProfile } from "store/slices/profile.slice";
 import { clearAccessToken } from "store/slices/session.slice";
@@ -17,7 +17,7 @@ export interface TestingForm {
   name?: string;
   version?: string;
   subject?: string;
-  numberOfTests?: any;
+  numberOfTests?: number;
   numCrashTolerance?: number;
   numWhiteList?: number;
   numDLTests?: number;
@@ -136,9 +136,12 @@ export const createTestRun = createAsyncThunk("createTestRun", async (payload: {
 export const fetchRunStatus = createAsyncThunk("fetchRunStatus", async (payload: {}, thunkApi) => {
   try {
     const { uuid, timelineConfig, plannedTestingTasks, unitTestSuccess, hasFailedTasks, isCustomizedTestingMode } = (thunkApi.getState() as RootState).testing;
-    const response = await fetch<RunStatus>(thunkApi, { method: 'GET', url: `/run/${uuid}` });
+    const response:any = await fetch<RunStatus>(thunkApi, { method: 'GET', url: `/run/${uuid}` });
     const newTimelineConfig = processTimeLineConfig(response, timelineConfig);
-    const newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks, isCustomizedTestingMode);
+    let newPlannedTestingTasks = getPlannedTestingTasks(response, plannedTestingTasks, isCustomizedTestingMode);
+    if (newPlannedTestingTasks.length === 0 && plannedTestingTasks.length > 0) {
+      newPlannedTestingTasks = plannedTestingTasks;
+    }
 
     const status: string = response.data.status;
     const state: string | null = response.data.hasOwnProperty('state') && response.data.state ? response.data.state : null;
@@ -264,8 +267,7 @@ export const testingSlice = createSlice({
         state.shouldFetchRunStatus = actions.payload.shouldFetchRunStatus;
       })
       .addCase(fetchRunStatus.rejected, (state, actions) => {
-        state.uuid = null;
-        state.form = null;
+        clearRun();
       });
   },
 });

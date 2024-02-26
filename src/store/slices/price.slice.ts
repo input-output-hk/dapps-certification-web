@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetch } from "api";
+import { fetch } from "../../api";
 
 interface PriceState {
   price: number;
