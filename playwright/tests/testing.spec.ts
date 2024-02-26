@@ -16,7 +16,7 @@ test.beforeAll(async ({ browser, playwright }) => {
 })
 
 test.afterAll(async ({ browser }) => {
-    browser.close;
+    browser.close();
 });
 
 test('can start a test campaign', async () => {
