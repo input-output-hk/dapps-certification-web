@@ -19,7 +19,7 @@ module.exports = {
       customExportConditions: [''],
     },
     transform: {
-      "^.+\\.tsx?$": "ts-jest",
+      "^src/.+\\.tsx?$": "ts-jest",
     },
     setupFiles: ['./jest.polyfills.js'],
     reporters: ['default', ['jest-junit', { outputDirectory: 'coverage' }]],
