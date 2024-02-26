@@ -20,6 +20,7 @@ export const fetchActiveSubscription = createAsyncThunk('fetchActiveSubscription
     const response: any = await fetch<string[]>(thunkApi, { method: 'GET', url: `/profile/${impersonate ? retainId : "current"}/subscriptions/active-features` });
     if (response.status !== 200) throw new Error();
     return response.data;
+    // return ['l1-run','l2-upload-report'];
   } catch (error) {
     await thunkApi.dispatch(logout());
     return [];

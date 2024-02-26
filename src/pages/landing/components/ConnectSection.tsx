@@ -15,6 +15,11 @@ declare global {
   }
 }
 
+
+if (document.cookie.indexOf('loadMockWallet=') !== -1) {
+  window.cardano = {'nami' : { icon: null, name: 'Nami' }}
+}
+
 const CardanoNS = window.cardano;
 
 const WalletSelection = (props: {

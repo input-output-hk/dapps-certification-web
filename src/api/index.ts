@@ -1,6 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from "axios";
 import { RootState } from "store/rootReducer";
 
+import { sessionMock } from "../utils/wallet-constant";
+
 interface FetchOptions {
   useSession?: boolean;
   useAccessToken?: boolean;
@@ -27,7 +29,12 @@ const getContentTypeHeader = (options: FetchOptions) => {
 }
 
 const getAuthorizationHeader = (state: RootState, options: FetchOptions) => {
-  const { authToken, accessToken } = state.session;
+  let { authToken, accessToken } = state.session;
+
+  if (document.cookie.indexOf('loadMockWallet=') !== -1) {
+    authToken = sessionMock.authToken
+    accessToken = sessionMock.accessToken
+  }
   if (options.useSession && authToken !== null) return { 'Authorization': `Bearer ${authToken}` };
   if (options.useAccessToken && accessToken !== null) return { 'Authorization': accessToken };
   return {};
