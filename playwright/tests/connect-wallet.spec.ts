@@ -1,13 +1,19 @@
 // @ts-check
-import { test, expect } from './fixtures';
+import { type Page } from '@playwright/test';
+import { test, expect } from '../others/fixtures';
 
 const wallet_account_name = 'CertTestWallet';
 const wallet_account_password = 'CertTestWallet@123';
 const wallet_seed_phrase = ['noble', 'reflect', 'amount', 'shock', 'visual', 'visual', 'daring', 'cloth', 'duck', 'else', 'result', 'cigar',
     'abstract', 'hobby', 'clown', 'lend', 'boy', 'priority', 'rhythm', 'short', 'pole', 'vote', 'already', 'frequent'];
 
+// let page: Page;
+// test.beforeAll(async ({ browser }) => {
+//     page = await browser.newPage();
+// });
+
 // setup wallet account
-test.beforeAll(async ({ page, extensionId }) => {
+test.beforeEach('Connect Wallet', async ({ page, extensionId }) => {
     await page.goto(`chrome-extension://${extensionId}/mainPopup.html`);
 
     await page.getByText('Legal & analytics').waitFor({state: 'visible'})
@@ -55,24 +61,30 @@ test.beforeAll(async ({ page, extensionId }) => {
     await page.getByText('Network').click();
     await page.locator('xpath=//select[contains(@class,"chakra-select")]').selectOption('preprod');
 
+    await page.goto('http://localhost:3000/');
+    await expect(page.getByRole('heading', { name: 'Testing Tool' })).toBeVisible();
 })
 
 test('can connect to Nami wallet', async ({ page, request, extensionId }) => {
-    await page.goto('http://localhost:3000/');
-    await expect(page.getByRole('heading', { name: 'Testing Tool' })).toBeVisible();
-
     await expect(page.getByTestId('connect-wallet-button')).toBeVisible()
     await page.getByTestId('connect-wallet-button').click()
+
     await expect(page.getByTestId('connect-to-wallet-Nami')).toBeVisible()
     await page.getByTestId('connect-to-wallet-Nami').click()
 
-    // const pagePromise = page.context().waitForEvent('page');
+    const pagePromise = page.context().waitForEvent('page');
+    
 
     const timestamp = await request.get('http://localhost:8080/server-timestamp');
     expect(timestamp.ok()).toBeTruthy();
-
-    // await page.goto(`chrome-extension://${extensionId}/internalPopup.html`);
     
+    // await pagePromise.waitForTimeout(3000)
+    
+    const signPopupPage = await pagePromise;
+    await signPopupPage.goto(`chrome-extension://${extensionId}/internalPopup.html`);
+    
+    await signPopupPage.waitForTimeout(3000);
+    await signPopupPage.pause()
     // const signPopupPage = await pagePromise;
-    // await expect(signPopupPage.getByText(/timestamp/i)).toBeVisible()
+    await expect(signPopupPage.getByText(/timestamp/i)).toBeVisible();
 })

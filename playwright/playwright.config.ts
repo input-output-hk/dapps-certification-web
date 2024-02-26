@@ -17,22 +17,21 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Opt out of parallel tests always */
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
-
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    // baseURL: "http://localhost:8080",
-    // extraHTTPHeaders: {
-    //   Accept: 'application/json',
-    //   Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWZhdWx0IjpbMSwic3Rha2VfdGVzdDF1cjl6Z3ozcHg3Nzh4eXVkNHhyZG0wOW01bjkzZmR4dXpma2Y1cGRtbjRtcDVxZzlxam5nZSJdLCJleHAiOjE3MDk0MDEwMDB9.Fck-IVAEuWBDJWaYLEGHfahGgD5sZGTsXktcnOH-X7g'
-    // }
+    /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL: "http://localhost:8080",
+    /* extra request headers to be used always unless locally overridden */
+    extraHTTPHeaders: {
+      Accept: 'application/json',
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWZhdWx0IjpbMSwic3Rha2VfdGVzdDF1cXRoenFscDM0N21leW0zOWRhZm13NHI2d2swcWxjemhoOGp4MzRyZ2FldXVxc2d4Z3V2aCJdLCJleHAiOjE3MTE0MzYyMjd9.Gyqz2xY-O26veRAmGPYi9KuSVvfkkPZSw9AMJCAcr8I'
+    }
   },
 
   /* Configure projects for major browsers */
@@ -76,7 +75,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   // webServer: {
   //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
+  //   url: 'http://localhost:3000',
+  //   // reuseExistingServer: !process.env.CI,
   // },
 });

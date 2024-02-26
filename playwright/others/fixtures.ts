@@ -14,8 +14,8 @@ export const test = base.extend<{
         `--load-extension=${pathToExtension}`,
       ],
     });
+
     await use(context);
-    // await context.close();
   },
   extensionId: "lpfcbjknijpeeillifnkikgncikgfhdo"
 });
