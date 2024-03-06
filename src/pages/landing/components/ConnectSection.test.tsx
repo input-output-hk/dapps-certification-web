@@ -10,6 +10,8 @@ import ConnectSection from './ConnectSection';
 describe('Landing page', () => {
   test('should render wallet connect button on landing page', () => {
 
+    renderWithProviders(<ConnectSection />);
+
     const buttonElement = screen.getByRole('button', { name: /Connect your wallet/i });
 
     expect(buttonElement).toBeVisible();
