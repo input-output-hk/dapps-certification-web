@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/coderabbit-overrides.v2.json
 language: en
 early_access: true
 
@@ -13,12 +14,12 @@ reviews:
   path_filters: []
   path_instructions: [] # Maybe something for **/**.test.tsx in the future?
 
-auto_review:
-  enabled: true
-  ignore_title_keywords: 
-    - "WIP"
-  labels: 
-    - "Not ready for review"
-  drafts: false
-  base_branches: 
-    - "main"
+  auto_review:
+    enabled: true
+    ignore_title_keywords: 
+      - "WIP"
+    labels: 
+      - "Not ready for review"
+    drafts: false
+    base_branches: 
+      - "main"
