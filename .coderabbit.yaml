@@ -18,8 +18,7 @@ reviews:
     enabled: true
     ignore_title_keywords: 
       - "WIP"
-    labels: 
-      - "Not ready for review"
+    labels: []
     drafts: false
     base_branches: 
       - "main"
