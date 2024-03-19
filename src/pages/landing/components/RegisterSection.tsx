@@ -16,7 +16,8 @@ const REFRESH_TIME = 30;
 
 interface Props {
   tier: Tier,
-  onSubmit: (form: RegisterForm) => void
+  onClickPay: (form: RegisterForm) => void,
+  submitForm: boolean
 }
 
 const RegisterSection = (props: Props) => {
@@ -65,7 +66,7 @@ const RegisterSection = (props: Props) => {
   );
 
   const onSubmit = (form: RegisterForm) => {
-    props.onSubmit({
+    props.onClickPay({
       ...form,
       linkedin: form.linkedin!.length > 0 ? form.linkedin : undefined,
       twitter: form.twitter!.length > 0 ? form.twitter : undefined,

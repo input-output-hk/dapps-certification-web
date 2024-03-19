@@ -7,6 +7,7 @@ import { fetch } from "../../api";
 import type { RootState } from "../rootReducer";
 
 import { sessionMock, walletMock } from "../../utils/wallet-constant";
+import { fetchProfileBalance } from "./profile.slice";
 
 declare global {
   interface Window {
@@ -124,6 +125,8 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
 
         await thunkApi.dispatch(fetchActiveSubscription());
 
+        thunkApi.dispatch(fetchProfileBalance({}))
+        
         return { wallet, walletName, walletAddress: changeAddressBech32, stakeAddress: stakeAddrBech32 };
     
     } 

@@ -54,7 +54,8 @@ const Profile = () => {
 
   const cancelEditing = () => {
     setIsEditing(false);
-    reset(); clearErrors();
+    reset(); 
+    clearErrors();
   }
 
   return (

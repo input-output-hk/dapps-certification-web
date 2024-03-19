@@ -84,6 +84,7 @@ interface ProfileState {
   runHistory: Run[];
   impersonate: boolean;
   retainId: number | null;
+  profileBalance: number;
 }
 
 export interface IUpdateProfile {
@@ -123,7 +124,8 @@ const initialState: ProfileState = {
   loadingHistory: false,
   runHistory: [],
   impersonate: false,
-  retainId: null
+  retainId: null,
+  profileBalance: 0
 };
 
 export const fetchProfile = createAsyncThunk('fetchProfile', async (payload, thunkApi) => {
@@ -227,6 +229,16 @@ export const fetchProfileRunHistory = createAsyncThunk("fetchProfileRunHistory",
   try {
     const response = await fetch<Run[]>(thunkApi, { method: 'GET', url: `/profile/${payload}/runs` });
     return response.data;
+  } catch (e: any) {
+    return thunkApi.rejectWithValue(e.response.data);
+  }
+})
+
+export const fetchProfileBalance = createAsyncThunk("fetchProfileBalance", async( payload: any, thunkApi) => {
+  try {
+    const res: any = await fetch<number>(thunkApi, { method: 'GET', url: '/profile/current/balance' });
+    if (res.status !== 200) throw { message: res.data };
+    return res.data;
   } catch (e: any) {
     return thunkApi.rejectWithValue(e.response.data);
   }
@@ -347,6 +359,15 @@ export const profileSlice = createSlice({
       .addCase(fetchProfileRunHistory.rejected, (state) => {
         state.loadingHistory = false;
         state.runHistory = [];
+      })
+      .addCase(fetchProfileBalance.pending, (state) => {
+        state.profileBalance = 0;
+      })
+      .addCase(fetchProfileBalance.fulfilled, (state, actions) => {
+        state.profileBalance = actions.payload;
+      })
+      .addCase(fetchProfileBalance.rejected, (state, actions) => {
+        state.profileBalance = 0;
       })
   },
 });
