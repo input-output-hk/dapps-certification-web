@@ -30,7 +30,7 @@ export default defineConfig({
     /* extra request headers to be used always unless locally overridden */
     extraHTTPHeaders: {
       Accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWZhdWx0IjpbMSwic3Rha2VfdGVzdDF1cXRoenFscDM0N21leW0zOWRhZm13NHI2d2swcWxjemhoOGp4MzRyZ2FldXVxc2d4Z3V2aCJdLCJleHAiOjE3MTE0MzYyMjd9.Gyqz2xY-O26veRAmGPYi9KuSVvfkkPZSw9AMJCAcr8I'
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWZhdWx0IjpbMSwic3Rha2VfdGVzdDF1cXRoenFscDM0N21leW0zOWRhZm13NHI2d2swcWxjemhoOGp4MzRyZ2FldXVxc2d4Z3V2aCJdLCJleHAiOjE3MTI3NjUyODN9.-SdV6PfGi0c_XHb7nUT3DRAJidO41yNGs0_8ujkbeZM'
     }
   },
 

@@ -7,13 +7,16 @@ const wallet_account_password = 'CertTestWallet@123';
 const wallet_seed_phrase = ['noble', 'reflect', 'amount', 'shock', 'visual', 'visual', 'daring', 'cloth', 'duck', 'else', 'result', 'cigar',
     'abstract', 'hobby', 'clown', 'lend', 'boy', 'priority', 'rhythm', 'short', 'pole', 'vote', 'already', 'frequent'];
 
-// let page: Page;
-// test.beforeAll(async ({ browser }) => {
-//     page = await browser.newPage();
-// });
+let page: Page;
 
 // setup wallet account
-test.beforeEach('Connect Wallet', async ({ page, extensionId }) => {
+test.beforeAll(async ({ browser, extensionId }) => {
+    const context = await browser.newContext();
+    page = await context.newPage();
+    await page.goto('http://localhost:3000');
+});
+
+test('Can import and connect to wallet', async ({extensionId}) => {
     await page.goto(`chrome-extension://${extensionId}/mainPopup.html`);
 
     await page.getByText('Legal & analytics').waitFor({state: 'visible'})
@@ -65,7 +68,7 @@ test.beforeEach('Connect Wallet', async ({ page, extensionId }) => {
     await expect(page.getByRole('heading', { name: 'Testing Tool' })).toBeVisible();
 })
 
-test('can connect to Nami wallet', async ({ page, request, extensionId }) => {
+test('can connect to Nami wallet', async ({ request, extensionId }) => {
     await expect(page.getByTestId('connect-wallet-button')).toBeVisible()
     await page.getByTestId('connect-wallet-button').click()
 

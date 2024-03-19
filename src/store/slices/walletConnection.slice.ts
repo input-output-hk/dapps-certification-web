@@ -67,64 +67,80 @@ const getAddresses = async (wallet: any): Promise<[StakeAddressHex, StakeAddress
 }
 
 export const connectWallet = createAsyncThunk('connectWallet', async (payload: { walletName: string }, thunkApi) => {
-  if (document.cookie.indexOf('loadMockWallet=') !== -1) {
-    // const { walletName } = payload;
-    // const wallet = await CardanoNS[walletName].enable();
-
-    thunkApi.dispatch(setSession({
-      authToken: sessionMock.authToken,
-      networkId: sessionMock.networkId,
-      walletAddress: sessionMock.walletAddress
-    }));
-
-    await thunkApi.dispatch(fetchActiveSubscription());
-
-    return { wallet: walletMock.wallet, walletName: walletMock.walletName, walletAddress: walletMock.walletAddress, stakeAddress: walletMock.stakeAddress };
-  } else {
-
-    try {
-      const { walletName } = payload;
-      const wallet = await CardanoNS[walletName].enable();
-      const networkId = await wallet.getNetworkId();
-
-      const [stakeAddrHex, stakeAddrBech32, changeAddressBech32] = await getAddresses(wallet);
-
+  try {
+    if (document.cookie.indexOf('loadUnauthorizedWallet=') !== -1) {
       const timestampRes = await fetch<number>(thunkApi, { method: 'GET', url: '/server-timestamp' });
       if (timestampRes.status !== 200) throw new Error();
-      const timestamp = timestampRes.data;
-      
-      const message = `Sign this message if you are the owner of the ${changeAddressBech32} address. \n Timestamp: <<${timestamp}>> \n Expiry: 60 seconds`;
-
-      const { key, signature } = await wallet.signData(stakeAddrHex, Buffer.from(message, 'utf8').toString('hex'));
-      if (!key || !signature) throw new Error();
-      
-      const loginRes = await fetch<string>(thunkApi, { method: 'POST', url: '/login', data: { address: stakeAddrBech32, key, signature } });
-      if (loginRes.status !== 200) throw new Error();
+      const loginPayload = {address: "", key: "", signature: ""}
+      const loginRes = await fetch<string>(thunkApi, { method: 'POST', url: '/login', data: loginPayload });
+      if (loginRes.status !== 200) throw new Error('Unable to login. Please try again.');
 
       thunkApi.dispatch(setSession({
-        authToken: loginRes.data,
-        networkId: networkId,
-        walletAddress: changeAddressBech32
+        authToken: sessionMock.authToken,
+        networkId: sessionMock.networkId,
+        walletAddress: sessionMock.walletAddress
+      }));
+      await thunkApi.dispatch(fetchActiveSubscription());
+
+      return { wallet: walletMock.wallet, walletName: walletMock.walletName, walletAddress: walletMock.walletAddress, stakeAddress: walletMock.stakeAddress };
+    } else if (document.cookie.indexOf('loadMockWallet=') !== -1) {
+      // const { walletName } = payload;
+      // const wallet = await CardanoNS[walletName].enable();
+
+      thunkApi.dispatch(setSession({
+        authToken: sessionMock.authToken,
+        networkId: sessionMock.networkId,
+        walletAddress: sessionMock.walletAddress
       }));
 
       await thunkApi.dispatch(fetchActiveSubscription());
-      
-      return { wallet, walletName, walletAddress: changeAddressBech32, stakeAddress: stakeAddrBech32 };
-    } catch (error: any) {
-      const payload = {
-        showRetry: true,
-        message: 'Could not obtain the proper key and signature for the wallet. Please try connecting again.'
-      };
-      if (error.info) {
-        payload.showRetry = error.code === 3;
-        payload.message = error.info;
-      }
-      if (error.response) {
-        error.showRetry = error.status === 403;
-        error.message = error.response.data || 'An error ocurred.';
-      }
-      return thunkApi.rejectWithValue(payload);
+
+      return { wallet: walletMock.wallet, walletName: walletMock.walletName, walletAddress: walletMock.walletAddress, stakeAddress: walletMock.stakeAddress };
+    } else {
+
+        const { walletName } = payload;
+        const wallet = await CardanoNS[walletName].enable();
+        const networkId = await wallet.getNetworkId();
+
+        const [stakeAddrHex, stakeAddrBech32, changeAddressBech32] = await getAddresses(wallet);
+
+        const timestampRes = await fetch<number>(thunkApi, { method: 'GET', url: '/server-timestamp' });
+        if (timestampRes.status !== 200) throw new Error();
+        const timestamp = timestampRes.data;
+        
+        const message = `Sign this message if you are the owner of the ${changeAddressBech32} address. \n Timestamp: <<${timestamp}>> \n Expiry: 60 seconds`;
+
+        const { key, signature } = await wallet.signData(stakeAddrHex, Buffer.from(message, 'utf8').toString('hex'));
+        if (!key || !signature) throw new Error();
+        
+        const loginRes = await fetch<string>(thunkApi, { method: 'POST', url: '/login', data: { address: stakeAddrBech32, key, signature } });
+        if (loginRes.status !== 200) throw new Error();
+
+        thunkApi.dispatch(setSession({
+          authToken: loginRes.data,
+          networkId: networkId,
+          walletAddress: changeAddressBech32
+        }));
+
+        await thunkApi.dispatch(fetchActiveSubscription());
+
+        return { wallet, walletName, walletAddress: changeAddressBech32, stakeAddress: stakeAddrBech32 };
+    
+    } 
+  } catch (error: any) {
+    const payload = {
+      showRetry: true,
+      message: 'Could not obtain the proper key and signature for the wallet. Please try connecting again.'
+    };
+    if (error.info) {
+      payload.showRetry = error.code === 3;
+      payload.message = error.info;
     }
+    if (error.response) {
+      error.showRetry = error.status === 403;
+      error.message = error.response.data || 'An error ocurred.';
+    }
+    return thunkApi.rejectWithValue(payload);
   }
 });
 

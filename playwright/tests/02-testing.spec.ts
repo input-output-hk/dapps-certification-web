@@ -2,6 +2,7 @@
 import { test, expect} from '@playwright/test';
 
 let page; 
+let runId;
 
 test.beforeAll(async ({ browser, playwright }) => {
     const context = await browser.newContext();
@@ -13,15 +14,14 @@ test.beforeAll(async ({ browser, playwright }) => {
     page = await context.newPage();
 
     await page.goto('http://localhost:3000');
+    
 })
 
 test.afterAll(async ({ browser }) => {
     browser.close();
-});
+})
 
 test('can start a test campaign', async () => {
-    page.on('console', msg => console.log(msg.text()));
-
     await page.route('**/repo/Ali-Hill/minimal-ptt-examples', async (route, request) => {
         // Override headers
         const headers = request.headers();
@@ -65,7 +65,7 @@ test('can start a test campaign', async () => {
 
     const commitHashInput = await page.getByTestId('commitHash');
     await commitHashInput.click();
-    await commitHashInput.fill('166f9b01c5');
+    await commitHashInput.fill('166f9b01c5'); // failed building
 
     await page.getByTestId('version').click();
     await page.getByTestId('subject').click();
@@ -79,21 +79,17 @@ test('can start a test campaign', async () => {
     await page.getByTestId('numWhiteList').click();
 
     const getRunIdPromise = page.waitForResponse(resp => {
-        return resp.url().match('http://localhost:8080/run') && resp.status() === 201
+        return resp.url().match('http://localhost:8080/run') && resp.request().method() === 'POST' && resp.status() === 201
     });
 
     await startTestButton.click();
 
     const getRunId = await getRunIdPromise;
-    const runId = await getRunId.body();
+    runId = await getRunId.body();
 
-    const getRunStatusPromise = page.waitForResponse(resp => {
-        return resp.url().match('http://localhost:8080/run/' + runId) && resp.status() === 200 
-            && resp.json().status === "building" && resp.json().state === "running"
-    })
-    const getRunStatus = await getRunStatusPromise;    
     await expect(page.getByTestId('statusTimeline')).toBeVisible();
-    await expect(page.getByTestId('statusTimeline').getByTestId('building').getByTestId('running')).toBeVisible();
+    // timeout wait for 100 seconds max
+    await expect(await page.getByTestId('statusTimeline').getByTestId('building').getByTestId('running')).toBeVisible({ timeout: 100000 });
 
     const getLogsPromise = page.waitForResponse(resp => resp.url().includes('/logs') && resp.status() === 200);
     const getLogs = await getLogsPromise; 
@@ -118,13 +114,74 @@ test('can see running campaign in Testing History', async () =>  {
     await expect(page.locator('xpath=//li[contains(@class,"nav-bar-item")][2]/div[2]/span[text()="Testing"]/div/span[contains(@class, "MuiChip-label")]')).toHaveText('Running');
 });
 
-    /* test('can see finished view for the run in Testing') */
-    // await page.locator('xpath=//li[contains(@class,"nav-bar-item")][2]/div[2]/span[text()="Testing"]').click();
-    // const finishedRunPromise = page.waitForResponse(resp => {
-    //     return resp.url().match('http://localhost:8080/run/' + runId) && resp.status() === 200 
-    //         && resp.json().status === "finished" && resp.json().result.length
-    // })
-    // const finishedRun = await finishedRunPromise;
-    // await expect(page.getByRole('button', { name: 'Full Report', exact: true })).toBeVisible()
+test('can see error in timeline when building fails', async () => {
+    await page.locator('xpath=//li[contains(@class,"nav-bar-item")][2]/div[2]/span[text()="Testing"]').click();
+    // timeout wait for 30mins max
+    await expect(await page.getByTestId('statusTimeline').getByTestId('building').getByTestId('failed')).toBeVisible({ timeout: 1.8e+6 });
+
+    await expect(page.getByRole('button', { name: 'Abort', exact: true })).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Test another commit', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Test another DApp', exact: true })).toBeVisible()
+})
+
+test('clears testing form except DApp info when clicked on "Test another commit" button', async () => {
+    const repoUrlInput = await page.getByTestId('repoUrl');
+    const dappNameInput = await page.getByTestId('name');
+    const commitHashInput = await page.getByTestId('commitHash');
+    
+    await expect(page.getByText('Fill the testing form')).toBeVisible();
+
+    await expect(repoUrlInput.inputValue()).not.toHaveValue('')
+    await expect(page.getByTestId('accessible')).toBeVisible();
+    await expect(dappNameInput.inputValue()).not.toHaveValue('')
+    await expect(commitHashInput.inputValue()).toHaveValue('')
+})
+
+test('clears entire testing form when clicked on "Test another DApp" button', async () => {
+    const startTestButton = await page.getByRole('button', { name: 'Test', exact: true });
+    const commitHashInput = await page.getByTestId('commitHash');
+    await expect(page.getByText('Fill the testing form')).toBeVisible();
+    await expect(page.getByTestId('accessible')).toBeVisible();
+
+    await commitHashInput.click();
+    await commitHashInput.fill('166f9b01c5'); // failed building
+
+    await page.getByTestId('version').click();
+    await page.getByTestId('subject').click();
+    await page.getByText('Default Testing', { exact: true }).click();
+    await page.getByText('Advanced', { exact: true }).click();
+    await page.getByTestId('numCrashTolerance').click();
+    await page.getByTestId('numDLTests').click();
+    await page.getByTestId('numNoLockedFunds').click();
+    await page.getByTestId('numNoLockedFundsLight').click();
+    await page.getByTestId('numStandardProperty').click();
+    await page.getByTestId('numWhiteList').click();
+
+    await startTestButton.click();
+    // timeout wait for 30mins max
+    await expect(await page.getByTestId('statusTimeline').getByTestId('building').getByTestId('failed')).toBeVisible({ timeout: 1.8e+6 });
+
+    await expect(page.getByRole('button', { name: 'Test another DApp', exact: true })).toBeVisible()
+    
+    const repoUrlInput = await page.getByTestId('repoUrl');
+    const dappNameInput = await page.getByTestId('name');
+    
+    await expect(page.getByText('Fill the testing form')).toBeVisible();
+
+    await expect(repoUrlInput.inputValue()).toHaveValue('')
+    await expect(page.getByTestId('accessible')).not.toBeVisible();
+    await expect(dappNameInput.inputValue()).toHaveValue('')
+    await expect(commitHashInput.inputValue()).toHaveValue('')
+
+
+})
+// test('can see finished view for the run in Testing', async () => {
+//     await page.locator('xpath=//li[contains(@class,"nav-bar-item")][2]/div[2]/span[text()="Testing"]').click();
+//     // const finishedRunPromise = page.waitForResponse(resp => {
+//     //     return resp.url().match('http://localhost:8080/run/' + runId) && resp.status() === 200 && resp.json().status === "finished" && resp.json().result.length
+//     // })
+//     // const finishedRun = await finishedRunPromise;
+//      // timeout wait for 45mins max
+//     await expect(page.getByRole('button', { name: 'Full Report', exact: true })).toBeVisible({ timeout: 2.7e+6 })
 
 // });
