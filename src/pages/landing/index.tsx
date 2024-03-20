@@ -6,6 +6,7 @@ import ConnectSection from "./components/ConnectSection";
 import SubscriptionSection from "./components/SubscriptionSection";
 import RegisterSection from "./components/RegisterSection";
 import RegisterModal from "./components/RegisterModal";
+import PaymentDetailsVerification from "components/PaymentConfirmation/PaymentDetailsVerification";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { fetchActiveSubscription } from "store/slices/auth.slice";
@@ -14,8 +15,6 @@ import type { Tier } from "store/slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
 
 import "./index.css";
-import { BigNum } from "@emurgo/cardano-serialization-lib-browser";
-import PaymentDetailsVerification from "components/PaymentConfirmation/PaymentDetailsVerification";
 
 export interface ISubscription {
   adaUsdPrice: number;

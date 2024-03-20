@@ -7,7 +7,8 @@ import { renderWithProviders } from 'utils/test-utils';
 import ConnectSection from './ConnectSection';
 
 
-describe('Landing page', () => {
+describe('Landing page > Connection section', () => {
+
   test('should render wallet connect button on landing page', () => {
 
     renderWithProviders(<ConnectSection />);
@@ -15,10 +16,9 @@ describe('Landing page', () => {
     const buttonElement = screen.getByRole('button', { name: /Connect your wallet/i });
 
     expect(buttonElement).toBeVisible();
+    
   });
-});
 
-describe('Landing page modal', () => {
   test('open modal when connect button is pressed and show 3 active wallets', async () => {
 
     window.cardano = {
@@ -48,4 +48,5 @@ describe('Landing page modal', () => {
     expect(screen.getByText('No wallet extensions installed yet!')).toBeVisible();
   
   });
+  
 });
