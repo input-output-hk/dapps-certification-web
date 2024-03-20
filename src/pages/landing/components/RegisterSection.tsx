@@ -41,7 +41,6 @@ const RegisterSection = (props: Props) => {
       setCount(REFRESH_TIME);
       dispatch(fetchPrice({}));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.tier]);
 
   useEffect(() => {

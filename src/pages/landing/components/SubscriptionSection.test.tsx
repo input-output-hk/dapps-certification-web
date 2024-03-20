@@ -39,26 +39,30 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test('fetches and render the subcriptions tiers', async () => {
+describe('Landing page > Subscription section', () => {
 
-  renderWithProviders(<SubscriptionSection onSelectTier={() => {}} />);
+  test('fetches and render the subcriptions tiers', async () => {
 
-  expect(await screen.findByText(/Tier 1/i)).toBeInTheDocument();
-  expect(await screen.findByText(/Tier 2/i)).toBeInTheDocument();
+    renderWithProviders(<SubscriptionSection onSelectTier={() => {}} />);
 
-});
+    expect(await screen.findByText(/Tier 1/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Tier 2/i)).toBeInTheDocument();
 
-test('render the subcriptions tiers and select one', async () => {
+  });
 
-  const onSelectTier = jest.fn();
+  test('render the subcriptions tiers and select one', async () => {
 
-  renderWithProviders(<SubscriptionSection onSelectTier={onSelectTier} />);
+    const onSelectTier = jest.fn();
 
-  await screen.findByText(/Tier 1/i);
+    renderWithProviders(<SubscriptionSection onSelectTier={onSelectTier} />);
 
-  await userEvent.click(screen.getAllByRole('button')[0]);
+    await screen.findByText(/Tier 1/i);
 
-  expect(onSelectTier.mock.calls).toHaveLength(1);
-  expect(onSelectTier.mock.calls[0][0].name).toBe('Tier 1');
+    await userEvent.click(screen.getAllByRole('button')[0]);
+
+    expect(onSelectTier.mock.calls).toHaveLength(1);
+    expect(onSelectTier.mock.calls[0][0].name).toBe('Tier 1');
+
+  });
 
 });
