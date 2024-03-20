@@ -13,7 +13,7 @@ interface Props {
 
 const RegisterModal = (props: Props) => {
   return (
-    <Dialog open={props.show} onClose={props.onClose}>
+    <Dialog open={props.show} onClose={props.onClose} role="dialog">
       <DialogTitle>
         {props.success ? 'Successfully initiated subscription' : 'Setting up your subscription...'}
       </DialogTitle>

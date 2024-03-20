@@ -38,8 +38,6 @@ const initialState: WalletConnectionState = {
   resetWalletChanges: false,
 };
 
-const CardanoNS = window.cardano;
-
 type StakeAddressHex = string;
 type StakeAddressBech32 = `stake${string}`;
 type ChangeAddressBech32 = `addr${string}`;
@@ -65,6 +63,8 @@ const getAddresses = async (wallet: any): Promise<[StakeAddressHex, StakeAddress
 }
 
 export const connectWallet = createAsyncThunk('connectWallet', async (payload: { walletName: string }, thunkApi) => {
+  const CardanoNS = window.cardano;
+
   try {
     const { walletName } = payload;
     const wallet = await CardanoNS[walletName].enable();
@@ -111,6 +111,7 @@ export const connectWallet = createAsyncThunk('connectWallet', async (payload: {
 });
 
 export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', async (payload: any, { dispatch, getState }) => {
+  const CardanoNS = window.cardano;
   const { authToken, networkId } = (getState() as RootState).session;
   const { wallet, walletName, stakeAddress } = (getState() as RootState).walletConnection;
   
@@ -147,7 +148,6 @@ export const startListenWalletChanges = createAsyncThunk('listenWalletChanges', 
           }
         }
       } catch (error) {
-        console.log(error);
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
