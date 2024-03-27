@@ -106,7 +106,18 @@ export interface IUpdateProfile {
 }
 
 const initialState: ProfileState = {
-  profile: null,
+  profile: {
+    address: '',
+    email: '',
+    fullName: '',
+    companyName: '',
+    contactEmail: '',
+    linkedin: null,
+    twitter: null,
+    website: null,
+    role: null,
+    dapp: null,
+  },
   errorMessage: null,
   loading: false,
   success: false,
@@ -125,6 +136,9 @@ const initialState: ProfileState = {
   impersonate: false,
   retainId: null
 };
+
+// Add this export to your profileSlice file
+export { initialState as profileInitialState };
 
 export const fetchProfile = createAsyncThunk('fetchProfile', async (payload, thunkApi) => {
   try {

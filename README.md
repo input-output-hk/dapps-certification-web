@@ -2,7 +2,7 @@
 
 | Statements                  | Branches                | Functions                 | Lines             |
 | --------------------------- | ----------------------- | ------------------------- | ----------------- |
-| ![Statements](https://img.shields.io/badge/statements-4.92%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-1.12%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-3.23%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-4.47%25-red.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-6.38%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-1.42%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-4.45%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-6.07%25-red.svg?style=flat) |
 
 Front-end repository for Certification Service integration
 
