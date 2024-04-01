@@ -65,7 +65,7 @@ node_modules/
 # any static API response mock-ups
 public/static/data
 
-/test-results/
-/playwright-report/
+/playwright/test-results/
+/playwright/playwright-report/
 /blob-report/
 /playwright/.cache/

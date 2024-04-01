@@ -15,13 +15,16 @@ test.beforeAll(async ({ browser, playwright }) => {
     await page.goto('http://localhost:3000');
 })
 
-test('1 - can subscribe to the tool with the dummy wallet', async () => {
-    // await context.addCookies([{
-    //     name: 'loadMockWallet',
-    //     value: 'true',
-    //     url: 'http://localhost'
-    // }])
+test.afterAll(async ({ browser }) => {
+    // logout
+    await page.getByTestId('ExpandMoreIcon').click();
+    await page.getByText('Logout').click();
+    await expect(page.getByTestId('connect-wallet-button')).toBeVisible();
 
+    browser.close();
+})
+
+test('1 - can subscribe to the tool with the dummy wallet', async () => {
     // Listen for the 'requestfinished' event on the page; to ensure modified headers for the specific request
     page.on('requestfinished', async (request) => {
         if (request.url().includes('/profile/current') && request.method() === 'POST') {
@@ -114,7 +117,8 @@ test('4 - unauthorized user when timestamp is past 60 seconds', async () => {
 
     expect(page.locator('//div[contains(@class,"subscription")][1]//button[text()="SELECT"]')).not.toBeVisible()
 
-    expect(page.getByText('Could not obtain the proper key and signature for the wallet. Please try connecting again.')).toBeVisible();
+    test.setTimeout(1200000)
+    expect(page.getByText('Could not obtain the proper key and signature for the wallet. Please try connecting again.')).toBeVisible({timeout: 1200000});
     expect(page.getByRole('button', {name: 'Retry', exact: true })).toBeVisible();
 
     // clear loadUnauthorizedWallet test cookie

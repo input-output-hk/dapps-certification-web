@@ -40,7 +40,7 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "PORT=3000 react-app-rewired start",
+    "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "build:production": "REACT_APP_ENV=production npm run build",
     "react-test": "react-app-rewired test",

@@ -83,6 +83,12 @@ npm run start
 
 For back-end APIs to be available at `http://localhost:8080`
 ```sh
-bash <( curl -L -s bit.ly/3UCsWRP ) master --env-file /home/<<exact path to the project dir in your filesystem>>/dapps-certification-web/.docker.env --admin-address stake_test1uqthzqlp347meym39dafmw4r6wk0qlczhh8jx34rgaeuuqsgxguvh
+bash <( curl -L -s bit.ly/3UCsWRP ) master --env-file <<exact path to the project dir in your filesystem>>/dapps-certification-web/.docker.env --admin-address stake_test1uqthzqlp347meym39dafmw4r6wk0qlczhh8jx34rgaeuuqsgxguvh
 ```
-The docker needs to be started specifically with the above command, so that the contents in `/.docker.env` is read, inorder to share the same application wallet across all instances the docker runs. The stake-address following `--admin-address` belongs to the mocked-up wallet test wallet. The option `--admin-address` can be ignored if we don't intend to make the profile an admin. 
+The docker needs to be started specifically with the above command, so that the contents in `/.docker.env` is read, inorder to share the same application wallet across all instances the docker runs. The ```<<exact path>>``` can vary based on your operating systems.
+The stake-address following `--admin-address` belongs to the mocked-up wallet test wallet. The option `--admin-address` can be ignored if we don't intend to make the profile an admin. 
+
+Now run the tests with
+```
+npm run test:e2e
+```
