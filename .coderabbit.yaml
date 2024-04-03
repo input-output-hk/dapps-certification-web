@@ -11,7 +11,8 @@ reviews:
   poem: false
   review_status: true
   collapse_walkthrough: false
-  path_filters: []
+  path_filters: 
+  - "!./playwright/extensions/**/*"
   path_instructions: [] # Maybe something for **/**.test.tsx in the future?
 
   auto_review:
