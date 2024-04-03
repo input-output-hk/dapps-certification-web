@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "store/store";
 import { connectWallet } from "store/slices/walletConnection.slice";
 import { showSnackbar, clearSnackbar } from "store/slices/snackbar.slice";
 
-import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, IconButton, CircularProgress, Snackbar, Alert, Grid } from "@mui/material";
+import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, IconButton, CircularProgress, Alert, Grid } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 import "../index.css";
