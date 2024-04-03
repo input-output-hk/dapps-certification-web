@@ -11,8 +11,8 @@ import './PaymentDetailsVerification.css'
 interface Props {
   content?: any;
   data: {
-    fee: BigNum,
-    subscription: ISubscription,
+    subscription: any,
+    balance: number
     profile: any
   } | undefined | null;
   onAccept: () => void;
@@ -46,8 +46,8 @@ const PaymentDetailsVerification = ( props: Props ) => {
             {props?.data?.subscription && (<>
               <ListItem><ListItemText primary="Subscription Type" secondary={formatToTitleCase(props?.data?.subscription.type)} /></ListItem>
               <ListItem><ListItemText primary="Tier" secondary={"Tier " + props?.data?.subscription.tierId}/></ListItem>
-              <ListItem><ListItemText primary="Amount in USD" secondary={`$${Math.round(props?.data?.subscription.price/1000000*props?.data?.subscription.adaUsdPrice*100)/100}/year`} /></ListItem>              
-              <ListItem><ListItemText primary="Amount in ADA" secondary={`₳ ${Math.round(props?.data?.subscription.price*100/1000000)/100}`} /></ListItem>
+              <ListItem><ListItemText primary="Amount in USD" secondary={`$${props?.data?.subscription.usdPrice}/year`} /></ListItem>
+              <ListItem><ListItemText primary="Expected Amount in ADA" secondary={`₳ ${props?.data?.subscription.adaPrice} ${props?.data?.balance ? `- Will be deducted from the available balance ₳${props?.data?.balance} in your profile` : ''}`}  /></ListItem>
             </>)}  
           </List>
         </>

@@ -16,7 +16,8 @@ const REFRESH_TIME = 30;
 
 interface Props {
   tier: Tier,
-  onSubmit: (form: RegisterForm) => void
+  onClickPay: (form: RegisterForm) => void,
+  submitForm: boolean
 }
 
 const RegisterSection = (props: Props) => {
@@ -65,7 +66,7 @@ const RegisterSection = (props: Props) => {
   );
 
   const onSubmit = (form: RegisterForm) => {
-    props.onSubmit({
+    props.onClickPay({
       ...form,
       linkedin: form.linkedin!.length > 0 ? form.linkedin : undefined,
       twitter: form.twitter!.length > 0 ? form.twitter : undefined,
@@ -90,6 +91,7 @@ const RegisterSection = (props: Props) => {
               label="Company name *" type="text"
               error={errors.companyName !== undefined}
               helperText={errors.companyName !== undefined ? 'The field value is invalid' : undefined}
+              inputProps={{ "data-testid": "companyName" }}
               {...register("companyName", { required: true })}
             />
             <TextField
@@ -98,6 +100,7 @@ const RegisterSection = (props: Props) => {
               label="Contact email *" type="email"
               error={errors.contactEmail !== undefined}
               helperText={errors.contactEmail !== undefined ? 'The field value is invalid' : undefined}
+              inputProps={{ "data-testid": "contactEmail" }}
               {...register("contactEmail", { required: true, pattern: /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-_]+\.[A-Za-z]{2,64}$/i })}
             />
             <TextField
@@ -106,6 +109,7 @@ const RegisterSection = (props: Props) => {
               label="Company Email *" type="email"
               error={errors.email !== undefined}
               helperText={errors.email !== undefined ? 'The field value is invalid' : undefined}
+              inputProps={{ "data-testid": "companyEmail" }}
               {...register("email", { required: true, pattern: /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-_]+\.[A-Za-z]{2,64}$/i })}
             />
             <TextField
@@ -114,6 +118,7 @@ const RegisterSection = (props: Props) => {
               label="Full name *" type="text"
               error={errors.fullName !== undefined}
               helperText={errors.fullName !== undefined ? 'The field value is invalid' : undefined}
+              inputProps={{ "data-testid": "fullName" }}
               {...register("fullName", { required: true })}
             />
             <TextField
@@ -122,6 +127,7 @@ const RegisterSection = (props: Props) => {
               label="Twitter" type="text"
               error={errors.twitter !== undefined}
               helperText={errors.twitter !== undefined ? 'The field value is invalid' : undefined}
+              inputProps={{ "data-testid": "twitter" }}
               {...register("twitter", { pattern: /^[A-Za-z0-9_]{1,15}$/i })}
             />
             <TextField
@@ -130,6 +136,7 @@ const RegisterSection = (props: Props) => {
               label="LinkedIn" type="text"
               error={errors.linkedin !== undefined}
               helperText={errors.linkedin !== undefined ? 'The field value is invalid' : undefined}
+              inputProps={{ "data-testid": "linkedin" }}
               {...register("linkedin", { pattern: /^(http(s)?:\/\/)?([\w]+\.)?linkedin\.com\/(pub|in|profile|company)\/([a-zA-Z0-9_-]+)$/i })}
             />
             <TextField
@@ -138,6 +145,7 @@ const RegisterSection = (props: Props) => {
               label="Website" type="text"
               error={errors.website !== undefined}
               helperText={errors.website !== undefined ? 'The field value is invalid' : undefined}
+              inputProps={{ "data-testid": "website" }}
               {...register("website", { pattern: /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,255}\.[a-z]{2,6}(\b([-a-zA-Z0-9@:%_\+.~#()?&\/\/=]*))?$/i })}
             />
             <Button

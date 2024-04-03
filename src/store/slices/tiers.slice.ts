@@ -12,6 +12,9 @@ export interface Tier {
   features: TierFeature[];
   usdPrice: number;
   enabled: boolean;
+  type: string;
+  duration: number;
+  description: string;
 }
 
 interface TiersState {
