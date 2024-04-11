@@ -38,6 +38,10 @@ const initialState: WalletConnectionState = {
   resetWalletChanges: false,
 };
 
+// Add this export to your walletConnectionSlice file
+export { initialState as walletConnectionInitialState };
+
+
 const CardanoNS = window.cardano;
 
 type StakeAddressHex = string;
