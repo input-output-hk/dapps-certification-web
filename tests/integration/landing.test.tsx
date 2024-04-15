@@ -5,8 +5,8 @@ import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
-import { renderWithProviders } from 'utils/test-utils';
-import LandingPage from './';
+import { renderWithProviders } from '../../src/utils/test-utils';
+import LandingPage from '../../src/pages/landing';
 
 const server = setupServer(
   http.get('/server-timestamp', async () => {

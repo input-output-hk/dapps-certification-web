@@ -20,7 +20,7 @@ describe('Landing page > Register modal', () => {
 
     renderWithProviders(<RegisterModal {...props} />);
 
-    const dialogElement = screen.queryByRole('dialog');
+    const dialogElement = screen.queryByTestId('register-modal');
 
     expect(dialogElement).not.toBeInTheDocument();
 
@@ -37,7 +37,7 @@ describe('Landing page > Register modal', () => {
 
     renderWithProviders(<RegisterModal {...props} />);
 
-    const dialogElement = screen.getAllByRole('dialog')[0];
+    const dialogElement = screen.getByTestId('register-modal');
 
     expect(dialogElement).toBeVisible();
 
