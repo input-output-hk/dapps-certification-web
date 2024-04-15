@@ -38,6 +38,9 @@ const initialState: WalletConnectionState = {
   resetWalletChanges: false,
 };
 
+// Add this export to your walletConnectionSlice file
+export { initialState as walletConnectionInitialState };
+
 type StakeAddressHex = string;
 type StakeAddressBech32 = `stake${string}`;
 type ChangeAddressBech32 = `addr${string}`;

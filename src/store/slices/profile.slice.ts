@@ -126,6 +126,9 @@ const initialState: ProfileState = {
   retainId: null
 };
 
+// Add this export to your profileSlice file
+export { initialState as profileInitialState };
+
 export const fetchProfile = createAsyncThunk('fetchProfile', async (payload, thunkApi) => {
   try {
     const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
