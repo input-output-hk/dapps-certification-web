@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "store/rootReducer";
 import { fetch } from "../../api";
+import { fetchProfileBalance } from "./profile.slice";
 
 interface AuthState {
   isSessionFetched: boolean;
@@ -18,6 +19,7 @@ export const fetchActiveSubscription = createAsyncThunk('fetchActiveSubscription
   try {
     const {impersonate, retainId} = (thunkApi.getState() as RootState).profile;
     const response: any = await fetch<string[]>(thunkApi, { method: 'GET', url: `/profile/${impersonate ? retainId : "current"}/subscriptions/active-features` });
+    thunkApi.dispatch(fetchProfileBalance({}))
     if (response.status !== 200) throw new Error();
     return response.data;
   } catch (error) {

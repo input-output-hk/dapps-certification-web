@@ -64,14 +64,10 @@ const getUserSubscriptionById = async (thunkApi: any, subscriptionId: string) =>
   return res.data.find(item => item.id === subscriptionId);
 }
 
-const getUserBalance = async (thunkApi: any) => {
-  const res = await fetch<number>(thunkApi, { method: 'GET', url: '/profile/current/balance' });
-  if (res.status !== 200) throw { message: res.data };
-  return BigNum.from_str(res.data.toString());
-}
-
-const calculateFee = async (subscriptionPrice: BigNum, balance: BigNum) => {
+export const calculateFee = async (subscriptionPriceNum: number, balanceNum: number) => {
   let lessBalance = false;
+  const subscriptionPrice: BigNum = BigNum.from_str(subscriptionPriceNum.toString())
+  const balance: BigNum = BigNum.from_str(balanceNum.toString())
   if (balance.less_than(subscriptionPrice)) {
     lessBalance = true;
   } else {
@@ -130,19 +126,14 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
       if (!subscription) throw { message: 'There\'s no subscription registered' };
       if (subscription.status !== 'pending') throw { message: 'The subscription it\'s not pending' };
 
-      const subscriptionPrice = BigNum.from_str(subscription.price.toString());
-      const balance = await getUserBalance(thunkApi);
+      const { profileBalance } = (thunkApi.getState() as RootState).profile;
 
-      const { lessBalance, fee } = await calculateFee(subscriptionPrice, balance);
-      if (!lessBalance) {
-        // do nothing; auto pay from balance
-        return '';
-      } else {
-        return {
-          fee: fee,
-          subscription: subscription
-        };
-      }
+      const { lessBalance, fee } = await calculateFee(subscription.price, profileBalance);
+      return {
+        fee: fee,
+        subscription: subscription,
+        balance: !lessBalance ? profileBalance : null
+      };
     }
     else {
       const currentSub = await getUserSubscriptionById(thunkApi, pendingSubscription.id);
@@ -157,11 +148,15 @@ export const register = createAsyncThunk("register", async (request: RegisterReq
   }
 });
 
-export const payForRegister = createAsyncThunk("payForRegister", async (payload: {fee: BigNum, subscription: any}, thunkApi) => {
+export const payForRegister = createAsyncThunk("payForRegister", async (payload: {fee: BigNum, subscription: any, balance: number}, thunkApi) => {
   const { wallet, walletAddress, stakeAddress } = (thunkApi.getState() as RootState).walletConnection;
-  let transactionId: string | null;
+  let transactionId: string | null = '';
   try {
-    transactionId = await doPayment(thunkApi.dispatch, wallet, walletAddress!, stakeAddress!, payload.fee);
+    if (payload.balance) {
+      // prevent triggering wallet payments as account has balance
+    } else {
+      transactionId = await doPayment(thunkApi.dispatch, wallet, walletAddress!, stakeAddress!, payload.fee);
+    }
 
     await hasActiveSubscription(thunkApi, payload.subscription.id).catch(error => {
       return thunkApi.rejectWithValue(error.message.toString());

@@ -9,7 +9,7 @@ import RegisterModal from "./components/RegisterModal";
 
 import { useAppDispatch, useAppSelector } from "store/store";
 import { fetchActiveSubscription } from "store/slices/auth.slice";
-import { register, clear, payForRegister } from "store/slices/register.slice";
+import { register, clear, payForRegister, calculateFee } from "store/slices/register.slice";
 import type { Tier } from "store/slices/tiers.slice";
 import type { RegisterForm } from "store/slices/register.slice";
 
@@ -35,12 +35,16 @@ export default function LandingPage() {
   const dispatch = useAppDispatch();
   const { wallet } = useAppSelector((state) => state.walletConnection);
   const { transactionId, processing, success } = useAppSelector((state) => state.register);
+  const { price } = useAppSelector((state) => state.price);
+  const { profileBalance } = useAppSelector((state) => state.profile);
 
   const [step, setStep] = useState<string>('connect');
   const [selectedTier, setSelectedTier] = useState<Tier|null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState<boolean>(false);
   const [registerResponse, setRegisterResponse] = useState<any>(null);
-  const [detailsToBeVerified, setDetailsToBeVerified] = useState<any>(null)
+  const [detailsToBeVerified, setDetailsToBeVerified] = useState<any>(null);
+  const [submitForm, setSubmitForm] = useState<boolean>(false);
+  const [form, setForm] = useState<RegisterForm>({ address: "", companyName: "", contactEmail: "", email: "", fullName: ""});
     
   useEffect(() => {
     if (wallet !== null && step === 'connect') {
@@ -54,22 +58,35 @@ export default function LandingPage() {
 
   
   const handleRegistration = async (form: RegisterForm) => {
-    const response: any = await dispatch(register({ form, tierId: selectedTier!.id }));
-    if (typeof response.payload !== 'string') {
-      setRegisterResponse(response.payload);
-      setDetailsToBeVerified({
-        ...response.payload, 
+    if (selectedTier?.id) {
+      setForm(form)
+      const adaPrice: number = selectedTier.usdPrice / price;
+      const lovelacesPrice: number = Math.round(adaPrice * 1000000); 
+      const { lessBalance } = await calculateFee(lovelacesPrice, profileBalance);
+      await setDetailsToBeVerified({
+        subscription: {
+          type: selectedTier.type,
+          tierId: selectedTier.id,
+          adaPrice: adaPrice.toFixed(2),
+          usdPrice: selectedTier.usdPrice
+        },
+        balance: !lessBalance ? Math.round(profileBalance*100/1000000) / 100 : null,
         profile: form
       })
-      setShowVerificationModal(true);
-    } else {
-      // do nothin;
+      await setShowVerificationModal(true);
     } 
   };
 
   const onPaymentDetailsVerified = async () => {
     setShowVerificationModal(false)
-    await dispatch(payForRegister(registerResponse));
+    const response: any = await dispatch(register({ form, tierId: selectedTier!.id }));
+    if (response?.payload?.subscription) {
+      setRegisterResponse(response.payload); 
+      await dispatch(payForRegister(response.payload));
+      setSubmitForm(true)
+    } else {
+      // do nothing;
+    }
   }
 
   const handleContinue = () => {
@@ -83,7 +100,7 @@ export default function LandingPage() {
     <Box className="flex flex-row h-screen bg-cover bg-center bg-landing">
       { step === 'connect' && <ConnectSection /> }
       { step === 'subscription' && <SubscriptionSection onSelectTier={setSelectedTier}/> }
-      { selectedTier !== null && <RegisterSection tier={selectedTier} onSubmit={handleRegistration} /> }
+      { selectedTier !== null && <RegisterSection tier={selectedTier} onClickPay={handleRegistration} submitForm={submitForm} /> }
       <RegisterModal show={processing||success} onClose={handleContinue} success={success} transactionId={transactionId} />
       
       {showVerificationModal ? 
